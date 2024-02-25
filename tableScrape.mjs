@@ -12,17 +12,15 @@ classes = [],
 validClass = /^([A-Z]+\d+[A-Z]{0,1}).*(\d)$/,
 blaskListCourseCodes = /(?:^COOP)/g,
 whitespace = /[\t\n\r]+/g,
-captionBlacklist = /COOP|Senior Design|\WSelect\W|Contemporary|Track|Elective/g
+captionBlacklist = /COOP|Senior Design|\WSelect\W|Contemporary|Tra+ck|Elective/g
 let curriculum = []
 
 // Grab all of the table elements on the page
-$('table').each((index, element) => {
+$('table').each((i, element) => {
     const tableId = $(element).attr().id,
     // The caption element on each table holds the header, we can use this to throw out some groups of classes that we don't want to include
     tableCaption = $(`#${tableId} caption`).text().trim().replace(/\t+|\n|\r/g, ' ').replace(/ {2,}/g, '')
     // Check if the header is valid
-    // Current this runs into an issue when doing tracks for various majors, not sure why.
-    // The end goal is to not inlcude classes that are specific to a track
     if (!captionBlacklist.test(tableCaption)) {
         console.log(tableCaption)
         const rowData = []
@@ -44,3 +42,4 @@ $('table').each((index, element) => {
 
 // Log results for debugging
 console.log(curriculum)
+console.log(curriculum.length)

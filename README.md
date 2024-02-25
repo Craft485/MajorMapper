@@ -31,6 +31,8 @@ The steps this app are taking, in a very general sense, are as follows:
 
 Since we are using axois and cheerio (nodejs/server side libraries), we will probably have to use a [bundler such as webpack](https://webpack.js.org/) to prep it for the web app
 
+To use the current iteration of this application from a command line context using [nodejs](https://nodejs.org/en) run `node scraper.mjs` from the root directory of this project
+
 ### Known Hurdles
 
 1. Some spelling mistakes are present within certain curriculums

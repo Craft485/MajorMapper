@@ -37,4 +37,13 @@ To use the current iteration of this application from a command line context usi
 
 1. Some spelling mistakes are present within certain curriculums
 2. Formatting across different curriculums are somewhat similar but different enough to be an issue
-3. Some classes (such as the CS requirement to choose either bio/physics with lab) are formatted strangly yet should probably still be included
+3. Some classes (such as the CS requirement to choose either bio/physics with lab) are formatted strangely yet should probably still be included
+
+# Regular Expressions
+
+This app will rely heavily on regular expressions which can be a bit tedious to try and read.
+For this reason I will atempt to document some of them and the purposes behind them:
+
+- Detect a valid **class code** (ie: CS1021C, MATH1062, etc): `/([A-Z]*\d{4}[A-Z]?)/g`
+- Detect a valid **class** (ie: "CS1100 Introduction to Computer Science 1"): `/^([A-Z]+\d+[A-Z]{0,1}).*(\d)$/`
+  - This will also create capture groups with the course code and the number of credits for the class

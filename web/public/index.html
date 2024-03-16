@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Major Mapper</title>
+    <link rel="stylesheet" href="./styles.css">
+    <!-- <script src="dist/bundle.js" defer></script> -->
+    <script src="./client.js" defer></script>
+</head>
+<body>
+    <h2 id="title">
+        <button id="add" onclick="addCurriculum()" class="button">Add</button>
+        <p>Major Mapper</p>
+        <button onclick="submit()" class="button">Submit</button>
+    </h2>
+    <article id="main">
+        <div class="curriculum">
+            <div class="selector">
+                <label for="major-select-0">Curriculum: </label>
+                <select name="major" id="major-select-0" class="major-select">
+                    <option value="">-- Select Your Major --</option>
+                </select>
+            </div>
+            <div class="list"></div>
+            <button class="button remove" onclick="remove(this)">Remove</button>
+        </div>
+        <div class="curriculum">
+            <div class="selector">
+                <label for="major-select-1">Curriculum: </label>
+                <select name="major" id="major-select-1" class="major-select">
+                    <option value="">-- Select Your Major --</option>
+                </select>
+            </div>
+            <div class="list"></div>
+            <button class="button remove" onclick="remove(this)">Remove</button>
+        </div>
+    </article>
+</body>
+</html>

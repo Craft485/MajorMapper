@@ -19,26 +19,22 @@ async function scrapeIndividual(curriculumStack, debug = false) {
     // TODO: Deal with validating that the given curriculum actually exists (use fetch and check status code in response headers?)
     // TODO: Clean this up, it needs it
     return new Promise(async (resolve) => {
-        const curriculum = []
-        const response = await axios.get(baseURL + curriculumStack, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } })
+        const curriculum = [], response = await axios.get(baseURL + curriculumStack, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } })
         if (debug) console.log('Axios done', response.status, response.statusText)
         // Cheerio will handle any html parsing, allowing us to use a JQuery like syntax to scan the DOM
-        const $ = cheerio.load(response.data)
         // Grab all of the table elements on the page
-        const tables = $('.table')
+        const $ = cheerio.load(response.data), tables = $('table')
         // console.log('Grabbed tables from cheerio parse', tables, tables.length)
         // This may be able to get refactored later (read: should)
         for (let i = 0; i < tables.length; i++) {   
-            const element = tables.get(i)
-            const tableId = $(element).attr().id,
+            const element = tables.get(i), tableId = $(element).attr().id,
             // The caption element on each table holds the header, we can use this to throw out some groups of classes that we don't want to include
             tableCaption = $(`#${tableId} caption`).text().trim().replace(/\t+|\n|\r/g, ' ').replace(/ {2,}/g, '')
             // Check if the header is valid
             if (!captionBlacklist.test(tableCaption)) {
-                // console.log(tableCaption)
-                const rowData = []
+                const rowData = [], tableRows = $(`#${tableId} tr`)
                 // Grab all of the row data in the current class, each row in a table contains data for an individual class (some exceptions apply)
-                $(`#${tableId} tr`).each((i, row) => {
+                for (const row of tableRows) {
                     const classData = $(row).text().replace(whitespace, ' ').replace(/ {2,}/g, '').trim(),
                     courseCodes = classData.match(courseCodesExp) || []
                     // console.log(classData)
@@ -48,7 +44,7 @@ async function scrapeIndividual(curriculumStack, debug = false) {
                         // console.log(courseData, courseCode, className, credits)
                         rowData.push([courseCode, className, credits])
                     }
-                })
+                }
                 curriculum.push(...rowData)
             }
             if (debug) {

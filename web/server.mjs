@@ -54,10 +54,8 @@ app.get('*', (req, res) => {
     res.status(404).send('Invalid URL path')
 })
 
-// TODO: Refactor to allow for multiple scrapes
 app.post('/submit', async (req, res) => {
     console.log(req.originalUrl)
-    console.log(req.query)
     // req.query.q should be a comma seperated list of program stacks
     // Still need to do some level of input validation
     const r = await scrape(req.query['q'].split(','))
@@ -65,7 +63,7 @@ app.post('/submit', async (req, res) => {
 })
 
 app.post('/major-info', async (req, res) => {
-    console.log(req.originalUrl, '\n', req.params)
+    console.log(req.originalUrl, req.query || '')
     /** @type {Program[]} result */
     const result = await programList.default.data.filter( /** @type {Program} program */ (program) => {
         return program.HasMajorMap &&
@@ -77,4 +75,4 @@ app.post('/major-info', async (req, res) => {
 })
 
 // Start server on localhost/127.0.0.1 on port 8080
-server.listen(8080, () => console.info('Online at ', server.address()))
+server.listen(8080, () => console.info(`Online at ${server.address().address}${server.address().port}`))

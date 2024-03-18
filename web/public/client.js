@@ -41,6 +41,8 @@ function addCurriculum() {
     /** @type {HTMLElement} pageContent */
     const pageContent = id('main')
     if (pageContent.children.length < MAX_ITEMS) {
+        // This is temporary
+        const programs = Array.from(id('major-select-0').children).filter(e => e.innerText !== '-- Select Your Major --').map(x => `<option id="${x.id}" value="${x.innerText}">${x.innerText}</option>`)
         /** @type HTMLDivElement newCurriculum */
         const newCurriculum = createElement('div')
         newCurriculum.className = 'curriculum'
@@ -49,6 +51,7 @@ function addCurriculum() {
         <label for="major-select">Curriculum: </label>
         <select name="major" id="major-select">
             <option value="">-- Select Your Major --</option>
+            ${programs.join('')}
         </select>
         </div>
         <div class="list"></div>

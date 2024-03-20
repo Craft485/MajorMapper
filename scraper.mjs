@@ -66,7 +66,7 @@ async function scrapeIndividual(curriculumStack, debug = false) {
 export async function scrape(curriculumStacks = null, debug = false) {
     const result = []
     for (const stack of curriculumStacks) result.push(await scrapeIndividual(stack, debug))
-    console.log(result)
+    if (debug) console.log(result)
     return result
 }
 

@@ -2,37 +2,96 @@
 if (!$) var $ = document.querySelectorAll.bind(document)
 if (!id) var id = document.getElementById.bind(document)
 if (!createElement) var createElement = document.createElement.bind(document)
+if (!qSelect) var qSelect = document.querySelector.bind(document)
 
-const baseURL = 'https://webapps2.uc.edu/ecurriculum/DegreePrograms/Home/MajorMap/'
-const MAX_ITEMS = 10
+const baseURL = 'https://webapps2.uc.edu/ecurriculum/degreeprograms/program/majormap/',
+MAX_ITEMS = 10,
+/** @type {{[stack: string]: Program}} allPrograms*/
+allPrograms = {},
+/** @type {Array<Program>} */
+selectedProgramList = []
+
+class Program {
+    /**
+     * @param {{ ProgramTitle?: string,
+     *           DegreeCode?: string,
+     *           LocationCode?: string,
+     *           CollegeCode?: string,
+     *           HasMajorMap?: Boolean,
+     *           DisplayDegree?: string,
+     *           ProgramStack?: string }} props 
+     */
+    constructor (props) {
+        /** @type {string | null} ProgramTitle */
+        this.ProgramTitle = props.ProgramTitle || null
+        /** @type {string | null} DegreeCode (ex: BSCS) */
+        this.DegreeCode = props.DegreeCode || null
+        /** @type {string | null} LocationCode (ex: West Campus) */
+        this.LocationCode = props.LocationCode || null
+        /** @type {string | null} CollegeCode (ex: Engineering & Applied Science) */
+        this.CollegeCode = props.CollegeCode || null
+        /** @type {boolean} HasMajorMap */
+        this.HasMajorMap = props.HasMajorMap || false
+        /** @type {string | null} DisplayDegree */
+        this.DisplayDegree = props.DisplayDegree || null
+        /**
+         * @description Ex: 20BC-ASE-BSAERO | Used to create the URL for the major map
+         * @type {string | null} ProgramStack 
+         */
+        this.ProgramStack = props.ProgramStack || null
+        /** @type {string[]} Not populated until submit is called */
+        this.courseList = []
+    }
+}
 
 // TODO: Refactor this
 function submit() {
     // Clear lists
-    Array.from($('.curriculum .list')).forEach(list => { list.innerText = '' })
-    /** @type {HTMLSelectElement} majors */
-    const majors = Array.from($('select')) || [], programStackList = []
-    for (const major of majors) programStackList.push(document.querySelector(`option[value="${major.value}"]`).id)
+    Array.from($('.curriculum .list')).forEach(list => list.innerText = '')
+    /** @type {HTMLSelectElement} */
+    const majors = Array.from($('select')) || [],
+    /** @type {string[]} */
+    programStackList = []
+    for (const major of majors) programStackList.push(qSelect(`option[value="${major.value}"]`).id)
     fetch(`/submit?q=${programStackList.join(',')}`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
             // Handle UI updates (bring out to a global function?)
-            console.log(data)
             // Assume that the order that we got the curriculums back is the same order that they are ordered on the page
             const curriculumLists = Array.from($('.curriculum .list'))
             for (let i = 0; i < curriculumLists.length; i++) {
+                /** @type {Array<string>} programCoursesList */
+                const programCoursesList = [],
                 /** @type {HTMLDivElement} curriculumListElement */
-                const curriculumListElement = curriculumLists[i],
-                /** @type {Array<string[]>} curriculumData */
+                curriculumListElement = curriculumLists[i],
+                /** @type {Array<string[]>} Formatted as [[ code, name, credits ], ...] */
                 curriculumData = data[i]
                 for (const course of curriculumData) {
+                    programCoursesList.push(course[0])
                     /** @type {HTMLParagraphElement} listItem */
                     const listItem = createElement('p')
-                    listItem.className = 'list-item'
-                    listItem.innerText = course.join(' ')
+                    listItem.className = `list-item ${course[0]}`
+                    // NOTE: I want to change this link to direct the user to a course description page, perhaps somewhere like coursicle
+                    listItem.innerHTML = `<a class="list-item-link" href="${baseURL + programStackList[i]}">${course.join(' ')}</a>`
                     curriculumListElement.appendChild(listItem)
                 }
+                // Setup program to compare, object references should make this a copy in both locations
+                allPrograms[programStackList[i]].courseList.push(...programCoursesList)
+                selectedProgramList.push(allPrograms[programStackList[i]])
             }
+        })
+        .then(() => {
+            // Comparing function (NOTE: There is probably a much better way to do this)
+            const allCourses = selectedProgramList.map(x => x.courseList.join()).join().split(',')
+            let courseCounts = []
+            for (const course of allCourses) {
+                const alreadyCountedCourseIndex = courseCounts.findIndex(v => v.code === course)
+                alreadyCountedCourseIndex === -1 ? courseCounts.push({ code: course, count: 1 }) : courseCounts[alreadyCountedCourseIndex].count++
+            }
+            // Trim down the array to only the courses shared across all programs
+            courseCounts = courseCounts.filter(x => x.count === selectedProgramList.length)
+            for (const sharedCourse of courseCounts) Array.from($(`.${sharedCourse.code} a`)).forEach((/** @type {HTMLElement} */ e) => e.classList.add('shared-course'))
+            
         })
 }
 
@@ -43,7 +102,7 @@ function addCurriculum() {
     if (pageContent.children.length < MAX_ITEMS) {
         // This is temporary
         const programs = Array.from(id('major-select-0').children).filter(e => e.innerText !== '-- Select Your Major --').map(x => `<option id="${x.id}" value="${x.innerText}">${x.innerText}</option>`)
-        /** @type HTMLDivElement newCurriculum */
+        /** @type {HTMLDivElement} newCurriculum */
         const newCurriculum = createElement('div')
         newCurriculum.className = 'curriculum'
         newCurriculum.innerHTML = `
@@ -60,42 +119,6 @@ function addCurriculum() {
     }
 }
 
-// Using this class to keep track of what sort of properties we are interested in, may also be useful if we move to a more OOP approach
-class Program {
-    constructor (props) {
-        /**
-         * @type {string | null} ProgramTitle (ex: Computer Science)
-         * @default null
-         */
-        this.ProgramTitle = props.ProgramTitle || null
-        /** 
-         * @type {string | null} DegreeCode (ex: BSCS)
-         * @default null
-         */
-        this.DegreeCode = props.DegreeCode || null
-        /**
-         * @type {string | null} LocationCode (ex: West Campus)
-         * @default null
-         */
-        this.LocationCode = props.LocationCode || null
-        /** @type {string | null} CollegeCode (ex: Engineering & Applied Science) @default null */
-        this.CollegeCode = props.CollegeCode || null
-        /** 
-         * @type {boolean} HasMajorMap
-         * @default false
-         */
-        this.HasMajorMap = props.HasMajorMap || false
-        /** @type {string | null} DisplayDegree */
-        this.DisplayDegree = props.DisplayDegree || null
-        /**
-         * @description  Ex: 20BC-ASE-BSAERO | Used to create the URL for the major map
-         * @type {string | null} ProgramStack
-         * @default null
-         */
-        this.ProgramStack = props.ProgramStack || null
-    }
-}
-
 function requestMajorList() {
     // Default headers provided by the browsers should be fine for the time being
     fetch('/major-info', { method: 'POST' })
@@ -103,6 +126,17 @@ function requestMajorList() {
         .then((/** @type {Program[]} data*/ data) => {
             // console.log(data)
             data.forEach(program => {
+                // While the JSON response has the SHAPE of Program, we need an actual object representation
+                // We can't fill the course list here, we have to wait until its actually submitted
+                allPrograms[program.ProgramStack] = new Program({
+                    ProgramTitle: program.ProgramTitle,
+                    DegreeCode: program.DegreeCode,
+                    LocationCode: program.LocationCode,
+                    CollegeCode: program.CollegeCode,
+                    HasMajorMap: program.HasMajorMap,
+                    DisplayDegree: program.DisplayDegree,
+                    ProgramStack: program.ProgramStack
+                })
                 /** @type {HTMLOptionElement} item */
                 const item = createElement('option')
                 item.id = program.ProgramStack

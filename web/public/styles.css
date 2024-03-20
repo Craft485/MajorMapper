@@ -68,11 +68,21 @@ article#main {
     left: 0;
     right: 0;
     align-self: center;
+    border-top: thin solid black;
 }
 
 .list-item {
     margin: 0;
     padding: 2px;
+}
+
+.list-item-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.shared-course {
+    background-color: darkcyan;
 }
 
 .button {

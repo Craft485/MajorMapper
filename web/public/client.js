@@ -46,6 +46,11 @@ class Program {
 
 // TODO: Refactor this
 function submit() {
+    console.clear()
+    // Clear previous stuff
+    selectedProgramList.length = 0
+    // This is a slightly stupid fix to get around obj references
+    Object.values(allPrograms).forEach(program => program.courseList.length = 0)
     // Clear lists
     Array.from($('.curriculum .list')).forEach(list => list.innerText = '')
     /** @type {HTMLSelectElement} */
@@ -79,8 +84,11 @@ function submit() {
                 allPrograms[programStackList[i]].courseList.push(...programCoursesList)
                 selectedProgramList.push(allPrograms[programStackList[i]])
             }
+            console.log('UI step')
         })
         .then(() => {
+            console.log('compare step')
+            console.log($('.list-item'), selectedProgramList.length)
             // Comparing function (NOTE: There is probably a much better way to do this)
             const allCourses = selectedProgramList.map(x => x.courseList.join()).join().split(',')
             let courseCounts = []
@@ -90,8 +98,8 @@ function submit() {
             }
             // Trim down the array to only the courses shared across all programs
             courseCounts = courseCounts.filter(x => x.count === selectedProgramList.length)
-            for (const sharedCourse of courseCounts) Array.from($(`.${sharedCourse.code} a`)).forEach((/** @type {HTMLElement} */ e) => e.classList.add('shared-course'))
-            
+            console.log(selectedProgramList.map(x => x.courseList.join()).join('\n'), courseCounts)
+            for (const sharedCourse of courseCounts) {console.log($(`.${sharedCourse.code} a`));Array.from($(`.${sharedCourse.code} a`)).forEach((/** @type {HTMLElement} */ e) => e.classList.add('shared-course'))}
         })
 }
 

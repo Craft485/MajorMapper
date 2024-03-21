@@ -9,7 +9,8 @@ MAX_ITEMS = 10,
 /** @type {{[stack: string]: Program}} allPrograms*/
 allPrograms = {},
 /** @type {Array<Program>} */
-selectedProgramList = []
+selectedProgramList = [],
+coursicleBaseURL = 'https://www.coursicle.com/uc/courses/'
 
 class Program {
     /**
@@ -76,19 +77,15 @@ function submit() {
                     /** @type {HTMLParagraphElement} listItem */
                     const listItem = createElement('p')
                     listItem.className = `list-item ${course[0]}`
-                    // NOTE: I want to change this link to direct the user to a course description page, perhaps somewhere like coursicle
-                    listItem.innerHTML = `<a class="list-item-link" href="${baseURL + programStackList[i]}">${course.join(' ')}</a>`
+                    listItem.innerHTML = `<a class="list-item-link" href="${coursicleBaseURL}${/^[A-Z]+/.exec(course[0])[0]}/${/\d+[A-Z]*$/.exec(course[0])[0]}">${course.join(' ')}</a>`
                     curriculumListElement.appendChild(listItem)
                 }
                 // Setup program to compare, object references should make this a copy in both locations
                 allPrograms[programStackList[i]].courseList.push(...programCoursesList)
                 selectedProgramList.push(allPrograms[programStackList[i]])
             }
-            console.log('UI step')
         })
         .then(() => {
-            console.log('compare step')
-            console.log($('.list-item'), selectedProgramList.length)
             // Comparing function (NOTE: There is probably a much better way to do this)
             const allCourses = selectedProgramList.map(x => x.courseList.join()).join().split(',')
             let courseCounts = []
@@ -98,8 +95,7 @@ function submit() {
             }
             // Trim down the array to only the courses shared across all programs
             courseCounts = courseCounts.filter(x => x.count === selectedProgramList.length)
-            console.log(selectedProgramList.map(x => x.courseList.join()).join('\n'), courseCounts)
-            for (const sharedCourse of courseCounts) {console.log($(`.${sharedCourse.code} a`));Array.from($(`.${sharedCourse.code} a`)).forEach((/** @type {HTMLElement} */ e) => e.classList.add('shared-course'))}
+            for (const sharedCourse of courseCounts) Array.from($(`.${sharedCourse.code} a`)).forEach((/** @type {HTMLElement} */ e) => e.classList.add('shared-course'))
         })
 }
 

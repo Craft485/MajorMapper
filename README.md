@@ -20,7 +20,7 @@ These types of classes include but are not limited to:
 The steps this app are taking, in a very general sense, are as follows:
 
 1. Use [axios](https://www.npmjs.com/package/axios) to send a get request and grab the curriculum
-    - [Example URL](https://webapps2.uc.edu/ecurriculum/DegreePrograms/Home/MajorMap/7262) that we are hitting (only the number at the end seems to change?)
+    - [Example URL](https://webapps2.uc.edu/ecurriculum/degreeprograms/program/majormap/)
 2. Use [cheerio](https://www.npmjs.com/package/cheerio) to parse the html from axios
 3. Scan the page (stored as a cheerio object) for class codes that we are interested in
 4. Repeat for as many curriculums we were told to compare
@@ -29,9 +29,9 @@ The steps this app are taking, in a very general sense, are as follows:
 
 ### Notes
 
-Since we are using axois and cheerio (nodejs/server side libraries), we will probably have to use a [bundler such as webpack](https://webpack.js.org/) to prep it for the web app
+To use the current iteration of this application from a command line context using [nodejs](https://nodejs.org/en) run `node scraper.mjs program-stack[, program stack, ...]` from the root directory of this project
 
-To use the current iteration of this application from a command line context using [nodejs](https://nodejs.org/en) run `node scraper.mjs` from the root directory of this project
+Ex: `node scraper.mjs 20BC-CS-BSCS` will scrape the information for computer science
 
 ### Known Hurdles
 
@@ -45,5 +45,5 @@ This app will rely heavily on regular expressions which can be a bit tedious to 
 For this reason I will atempt to document some of them and the purposes behind them:
 
 - Detect a valid **class code** (ie: CS1021C, MATH1062, etc): `/([A-Z]*\d{4}[A-Z]?)/g`
-- Detect a valid **class** (ie: "CS1100 Introduction to Computer Science 1"): `/^([A-Z]+\d+[A-Z]{0,1}).*(\d)$/`
-  - This will also create capture groups with the course code and the number of credits for the class
+- Detect a valid **class** (ie: "CS1100 Introduction to Computer Science 1"): `/^([A-Z]+\d+[A-Z]{0,1}) ().*) (\d)$/`
+  - This will also create capture groups with the course code, the class name/description, and the number of credits for the class

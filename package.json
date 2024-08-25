@@ -9,8 +9,9 @@
     "express": "^4.18.3"
   },
   "scripts": {
-    "test": "node scrapper.mjs",
-    "build": "webpack"
+    "client": "cd src/client && tsc && cd ../..",
+    "server": "cd src/server && tsc && cd ../..",
+    "build": "npm run client && npm run server"
   },
   "keywords": [],
   "author": "Colin Davis",

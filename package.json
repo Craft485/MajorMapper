@@ -9,7 +9,7 @@
     "express": "^4.18.3"
   },
   "scripts": {
-    "client": "cd src/client && tsc && cd ../..",
+    "client": "cd src/client && tsc && cd ../.. && node src/utils/build-cleanup.mjs --script",
     "server": "cd src/server && tsc && cd ../..",
     "build": "npm run client && npm run server"
   },

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" oncontextmenu="return false">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Major Mapper</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./main.js" defer></script>
+</head>
+<body>
+    <h2 id="title-bar">
+        <button id="add" onclick="addCurriculum()" class="button">Add</button>
+        <span>Major Mapper</span>
+        <button onclick="submit()" class="button">Submit</button>
+    </h2>
+    <article id="container">
+        <div class="program-selector">
+            <div class="location-select-menu">
+                <span class="menu-label">Location</span>
+                <select class="select-menu">
+                    <option value=''>--- Select Location ---</option>
+                </select>
+            </div>
+            <div class="college-select-menu">
+                <span class="menu-label">College: </span>
+                <select class='select-menu'>
+                    <option value=''>--- Select college ---</option>
+                </select>
+            </div>
+            <div class="program-select-menu">
+                <span class="menu-label">Program: </span>
+                <select class='select-menu'>
+                    <option value=''>--- Select Program ---</option>
+                    <option value='BS'>Bachelors of Science</option>
+                </select>
+            </div>
+            <div class="fos-select-menu">
+                <span class="menu-label">Feild of Study: </span>
+                <select class='select-menu'>
+                    <option value=''>--- Select Field of Study ---</option>
+                </select>
+            </div>
+            <button class="remove" onclick="this.parentElement.remove()">Remove</button>
+        </div>
+    </article>
+</body>
+</html>

@@ -26,7 +26,7 @@ async function scrapeIndividual(curriculumStack, debug = false) {
         const $ = cheerio.load(response.data), tables = $('table')
         // console.log('Grabbed tables from cheerio parse', tables, tables.length)
         // This may be able to get refactored later (read: should)
-        for (let i = 0; i < tables.length; i++) {   
+        for (let i = 0; i < tables.length; i++) {
             const element = tables.get(i), tableId = $(element).attr().id,
             // The caption element on each table holds the header, we can use this to throw out some groups of classes that we don't want to include
             tableCaption = $(`#${tableId} caption`).text().trim().replace(/\t+|\n|\r/g, ' ').replace(/ {2,}/g, '')

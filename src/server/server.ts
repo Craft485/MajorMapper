@@ -1,6 +1,5 @@
 import express from 'express'
 import { createServer } from 'http'
-import * as programList from './program-list.json'
 import * as config from './config.json'
 import { readdir } from 'fs'
 import { EndPoint } from '../types/backend'

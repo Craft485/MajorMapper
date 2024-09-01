@@ -23,11 +23,11 @@ function loadEndpoints() {
         if (err) throw err
 
         for await (const file of files) {
-            if (!file.name.endsWith('.json')) {
+            if (!file.name.endsWith('.json') && !file.isDirectory()) {
                 const fileData: EndPoint = (await import(`${file.path}/${file.name}`)).default
                 if (fileData.type === 'POST') {
                     const endpoint = file.name.split('.')[0]
-                    console.log(JSON.stringify(fileData), fileData.call, JSON.stringify(fileData.call))
+                    //console.log(JSON.stringify(fileData), fileData.call, JSON.stringify(fileData.call))
                     console.log(`New POST endpoint found: ${endpoint}`)
                     app.post(`/${endpoint}`, fileData.call)
                 }

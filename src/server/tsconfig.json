@@ -5,5 +5,7 @@
         "resolveJsonModule": true,
         "module": "NodeNext",
         "moduleResolution": "NodeNext"
-    }
+    },
+    "include": ["*.ts", "*.json", "utils/json/*.json"],
+    "exclude": ["*.old.*", "*.test.*", "tsconfig.json"]
 }

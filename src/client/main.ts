@@ -1,9 +1,7 @@
 import { Program } from '../types/university'
 import { ProgramList } from '../types/backend'
 
-const UCBaseURL = 'https://webapps2.uc.edu/ecurriculum/degreeprograms/program/majormap/',
-coursicleBaseURL = 'https://www.coursicle.com/uc/courses/',
-allPrograms: { [stack: string]: Program } = {},
+const allPrograms: { [stack: string]: Program } = {},
 colleges: string[] = [],
 locations: string[] = [],
 container = document.getElementById('container')
@@ -11,6 +9,7 @@ container = document.getElementById('container')
 let selection = ''
 
 // Called within the html directly
+// FIXME: Swtich to using appendChild as updating the html as a string will reset all dropdowns
 const addCurriculum = (): string => container.innerHTML += selection
 
 function requestProgramListData(): void {
@@ -31,21 +30,29 @@ function requestProgramListData(): void {
                 if (!locations.includes(program.LocationCode)) {
                     locations.push(program.LocationCode)
                     document.querySelector('.location-select-menu > select').innerHTML += `<option value='${program.LocationCode.replaceAll(' ', '-')}'>${program.LocationCode}</option>`
-                    console.log(document.querySelector('.location-select-menu > select'))
                 }
                 if (!colleges.includes(program.CollegeCode)) {
                     colleges.push(program.CollegeCode)
                     document.querySelector('.college-select-menu > select').innerHTML += `<option value='${program.CollegeCode.replaceAll(' ', '-')}'>${program.CollegeCode}</option>`
                 }
-                document.querySelector('.fos-select-menu > select').innerHTML += `<option value='${program.ProgramTitle.replaceAll(' ', '-')}'>${program.ProgramTitle}`
+                document.querySelector('.fos-select-menu > select').innerHTML += `<option value='${program.ProgramStack}'>${program.ProgramTitle}`
             })
             selection = document.querySelector('.program-selector').outerHTML
         })
         .catch(console.error)
 }
 
+/** Called from the HTML */
 function submit(): void {
-    
+    const stacks = Array.from(document.querySelectorAll<HTMLSelectElement>('.fos-select-menu > select')).map(element => element?.value).filter(Boolean)
+    if (stacks.length) {
+        fetch(`/submit?q=${stacks.join(',')}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                // TODO: Implement this
+                console.log(data)
+            })
+    }
 }
 
 window.onload = () => {

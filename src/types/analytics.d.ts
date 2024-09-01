@@ -1,9 +1,9 @@
-type Curriculum = {
+export type Curriculum = {
     semesters: Vertex[][]
     totalCredits: number
 }
 
-type Vertex = {
+export type Vertex = {
     /** 
      * Edges represent a list of courses for which this course acts as a prereq for
      * Co-reqs and be accomplished by having two classes point to each other
@@ -13,8 +13,18 @@ type Vertex = {
     courseName: string
     semester: number
     credits: number
+    /** Labled as optional because this is not fully implemented */
+    metrics?: Metrics
 }
 
-type Edge = {
+export type Edge = {
     courseCode: string
+}
+
+/** Metrics based on https://curricularanalytics.org/metrics */
+export type Metrics = {
+    delayFactor: number
+    blockingFactor: number
+    centrality: number
+    structualComplexity: number
 }

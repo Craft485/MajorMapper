@@ -1,6 +1,5 @@
 import { Program } from '../types/university'
 import { ProgramList } from '../types/backend'
-import { Curriculum } from '../types/analytics'
 
 if (!render) var render = () => console.error('No render method found')
 
@@ -33,15 +32,17 @@ function requestProgramListData(): void {
                     DisplayDegree: program.DisplayDegree,
                     ProgramStack: program.ProgramStack
                 }
-                // TODO: Add current program to list of options in DOM
+                // If location for current progam is not an option, add it
                 if (!locations.includes(program.LocationCode)) {
                     locations.push(program.LocationCode)
                     document.querySelector('.location-select-menu > select').innerHTML += `<option value='${program.LocationCode.replaceAll(' ', '-')}'>${program.LocationCode}</option>`
                 }
+                // If college for current program is not an option, add it
                 if (!colleges.includes(program.CollegeCode)) {
                     colleges.push(program.CollegeCode)
                     document.querySelector('.college-select-menu > select').innerHTML += `<option value='${program.CollegeCode.replaceAll(' ', '-')}'>${program.CollegeCode}</option>`
                 }
+                // Add the program as an option in the dropdown
                 document.querySelector('.fos-select-menu > select').innerHTML += `<option value='${program.ProgramStack}'>${program.ProgramTitle}`
             })
             selection = document.querySelector('.program-selector').innerHTML
@@ -50,7 +51,7 @@ function requestProgramListData(): void {
 }
 
 /** Called from the HTML */
-function submit(): void {
+const submit = (): void => {
     const stacks = Array.from(document.querySelectorAll<HTMLSelectElement>('.fos-select-menu > select')).map(element => element?.value).filter(Boolean)
     if (stacks.length) {
         fetch(`/submit?q=${stacks.join(',')}`, { method: 'POST' })

@@ -7,14 +7,13 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
     course.classList.add('prereq-shown')
     if (foundEdges.length = 0) foundEdges.push(course.id)
     const edges: string[] = []
-    // Looking forward
+    // Look forward
     const forwardEdges = isLookingForward === undefined || isLookingForward === true ? course.getAttribute('edges').split(',').filter(Boolean) : []
     // Look back
     const behindEdges = isLookingForward === undefined || isLookingForward === false ? Array.from(document.querySelectorAll<HTMLSpanElement>(`[edges*=${course.id}]`)).map(e => e.id) : []
     edges.push(...forwardEdges, ...behindEdges)
     for (const edge of edges) {
         if (foundEdges.includes(edge)) continue
-        // console.log(edge)
         const edgeElement = document.getElementById(edge)
         edgeElement.classList.add('prereq-shown')
         foundEdges.push(edge)
@@ -26,7 +25,6 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
 
 function render(renderData: { data: Curriculum }): void {
     const curricula = renderData.data, semesters = curricula.semesters
-    console.log(renderData.data)
     renderer.innerHTML = ''
     renderer.classList.add('active')
 

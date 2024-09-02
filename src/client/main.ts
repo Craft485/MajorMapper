@@ -12,8 +12,12 @@ container = document.getElementById('container')
 let selection = ''
 
 // Called within the html directly
-// FIXME: Swtich to using appendChild as updating the html as a string will reset all dropdowns
-const addCurriculum = (): string => container.innerHTML += selection
+const addCurriculum = (): void => {
+    const child = document.createElement('div')
+    child.className = 'program-selector'
+    child.innerHTML = selection
+    container.appendChild(child)
+}
 
 function requestProgramListData(): void {
     fetch('/major-info', { method: 'POST' })
@@ -40,7 +44,7 @@ function requestProgramListData(): void {
                 }
                 document.querySelector('.fos-select-menu > select').innerHTML += `<option value='${program.ProgramStack}'>${program.ProgramTitle}`
             })
-            selection = document.querySelector('.program-selector').outerHTML
+            selection = document.querySelector('.program-selector').innerHTML
         })
         .catch(console.error)
 }

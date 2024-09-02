@@ -71,18 +71,57 @@ button.clear-view {
     right: 5px;
 }
 
-#canvas {
+#renderer {
     display: none;
     position: absolute;
     z-index: 1;
     top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    text-align: center;
 }
 
-#canvas.active {
-    background-color: black;
+#renderer.active {
+    background-color: var(--bearcats-black);
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    overflow: auto;
+}
+
+#renderer.active + button.clear-view {
     display: block;
 }
 
-#canvas.active + button.clear-view {
+.semester {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 2px;
+    border: var(--calhoun-red) solid thin;
+    flex-grow: 1;
+}
+
+.context-menu {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    background-color: var(--bearcats-black);
+    padding: 5px;
+    border: black solid thin;
+}
+
+.course:hover > .context-menu {
     display: block;
+}
+
+.course {
+    display: block;
+    border-top: var(--calhoun-red) solid thin;
+    border-bottom: var(--calhoun-red) solid thin;
+}
+
+.prereq-shown {
+    background-color: rgb(96, 128, 128);
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Major Mapper</title>
     <link rel="stylesheet" href="./styles.css">
+    <script src="./renderer.js" defer></script>
     <script src="./main.js" defer></script>
 </head>
 <body>
@@ -43,7 +44,7 @@
             <button class="remove" onclick="this.parentElement.remove()">Remove</button>
         </div>
     </article>
-    <canvas id="canvas"></canvas>
-    <button class="clear-view" onclick="exitCanvas()">Exit</button>
+    <article id="renderer"></article>
+    <button class="clear-view" onclick="exitRender()">Exit</button>
 </body>
 </html>

@@ -62,3 +62,27 @@ button:hover {
 .program-selector:hover .remove {
     display: block;
 }
+
+button.clear-view {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 5px;
+}
+
+#canvas {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+}
+
+#canvas.active {
+    background-color: black;
+    display: block;
+}
+
+#canvas.active + button.clear-view {
+    display: block;
+}

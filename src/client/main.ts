@@ -1,12 +1,20 @@
 import { Program } from '../types/university'
 import { ProgramList } from '../types/backend'
+import { Curriculum } from '../types/analytics'
 
 const allPrograms: { [stack: string]: Program } = {},
 colleges: string[] = [],
 locations: string[] = [],
-container = document.getElementById('container')
+container = document.getElementById('container'),
+canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
+ctx = canvas.getContext('2d'),
+width = window.innerWidth,
+height = window.innerHeight
 
 let selection = ''
+
+canvas.height = height
+canvas.width = width
 
 // Called within the html directly
 // FIXME: Swtich to using appendChild as updating the html as a string will reset all dropdowns
@@ -48,12 +56,28 @@ function submit(): void {
     if (stacks.length) {
         fetch(`/submit?q=${stacks.join(',')}`, { method: 'POST' })
             .then(r => r.json())
-            .then(data => {
-                // TODO: Implement this
-                console.log(data)
-            })
+            .then(render)
     }
 }
+
+function render(renderData: { data: Curriculum }) {
+    const curricula = renderData.data, semesters = curricula.semesters
+    console.log(renderData.data)
+    // Setup/clear canvas
+    canvas.classList.add('active')
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, width, height)
+
+    // Draw contents of renderData to screen
+    for (const semester of semesters) {
+        for (const course of semester) {
+            
+        }
+    }
+}
+
+/** Called from HTML */
+const exitCanvas = (): void => canvas.classList.remove('active')
 
 window.onload = () => {
     console.info('Pinning for the fjords')

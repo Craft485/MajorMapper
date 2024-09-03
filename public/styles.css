@@ -99,7 +99,7 @@ button.clear-view {
     flex-direction: column;
     justify-content: space-evenly;
     padding: 2px;
-    border: var(--calhoun-red) solid thin;
+    border: var(--calhoun-red) dashed thin;
     flex-grow: 1;
 }
 
@@ -120,6 +120,10 @@ button.clear-view {
     display: block;
     border-top: var(--calhoun-red) solid thin;
     border-bottom: var(--calhoun-red) solid thin;
+}
+
+.course:hover {
+    cursor: pointer;
 }
 
 .prereq-shown {

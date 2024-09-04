@@ -5,7 +5,7 @@ const renderer = document.getElementById('renderer')
 function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
     if (isLookingForward === undefined) Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
     course.classList.add('prereq-shown')
-    if (foundEdges.length = 0) foundEdges.push(course.id)
+    if (foundEdges.length === 0) foundEdges.push(course.id)
     const edges: string[] = []
     // Look forward
     const forwardEdges = isLookingForward === undefined || isLookingForward === true ? course.getAttribute('edges').split(',').filter(Boolean) : []
@@ -18,7 +18,6 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
         edgeElement.classList.add('prereq-shown')
         foundEdges.push(edge)
         // Recurse from the current edge
-        // FIXME: Co-reqs cause an infinite loop leading to a max call stack error
         showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
     }
 }

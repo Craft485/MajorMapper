@@ -120,6 +120,8 @@ button.clear-view {
     display: block;
     border-top: var(--calhoun-red) solid thin;
     border-bottom: var(--calhoun-red) solid thin;
+    width: 50%;
+    align-self: center;
 }
 
 .course:hover {

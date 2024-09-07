@@ -1,6 +1,6 @@
 import { Curriculum } from "../types/analytics"
 
-const renderer = document.getElementById('renderer')
+const contentContainer = document.getElementById('program-content')
 
 function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
     if (isLookingForward === undefined) Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
@@ -24,8 +24,8 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
 
 function render(renderData: { data: Curriculum }): void {
     const curricula = renderData.data, semesters = curricula.semesters
-    renderer.innerHTML = ''
-    renderer.classList.add('active')
+    contentContainer.innerHTML = ''
+    contentContainer.parentElement.classList.add('active')
 
     for (const semester of semesters) {
         const column = document.createElement('div')
@@ -44,6 +44,6 @@ function render(renderData: { data: Curriculum }): void {
             courseBlock.addEventListener('click', e => showPreReqs(courseBlock))
             column.appendChild(courseBlock)
         }
-        renderer.appendChild(column)
+        contentContainer.appendChild(column)
     }
 }

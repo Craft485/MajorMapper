@@ -71,7 +71,7 @@ button.clear-view {
     right: 5px;
 }
 
-#renderer {
+#renderer, #canvas, #program-content {
     display: none;
     position: absolute;
     z-index: 1;
@@ -82,7 +82,11 @@ button.clear-view {
     text-align: center;
 }
 
-#renderer.active {
+#program-content {
+    z-index: 5;
+}
+
+#renderer.active > #program-content {
     background-color: var(--bearcats-black);
     display: flex;
     justify-content: space-evenly;
@@ -90,7 +94,9 @@ button.clear-view {
     overflow: auto;
 }
 
-#renderer.active + button.clear-view {
+#renderer.active + button.clear-view,
+#renderer.active > #canvas,
+#renderer.active {
     display: block;
 }
 

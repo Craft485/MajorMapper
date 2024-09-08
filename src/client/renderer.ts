@@ -27,62 +27,6 @@ function convertStringToRGB(str: string): [r: number, g: number, b: number] {
     return [r, g, b]
 }
 
-function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
-    if (isLookingForward === undefined) {
-        Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-    }
-    course.classList.add('prereq-shown')
-    if (foundEdges.length === 0) foundEdges.push(course.id)
-    const edges: string[] = []
-    // Look forward
-    const forwardEdges = isLookingForward === undefined || isLookingForward === true ? course.getAttribute('edges').split(',').filter(Boolean) : []
-    // Look back
-    const behindEdges = isLookingForward === undefined || isLookingForward === false ? Array.from(document.querySelectorAll<HTMLSpanElement>(`[edges*=${course.id}]`)).map(e => e.id) : []
-    edges.push(...forwardEdges, ...behindEdges)
-    for (const edge of edges) {
-        if (foundEdges.includes(edge)) continue
-        const edgeElement = document.getElementById(edge)
-        edgeElement.classList.add('prereq-shown')
-        foundEdges.push(edge)
-        const startNode = forwardEdges.includes(edge) ? course : edgeElement
-        const endNode = forwardEdges.includes(edge) ? edgeElement : course
-        ctx.strokeStyle = `rgb(${convertStringToRGB(startNode.id).join(' ')})`
-        ctx.stroke(calculatePath(startNode, endNode) /*forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course)*/)
-        // Recurse from the current edge
-        showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
-    }
-}
-
-function render(renderData: { data: Curriculum }): void {
-    const curricula = renderData.data, semesters = curricula.semesters
-    contentContainer.innerHTML = ''
-    contentContainer.parentElement.classList.add('active')
-    let semesterCount = 1
-
-    for (const semester of semesters) {
-        const column = document.createElement('div')
-        column.className = 'semester'
-        for (const course of semester) {
-            const courseBlock = document.createElement('span')
-            courseBlock.id = course.courseCode
-            courseBlock.className = 'course'
-            courseBlock.setAttribute('edges', course.edges.join(','))
-            courseBlock.setAttribute('semester', `${semesterCount}`)
-            courseBlock.innerHTML = `
-                <p class="course-code">${course.courseCode}</p>
-                <div class="context-menu">
-                    <p>Credits: <span class="credits">${course.credits}</span></p>
-                    <p class="course-name">${course.courseName}</p>
-                </div>`
-            courseBlock.addEventListener('click', e => showPreReqs(courseBlock))
-            column.appendChild(courseBlock)
-        }
-        semesterCount++
-        contentContainer.appendChild(column)
-    }
-}
-
 function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement): Path2D {
     if (paths.has(`${startingElement.id}|${endingElement.id}`)) return paths.get(`${startingElement.id}|${endingElement.id}`)
     const startingSemester = parseInt(startingElement.getAttribute('semester')),
@@ -168,4 +112,60 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     paths.set(`${startingElement.id}|${endingElement.id}`, new Path2D(path))
 
     return new Path2D(path)
+}
+
+function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
+    if (isLookingForward === undefined) {
+        Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+    course.classList.add('prereq-shown')
+    if (foundEdges.length === 0) foundEdges.push(course.id)
+    const edges: string[] = []
+    // Look forward
+    const forwardEdges = isLookingForward === undefined || isLookingForward === true ? course.getAttribute('edges').split(',').filter(Boolean) : []
+    // Look back
+    const behindEdges = isLookingForward === undefined || isLookingForward === false ? Array.from(document.querySelectorAll<HTMLSpanElement>(`[edges*=${course.id}]`)).map(e => e.id) : []
+    edges.push(...forwardEdges, ...behindEdges)
+    for (const edge of edges) {
+        if (foundEdges.includes(edge)) continue
+        const edgeElement = document.getElementById(edge)
+        edgeElement.classList.add('prereq-shown')
+        foundEdges.push(edge)
+        const startNode = forwardEdges.includes(edge) ? course : edgeElement
+        const endNode = forwardEdges.includes(edge) ? edgeElement : course
+        ctx.strokeStyle = `rgb(${convertStringToRGB(startNode.id).join(' ')})`
+        ctx.stroke(calculatePath(startNode, endNode) /*forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course)*/)
+        // Recurse from the current edge
+        showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
+    }
+}
+
+function render(renderData: { data: Curriculum }): void {
+    const curricula = renderData.data, semesters = curricula.semesters
+    contentContainer.innerHTML = ''
+    contentContainer.parentElement.classList.add('active')
+    let semesterCount = 1
+
+    for (const semester of semesters) {
+        const column = document.createElement('div')
+        column.className = 'semester'
+        for (const course of semester) {
+            const courseBlock = document.createElement('span')
+            courseBlock.id = course.courseCode
+            courseBlock.className = 'course'
+            courseBlock.setAttribute('edges', course.edges.join(','))
+            courseBlock.setAttribute('semester', `${semesterCount}`)
+            courseBlock.innerHTML = `
+                <p class="course-code">${course.courseCode}</p>
+                <div class="context-menu">
+                    <p>Credits: <span class="credits">${course.credits}</span></p>
+                    <p class="course-name">${course.courseName}</p>
+                </div>`
+            courseBlock.addEventListener('click', e => showPreReqs(courseBlock))
+            column.appendChild(courseBlock)
+        }
+        semesterCount++
+        contentContainer.appendChild(column)
+    }
 }

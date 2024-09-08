@@ -4,7 +4,8 @@ const contentContainer = document.getElementById('program-content'),
 canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
 ctx = canvas.getContext('2d'),
 verticalSpacing = window.innerHeight * 0.05,
-halfVerticalSpacing = verticalSpacing / 2
+halfVerticalSpacing = verticalSpacing / 2,
+paths = new Map<string, Path2D>()
 
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
@@ -14,6 +15,17 @@ ctx.lineWidth = 5
 
 // @ts-ignore
 document.body.style = `--course-vertical-spacing: ${verticalSpacing}px;`
+
+function convertStringToRGB(str: string): [r: number, g: number, b: number] {
+    const charCodes = str.split('').map(char => char.charCodeAt(0))
+    let r = 0, g = 0, b = 0
+    for (let i = 0; i < charCodes.length; i+=3) {
+        r += charCodes[i] || 0
+        g += charCodes[i + 1] || 0
+        b += charCodes[i + 2] || 0
+    }
+    return [r, g, b]
+}
 
 function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
     if (isLookingForward === undefined) {
@@ -33,7 +45,10 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
         const edgeElement = document.getElementById(edge)
         edgeElement.classList.add('prereq-shown')
         foundEdges.push(edge)
-        ctx.stroke(forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course))
+        const startNode = forwardEdges.includes(edge) ? course : edgeElement
+        const endNode = forwardEdges.includes(edge) ? edgeElement : course
+        ctx.strokeStyle = `rgb(${convertStringToRGB(startNode.id).join(' ')})`
+        ctx.stroke(calculatePath(startNode, endNode) /*forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course)*/)
         // Recurse from the current edge
         showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
     }
@@ -69,6 +84,7 @@ function render(renderData: { data: Curriculum }): void {
 }
 
 function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement): Path2D {
+    if (paths.has(`${startingElement.id}|${endingElement.id}`)) return paths.get(`${startingElement.id}|${endingElement.id}`)
     const startingSemester = parseInt(startingElement.getAttribute('semester')),
     endingSemester = parseInt(endingElement.getAttribute('semester')),
     startingElementBoundingBox = startingElement.getBoundingClientRect(),
@@ -148,6 +164,8 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     if (actualDeltaX < deltaX) path += ` l${deltaX - actualDeltaX},0`
 
     console.log(path)
+
+    paths.set(`${startingElement.id}|${endingElement.id}`, new Path2D(path))
 
     return new Path2D(path)
 }

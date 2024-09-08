@@ -82,12 +82,18 @@ button.clear-view {
     text-align: center;
 }
 
+#canvas {
+    background-color: black;
+    height: 100%;
+    width: 100%;
+}
+
 #program-content {
     z-index: 5;
 }
 
 #renderer.active > #program-content {
-    background-color: var(--bearcats-black);
+    background: transparent;
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
@@ -103,9 +109,9 @@ button.clear-view {
 .semester {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
     padding: 2px;
-    border: var(--calhoun-red) dashed thin;
+    /* border: var(--calhoun-red) dashed thin; */
     flex-grow: 1;
 }
 
@@ -128,10 +134,16 @@ button.clear-view {
     border-bottom: var(--calhoun-red) solid thin;
     width: 50%;
     align-self: center;
+    margin-bottom: 50px;
+    margin-bottom: var(--course-vertical-spacing);
 }
 
 .course:hover {
     cursor: pointer;
+}
+
+.semester .course:first-of-type {
+    margin-top: var(--course-vertical-spacing);
 }
 
 .prereq-shown {

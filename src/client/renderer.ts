@@ -13,8 +13,7 @@ canvas.width = window.innerWidth
 ctx.strokeStyle = 'white'
 ctx.lineWidth = 5
 
-// @ts-ignore
-document.body.style = `--course-vertical-spacing: ${verticalSpacing}px;`
+document.body.style.cssText = `--course-vertical-spacing: ${verticalSpacing}px;`
 
 function convertStringToRGB(str: string): [r: number, g: number, b: number] {
     const charCodes = str.split('').map(char => char.charCodeAt(0))

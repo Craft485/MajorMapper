@@ -84,6 +84,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     halfWidth = width / 2,
     halfHeight = height / 2,
     deltaY = Math.abs(startY - endY),
+    deltaX = Math.abs(startX - endX),
     semesterDifference = endingSemester - startingSemester - 1
     let path = `M${startX},${startY} 
     l${halfWidth},0 
@@ -141,6 +142,11 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
         ? 0 
         : halfWidth
     },0`.replaceAll(/(\n|\t)+/g, '').replaceAll(/\s{2,}/g, ' ')
+
+    const actualDeltaX = path.split(' ').map(str => str.startsWith('l') ? parseFloat(str.split(',')[0].substring(1)) : 0).reduce((acc, curr) => acc + curr, 0)
+    //console.log(deltaX, actualDeltaX)
+    if (actualDeltaX < deltaX) path += ` l${deltaX - actualDeltaX},0`
+
     console.log(path)
 
     return new Path2D(path)

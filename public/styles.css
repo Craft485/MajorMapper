@@ -109,9 +109,7 @@ button.clear-view {
 .semester {
     display: flex;
     flex-direction: column;
-    /* justify-content: space-evenly; */
     padding: 2px;
-    /* border: var(--calhoun-red) dashed thin; */
     flex-grow: 1;
 }
 
@@ -130,8 +128,7 @@ button.clear-view {
 
 .course {
     display: block;
-    border-top: var(--calhoun-red) solid thin;
-    border-bottom: var(--calhoun-red) solid thin;
+    border: var(--calhoun-red) solid thin;
     width: 50%;
     align-self: center;
     margin-bottom: 50px;

@@ -1,13 +1,13 @@
 import { Curriculum } from "../types/analytics"
 
 const contentContainer = document.getElementById('program-content'),
-cavnas = document.querySelector<HTMLCanvasElement>('#canvas'),
-ctx = cavnas.getContext('2d'),
+canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
+ctx = canvas.getContext('2d'),
 verticalSpacing = window.innerHeight * 0.05,
 halfVerticalSpacing = verticalSpacing / 2
 
-cavnas.height = window.innerHeight
-cavnas.width = window.innerWidth
+canvas.height = window.innerHeight
+canvas.width = window.innerWidth
 
 ctx.strokeStyle = 'white'
 ctx.lineWidth = 5
@@ -16,7 +16,10 @@ ctx.lineWidth = 5
 document.body.style = `--course-vertical-spacing: ${verticalSpacing}px;`
 
 function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
-    if (isLookingForward === undefined) Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
+    if (isLookingForward === undefined) {
+        Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
     course.classList.add('prereq-shown')
     if (foundEdges.length === 0) foundEdges.push(course.id)
     const edges: string[] = []

@@ -15,6 +15,10 @@ ctx.lineWidth = 5
 
 document.body.style.cssText = `--course-vertical-spacing: ${verticalSpacing}px;`
 
+function getRandomRange(min: number, max: number): number {
+    return Math.random() * (max - min) + min
+}
+
 function convertStringToRGB(str: string): [r: number, g: number, b: number] {
     const charCodes = str.split('').map(char => char.charCodeAt(0))
     let r = 0, g = 0, b = 0
@@ -44,9 +48,10 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     halfHeight = height / 2,
     deltaY = Math.abs(startY - endY),
     deltaX = Math.abs(startX - endX),
-    semesterDifference = endingSemester - startingSemester - 1
+    semesterDifference = endingSemester - startingSemester - 1,
+    randomXOffset = (Math.random() < 0.5 ? -1 : 1) * getRandomRange(0, 10)
     let path = `M${startX},${startY} 
-    l${halfWidth},0 
+    l${halfWidth + randomXOffset},0 
     l0,${
         // If endpoint is below start point
         startY < endY
@@ -79,7 +84,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     } 
     l${
         startingSemester === endingSemester 
-        ? -halfWidth // If courses are in the same semester (coreqs)
+        ? -halfWidth - randomXOffset // If courses are in the same semester (coreqs)
         : (
             startingSemester + 1 === endingSemester 
             ? halfWidth // Courses are in adjacent semesters

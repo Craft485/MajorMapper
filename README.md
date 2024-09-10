@@ -1,49 +1,23 @@
 # University of Cincinnati Major Mapper (aka "Can I Double Major?")
 
+## **Note: this app is currently in the middle of a major rework so things may change heavily and frequently as I experiment with how I want to do things**
+
 The end goal of this project is to have a (static) single page web application that will
 
- - Take two majors/minors/certifications or other curriculums
- - Display general information about each individual curriculum then display the core courses that are shared between them
+- Take one or more majors/minors/certifications or other curriculums
+- Display a graph of the curriculum(s) along with some statistics to aid in decision making for whether or not a student wishes to pursue a certain academic avenue
 
-## Exclusions
+## Setup
 
-Some types of classes we aren't super interested in inculding in our comparison for one reason or another.
-These types of classes include but are not limited to:
+To work on or play around with this project locally:
 
-- Electives (unless we are only looking at a list of electives(are those listed anywhere publicly?))
-- Tracks within majors or certificates (perhaps in the future we can opt to inlude them)
-- Any CO-OP semesters/course codes
-- Any senior design classes
+1. Clone this repo
+2. Make sure [nodejs](https://nodejs.org/en) is installed (`node --version` should be 18.x.x or above, 20.X.X preferred)
+3. Run `npm install` to download dependencies
+4. Run `npm run build` to compile this typescript project
+5. Run `npm run start` to launch the web server on local host (port 8080)
+6. Navigate to `localhost:8080` in any web browser (note: this project is being developed on Chrome, minor visual differences or issues may be present on other browsers)
 
-## Methodology
+### Regards to old versions of this project
 
-The steps this app are taking, in a very general sense, are as follows:
-
-1. Use [axios](https://www.npmjs.com/package/axios) to send a get request and grab the curriculum
-    - [Example URL](https://webapps2.uc.edu/ecurriculum/degreeprograms/program/majormap/)
-2. Use [cheerio](https://www.npmjs.com/package/cheerio) to parse the html from axios
-3. Scan the page (stored as a cheerio object) for class codes that we are interested in
-4. Repeat for as many curriculums we were told to compare
-5. Compare the list of core classes from all scanned curriculums
-6. Display resulting information about shared core classes
-
-### Notes
-
-To use the current iteration of this application from a command line context using [nodejs](https://nodejs.org/en) run `node scraper.mjs program-stack[, program stack, ...]` from the root directory of this project
-
-Ex: `node scraper.mjs 20BC-CS-BSCS` will scrape the information for computer science
-
-### Known Hurdles
-
-1. Some spelling mistakes are present within certain curriculums
-2. Formatting across different curriculums are somewhat similar but different enough to be an issue
-3. Some classes (such as the CS requirement to choose either bio/physics with lab) are formatted strangely yet should probably still be included
-
-# Regular Expressions
-
-This app will rely heavily on regular expressions which can be a bit tedious to try and read.
-For this reason I will atempt to document some of them and the purposes behind them:
-
-- Detect a valid **class code** (ie: CS1021C, MATH1062, etc): `/([A-Z]*\d{4}[A-Z]?)/g`
-- Detect a valid **class** (ie: "CS1100 Introduction to Computer Science 1"): `/^([A-Z]+\d+[A-Z]{0,1}) ().*) (\d)$/`
-  - This will also create capture groups with the course code, the class name/description, and the number of credits for the class
+The original version of this project sought to scrape publicly available information from UC. This proved difficult to do with the inconsistencies between curriculums. Additionally, there was no feasible way to obtain information regarding prerequisite information (ie. there was no way for the program to tell that Calculus 1 is required to take Calculus 2) which is the ultimate reason I moved away from the approach altogether.

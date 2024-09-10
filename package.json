@@ -11,7 +11,8 @@
   "scripts": {
     "client": "cd src/client && tsc && cd ../.. && node src/utils/build-cleanup.mjs --script",
     "server": "cd src/server && tsc && cd ../..",
-    "build": "npm run client && npm run server"
+    "build": "npm run client && npm run server",
+    "start": "cd out/server && node server.js"
   },
   "keywords": [],
   "author": "Colin Davis",

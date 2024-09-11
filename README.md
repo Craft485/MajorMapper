@@ -17,6 +17,7 @@ To work on or play around with this project locally:
 4. Run `npm run build` to compile this typescript project
 5. Run `npm run start` to launch the web server on local host (port 8080)
 6. Navigate to `localhost:8080` in any web browser (note: this project is being developed on Chrome, minor visual differences or issues may be present on other browsers)
+*Note: Currently Computer Science (CSBS) will be the only field of study that work as I have to hard code them*
 
 ### Regards to old versions of this project
 

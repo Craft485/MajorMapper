@@ -12,7 +12,7 @@ The end goal of this project is to have a (static) single page web application t
 To work on or play around with this project locally:
 
 1. Clone this repo
-2. Make sure [nodejs](https://nodejs.org/en) is installed (`node --version` should be 18.x.x or above, 20.X.X preferred)
+2. Make sure [nodejs](https://nodejs.org/en) is installed (`node --version` should be 22.X.X)
 3. Run `npm install` to download dependencies
 4. Run `npm run build` to compile this typescript project
 5. Run `npm run start` to launch the web server on local host (port 8080)

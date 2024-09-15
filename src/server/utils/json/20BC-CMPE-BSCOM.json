@@ -1,0 +1,267 @@
+{
+    "data": {
+        "semesters": [
+            [
+                {
+                  "edges": [],
+                  "courseCode": "EECE1100",
+                  "courseName": "Introduction to EECS for EE, CompE, and EET Majors",
+                  "credits": 1,
+                  "semester": 1
+                },
+                {
+                  "edges": ["EECE2051C", "ENED1120", "EECE1080C"],
+                  "courseCode": "ENED1100",
+                  "courseName": "Foundations of Engineering Design Thinking I (C- min)",
+                  "credits": 3,
+                  "semester": 1
+                },
+                {
+                  "edges": ["ENGL4092"],
+                  "courseCode": "ENGL1001",
+                  "courseName": "English Composition",
+                  "credits": 3,
+                  "semester": 1
+                },
+                {
+                  "edges": ["EECE2080C", "EECE2051C", "MATH1062", "PHYS2001"],
+                  "courseCode": "MATH1061",
+                  "courseName": "Calculus I (C- min)",
+                  "credits": 4,
+                  "semester": 1
+                },
+                {
+                  "edges": ["PHYS2076", "PHYS2001L", "MATH1061"],
+                  "courseCode": "PHYS2001",
+                  "courseName": "College Physics I (Calculus-based) (C- min)",
+                  "credits": 4,
+                  "semester": 1
+                },
+                {
+                  "edges": ["PHYS2001"],
+                  "courseCode": "PHYS2001L",
+                  "courseName": "College Physics Lab I (Calculus-based)",
+                  "credits": 1,
+                  "semester": 1
+                }
+            ],
+            [
+                {
+                  "edges": ["CHEM1040L"],
+                  "courseCode": "CHEM1040",
+                  "courseName": "General Chemistry I",
+                  "credits": 4,
+                  "semester": 2
+                },
+                {
+                  "edges": ["CHEM1040"],
+                  "courseCode": "CHEM1040L",
+                  "courseName": "General Chemistry Laboratory I",
+                  "credits": 1,
+                  "semester": 2
+                },
+                {
+                  "edges": ["EECE3026", "CS2071", "EECE2080C", "EECE2060C"],
+                  "courseCode": "EECE1080C",
+                  "courseName": "Programming for ECE (C- min)",
+                  "credits": 4,
+                  "semester": 2
+                },
+                {
+                  "edges": [],
+                  "courseCode": "ENED1120",
+                  "courseName": "Foundations of Engineering Design Thinking II (C- min)",
+                  "credits": 3,
+                  "semester": 2
+                },
+                {
+                  "edges": ["MATH2076", "MATH2063", "EECE2065"],
+                  "courseCode": "MATH1062",
+                  "courseName": "Calculus II (C- min)",
+                  "credits": 4,
+                  "semester": 2
+                },
+                {
+                  "edges": ["PD2050"],
+                  "courseCode": "PD1011",
+                  "courseName": "Introduction to COOP for CEAS (C- min)",
+                  "credits": 1,
+                  "semester": 2
+                }
+            ],
+            [
+                {
+                  "edges": ["EECE3065"],
+                  "courseCode": "EECE2051C",
+                  "courseName": "Network Analysis (C- min)",
+                  "credits": 4,
+                  "semester": 3
+                },
+                {
+                  "edges": ["EECE4038C", "EECE3026"],
+                  "courseCode": "EECE2060C",
+                  "courseName": "Digital Design (C- min)",
+                  "credits": 4,
+                  "semester": 3
+                },
+                {
+                  "edges": ["EECE3065"],
+                  "courseCode": "EECE2065",
+                  "courseName": "Differential Equations and Laplace Transforms (C- min)",
+                  "credits": 2,
+                  "semester": 3
+                },
+                {
+                  "edges": [],
+                  "courseCode": "MATH2063",
+                  "courseName": "Multivariable Calculus",
+                  "credits": 4,
+                  "semester": 3
+                },
+                {
+                  "edges": [],
+                  "courseCode": "PHYS2076",
+                  "courseName": "Semiconductor Physics for Engineers",
+                  "credits": 4,
+                  "semester": 3
+                }
+            ],
+            [
+                {
+                  "edges": [],
+                  "courseCode": "COMM1071",
+                  "courseName": "Introduction to Effective Speaking",
+                  "credits": 3,
+                  "semester": 4
+                },
+                {
+                  "edges": ["EECE2070L", "EECE3071", "EECE3071L"],
+                  "courseCode": "EECE2070",
+                  "courseName": "Electronics I (C- min)",
+                  "credits": 3,
+                  "semester": 4
+                },
+                {
+                  "edges": ["EECE2070", "EECE3071", "EECE3071L"],
+                  "courseCode": "EECE2070L",
+                  "courseName": "Electronics Laboratory I (C- min)",
+                  "credits": 1,
+                  "semester": 4
+                },
+                {
+                  "edges": ["EECE4040", "EECE3093C"],
+                  "courseCode": "EECE2080C",
+                  "courseName": "Engineering Data Structures (C- min)",
+                  "credits": 2,
+                  "semester": 4
+                },
+                {
+                  "edges": [],
+                  "courseCode": "EECE3065",
+                  "courseName": "Signals and Systems (C- min)",
+                  "credits": 4,
+                  "semester": 4
+                },
+                {
+                  "edges": [],
+                  "courseCode": "MATH2076",
+                  "courseName": "Linear Algebra",
+                  "credits": 3,
+                  "semester": 4
+                }
+            ],
+            [
+                {
+                  "edges": [],
+                  "courseCode": "CS2071",
+                  "courseName": "Discrete Computational Structures (C- min)",
+                  "credits": 3,
+                  "semester": 5
+                },
+                {
+                  "edges": ["EECE4029"],
+                  "courseCode": "EECE3026",
+                  "courseName": "Introduction to Computer Architecture & Organization (C- min)",
+                  "credits": 3,
+                  "semester": 5
+                },
+                {
+                  "edges": ["EECE3071L"],
+                  "courseCode": "EECE3071",
+                  "courseName": "Electronics II",
+                  "credits": 3,
+                  "semester": 5
+                },
+                {
+                  "edges": ["EECE3071"],
+                  "courseCode": "EECE3071L",
+                  "courseName": "Electronics Laboratory II",
+                  "credits": 1,
+                  "semester": 5
+                },
+                {
+                  "edges": [],
+                  "courseCode": "EECE3093C",
+                  "courseName": "Software Engineering (C- min)",
+                  "credits": 4,
+                  "semester": 5
+                },
+                {
+                  "edges": [],
+                  "courseCode": "PD2050",
+                  "courseName": "Mid-Curricular Co-op Community for Engineering",
+                  "credits": 1,
+                  "semester": 5
+                }
+            ],
+            [
+                {
+                  "edges": [],
+                  "courseCode": "EECE4029",
+                  "courseName": "Operating Systems & Systems Programming (C- min)",
+                  "credits": 3,
+                  "semester": 6
+                },
+                {
+                  "edges": [],
+                  "courseCode": "EECE4038C",
+                  "courseName": "Embedded System Design",
+                  "credits": 3,
+                  "semester": 6
+                },
+                {
+                  "edges": [],
+                  "courseCode": "EECE4040",
+                  "courseName": "Advanced Data Structures and Algorithms (C- min)",
+                  "credits": 3,
+                  "semester": 6
+                },
+                {
+                  "edges": [],
+                  "courseCode": "ENGL4092",
+                  "courseName": "Technical and Scientific Writing",
+                  "credits": 3,
+                  "semester": 6
+                }
+            ],
+            [
+                {
+                  "edges": ["EECE5032"],
+                  "courseCode": "EECE5031",
+                  "courseName": "Computer Engineering Senior Design I (C- min)",
+                  "credits": 3,
+                  "semester": 7
+                }
+            ],
+            [
+                {
+                  "edges": [],
+                  "courseCode": "EECE5032",
+                  "courseName": "Computer Engineering Senior Design II (C- min)",
+                  "credits": 3,
+                  "semester": 8
+                }
+            ]
+        ]
+    }
+}

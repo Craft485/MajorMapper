@@ -29,13 +29,18 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
         semesters: new Array(Math.max(...curricula.flatMap(c => c.semesters.map(a => a.length)))).fill(null).map(x => []),
         totalCredits: curricula.reduce((a, b) => a + b.totalCredits, 0)
     }
-    const mergedSemesters: Analytics.Vertex[][] = new Array(Math.max(...curricula.flatMap(c => c.semesters.map(a => a.length)))).fill(null).map(x => [])
+    // Create object reference/pointer to the semesters as a shorthand
+    const mergedSemesters: Analytics.Vertex[][] = mergedCurriculum.semesters
     
     const courseListSets: Array<Set<string>> = []
 
     // For each curriculum, create a Set of all classes course codes
     for (const curriculum of curricula) {
-        courseListSets.push(new Set(curriculum.semesters.flatMap(semester => semester.map(course => course.courseCode))))
+        const allCourses = curriculum.semesters.flat()
+        for (const course of allCourses) {
+            mergedSemesters[course.semester - 1].push(course)
+        }
+        courseListSets.push(new Set(...allCourses.map(course => course.courseCode)))
     }
 
     // Determine what course codes are shared accross two or more curriculums
@@ -59,7 +64,7 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
             const vertex = currentCurriculum.semesters.flat().find(vertex => vertex.courseCode === courseCode)
             const path = await calculateCoursePath(vertex, currentCurriculum)
             if (!mergedVertex) {
-                mergedVertex = vertex
+                mergedVertex = { ...vertex }
             } else {
                 mergedVertex.edges = [...mergedVertex.edges, ...vertex.edges].filter((edge, i, arr) => arr.findIndex(edge2 => edge.courseCode === edge2.courseCode) === i)
             }
@@ -74,9 +79,68 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
          * 
          * NOTE: Not sure if this deals with a path containing two or more (different) duplicate courses, it doesn't look like this method is independent of the larger process
          */
+        // TODO: Is it possible for either of these to be -1? if so we need to figure out some error handeling
+        const minSemesterIndex = mergedSemesters.findIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
+        const maxSemesterIndex = mergedSemesters.findLastIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
+        // Will be -1 while there is no valid semester to merge to, otherwise it is the index of the mergedSemesters array
+        let validMergeSemesterIndex = -1
+        // Find empty semesters and check if they are valid candidates
+        // TODO: double check this range is actually what we want
+        for (let currentSemesterIndex = minSemesterIndex; currentSemesterIndex <= maxSemesterIndex; currentSemesterIndex++) {
+            const currentSemester = currentSemesterIndex + 1
+            const duplicateVertices: Map<number, Analytics.Vertex> = new Map
+            let isEmptySemester = true
+            for (let j = 0; j < paths.length; j++) {
+                const duplicateVertex = paths[j].find(vertex => vertex.courseCode === courseCode)
+                duplicateVertices.set(j, duplicateVertex)
+                if (duplicateVertex.semester === currentSemester) continue
+                const blockingVertex: Analytics.Vertex | undefined = paths[j].find(vertex => vertex.courseCode !== courseCode && vertex.semester === currentSemester && vertex.semester !== duplicateVertex.semester)
+                // Semester is not a valid candidate for merging
+                if (blockingVertex !== undefined) {
+                    isEmptySemester = false
+                    break
+                }
+            }
+            if (isEmptySemester) {
+                let isValidSemester = true
+                // Validate that we can actually merge to it
+                // Rule for a valid merge:
+                // 1. Must be adjacent to or in the same semester as all duplicate vertices OR
+                // 2. Must not have any pre/post reqs (depending on direction) between the duplicate and the candidate semester
+                for (const [pathIndex, duplicateVertex] of duplicateVertices) {
+                    const semesterDistance = Math.abs(duplicateVertex.semester - currentSemester)
+                    // Semester is valid if the semesters are adjacent
+                    if (semesterDistance <= 1) continue
+                    const path = paths[pathIndex]
+                    const intermediaryCourses = path.filter(vertex => currentSemester > duplicateVertex.semester ? vertex.semester > duplicateVertex.semester && vertex.semester < currentSemester : vertex.semester < duplicateVertex.semester && vertex.semester > currentSemester)
+                    // If there are no courses blocking the duplicate from merging, then it is a valid semester
+                    if (intermediaryCourses.length === 0) continue
+                    // Default case: the current semester is not valid
+                    isValidSemester = false
+                    break
+                }
+                if (isValidSemester) {
+                    validMergeSemesterIndex = currentSemesterIndex
+                    break
+                }
+            }
+        }
+
+        // TODO: If we could not merge the course, we need to merge it forward and push all post reqs back
+        if (validMergeSemesterIndex === -1) {
+            mergedVertex.semester = maxSemesterIndex - 1
+            for (const curriculum of familiarCurricula) {
+                const postReqNodes = []
+                calculateCoursePath(mergedVertex, curriculum, postReqNodes, true)
+            }
+        }
+        // Remove duplicates that are not at the location of the merged vertex
+
+        // Replace/insert the merged vertex into the proper semester
     }
 
-    mergedCurriculum.semesters = mergedSemesters
+    // Not needed if mergedSemesters is already an object reference to semester prop
+    //mergedCurriculum.semesters = mergedSemesters
     return mergedCurriculum
 }
 

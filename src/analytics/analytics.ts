@@ -6,7 +6,7 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
     const curricula: Analytics.Curriculum[] = []
     // Load the curriculum data
     for (const programStack of programStacks) {
-        readFile(`../server/utils/json/${programStack}.json`, { encoding: 'utf-8' }, (err, fileContents) => {
+        readFile(`../../json/${programStack}.json`, { encoding: 'utf-8' }, (err, fileContents) => {
             if (err) throw err
             curricula.push(JSON.parse(fileContents).data)
         })

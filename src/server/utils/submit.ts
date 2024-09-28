@@ -8,7 +8,7 @@ import { ParseAnalytics } from '../../analytics/analytics'
 async function Submit(req: Request<any, any, any, any, Record<string, any>>, res: Response): Promise<void> {
     console.log(req.originalUrl)
     const stackList: string = req.query['q']
-    const stacks: string[] = stackList.split(',').filter((stack, i, arr) => programData[stack] !== undefined && arr.indexOf(stack) === i)
+    const stacks: string[] = stackList.split(',').filter((stack, i, arr) => programData.find(plan => plan.ProgramStack === stack) !== undefined && arr.indexOf(stack) === i)
     /*for (const stack of stacks) {
         // In the future we need to go out and grab the information, for now we can just use the hand written test case
         read(`./utils/json/${stack}.json`, { encoding: 'utf-8' }, (err, data) => {

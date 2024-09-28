@@ -1,15 +1,13 @@
-import { readFile } from 'fs'
+import { readFile } from 'fs/promises'
 import * as Analytics from '../types/analytics'
 
 // TODO: Calculate metrics for the curricula
 export async function ParseAnalytics(programStacks: string[]): Promise<Analytics.Curriculum> {
     const curricula: Analytics.Curriculum[] = []
     // Load the curriculum data
-    for (const programStack of programStacks) {
-        readFile(`../../json/${programStack}.json`, { encoding: 'utf-8' }, (err, fileContents) => {
-            if (err) throw err
-            curricula.push(JSON.parse(fileContents).data)
-        })
+    for await (const programStack of programStacks) {
+        const fileContents = await readFile(`../../json/${programStack}.json`, 'utf-8').catch(err => { if (err) throw err })
+        curricula.push(JSON.parse(fileContents as string).data)
     }
     // Return early if needed
     if (curricula.length === 1) return curricula[0]

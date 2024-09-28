@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import * as config from './config.json'
 import { readdir } from 'fs'
 import { EndPoint } from '../types/backend'
+import { AddressInfo } from 'net'
 
 const app = express()
 // Points to the out/public directory once this is compiled and within the out/server directory
@@ -39,7 +40,9 @@ function loadEndpoints() {
 }
 
 // Start listening on 127.0.0.1:8080 by default
-server.listen(config.DefaultPort, () => {
+const s = server.listen(config.DefaultPort, () => {
     loadEndpoints()
     console.info(`Server is online on port ${config.DefaultPort}`)
 })
+if (s) console.log(Object.values(s.address() as AddressInfo).join(' | '))
+else throw new Error('Unable to start web server')

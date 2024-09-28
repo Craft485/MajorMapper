@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "outDir": "../out",
+        "resolveJsonModule": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "allowJs": true
+    },
+    // "include": ["server/utils/json/*.json"],
+    "exclude": ["*.old.*", "*.test.*", "*.d.ts", "*.ignore.*"]
+}

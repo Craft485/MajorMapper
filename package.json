@@ -7,10 +7,10 @@
     "express": "^4.18.3"
   },
   "scripts": {
-    "client": "cd src/client && tsc && cd ../.. && node src/utils/build-cleanup.mjs --script",
-    "server": "cd src/server && tsc && cd ../..",
-    "analytics": "cd src/analytics && tsc && cd ../..",
-    "build": "npm run client && npm run server && npm run analytics",
+    "client": "cd src/client && tsc -p ./tsconfig.json && cd ../.. && node src/utils/build-cleanup.mjs --script",
+    "server": "cd src/server && tsc -p ./tsconfig.json && cd ../..",
+    "analytics": "cd src/analytics && tsc -p ./tsconfig.json && cd ../..",
+    "build": "cd src && tsc -p ./tsconfig.json && cd .. && node src/utils/build-cleanup.mjs --script",
     "start": "cd out/server && node server.js"
   },
   "keywords": [],

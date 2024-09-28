@@ -6,7 +6,7 @@ import { EndPoint } from '../types/backend'
 
 const app = express()
 // Points to the out/public directory once this is compiled and within the out/server directory
-app.use(express.static('../public'))
+app.use(express.static('../client'))
 app.use(express.static('../../public'))
 
 const server = createServer(app)

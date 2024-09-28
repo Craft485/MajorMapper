@@ -8,7 +8,7 @@ const { argv:args } = process
  */
 function cleanup() {
     // If this is being ran from an npm script we need to use a different path
-    const dirPath = resolve(args.includes('--script') ? 'out/public' : '../../out/public')
+    const dirPath = resolve(args.includes('--script') ? 'out/client' : '../../out/client')
     console.log(resolve(dirPath))
     readdir(dirPath, { encoding: 'utf-8', withFileTypes: true, recursive: true }, (err, files) => {
         if (err) throw err

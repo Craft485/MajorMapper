@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "target": "ESNext",
-        "outDir": "../../out/analytics",
-        "resolveJsonModule": true,
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext"
-    }
-}

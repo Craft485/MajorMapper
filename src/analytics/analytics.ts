@@ -16,6 +16,8 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
 
     const mergedCurricula = await MergeCurricula(curricula)
     const optimizedDegreePlan = await OptimizeCurriculum(mergedCurricula)
+
+    return optimizedDegreePlan
 }
 
 /**
@@ -48,7 +50,9 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
     for (let i = 0; i < courseListSets.length; i++) {
         for (let j = 0; j < courseListSets.length; j++) {
             if (i === j) continue
+            
             const intersection = courseListSets[i].intersection(courseListSets[j])
+            
             if (intersection.size > 0) duplicateCourseCodesSet = duplicateCourseCodesSet.union(intersection)
         }
     }
@@ -61,7 +65,7 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
         const familiarCurricula = curricula.filter(curriculum => curriculum.semesters.flat().map(vertex => vertex.courseCode).includes(courseCode))
         for (const currentCurriculum of familiarCurricula) {
             // Calculate path for each vertex
-            const vertex = currentCurriculum.semesters.flat().find(vertex => vertex.courseCode === courseCode)
+            const vertex: Analytics.Vertex = currentCurriculum.semesters.flat().find(vertex => vertex.courseCode === courseCode)
             const path = await calculateCoursePath(vertex, currentCurriculum)
             if (!mergedVertex) {
                 mergedVertex = { ...vertex }
@@ -126,17 +130,31 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
             }
         }
 
+        const mergeToVertex: Analytics.Vertex = mergedSemesters.flat().findLast(vertex => validMergeSemesterIndex === -1 ? vertex.courseCode === courseCode : vertex.semester === validMergeSemesterIndex + 1)
         // TODO: If we could not merge the course, we need to merge it forward and push all post reqs back
         if (validMergeSemesterIndex === -1) {
-            mergedVertex.semester = maxSemesterIndex - 1
-            for (const curriculum of familiarCurricula) {
-                const postReqNodes = []
-                calculateCoursePath(mergedVertex, curriculum, postReqNodes, true)
+            mergedVertex.semester = maxSemesterIndex + 1
+            const postReqNodes = await calculateCoursePath(mergedVertex, mergedCurriculum, [], true)
+            for (const node of postReqNodes) {
+                // Move the postreq forward the smallest amount we can
+                // FIXME: What if a post-req is itself a duplicate?
+                const vertex = mergedSemesters.flat().find(vertex => vertex.courseCode === node.courseCode)
+                // FIXME: We cannot always push it forward by 1, it may need to be more
+                vertex.semester = vertex.semester < mergedVertex.semester ? mergedVertex.semester + 1 : vertex.semester + 1
             }
         }
+        else mergedVertex.semester = validMergeSemesterIndex + 1
         // Remove duplicates that are not at the location of the merged vertex
 
         // Replace/insert the merged vertex into the proper semester
+        // FIXME: We can't 100% find the index
+        const mergeToVertexIndex = mergedSemesters[mergeToVertex.semester - 1].findIndex(vertex => vertex.courseCode === mergeToVertex.courseCode)
+        const mergeToSemester = mergedSemesters[mergeToVertex.semester - 1]//[mergeToVertexIndex] = mergedVertex
+        if (mergeToVertexIndex === -1) {
+            // mergeToSemester.push()
+        }
+        // Ensure all courses are in the correct semesters after we've been shifting them
+
     }
 
     // Not needed if mergedSemesters is already an object reference to semester prop

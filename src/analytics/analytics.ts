@@ -78,9 +78,7 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
          * This defines a range we can check for "empty" semesters that do not contain any courses in any of the concerned paths
          * For each empty semester we find, we need to validate it by seeing that there are no courses between it and the vertex in each path
          * If there are no valid empty semesters, we need to merge forward to the farthest/max semester and push all post reqs in other paths forward by a dynamic number of semesters that needs to be kept at a min
-         * 
-         * NOTE: Not sure if this deals with a path containing two or more (different) duplicate courses, it doesn't look like this method is independent of the larger process
-         */
+        */
         // TODO: Is it possible for either of these to be -1? if so we need to figure out some error handeling
         const minSemesterIndex = mergedSemesters.findIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
         const maxSemesterIndex = mergedSemesters.findLastIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
@@ -128,40 +126,86 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
             }
         }
 
-        const mergeToVertex: Analytics.Vertex = mergedSemesters.flat().findLast(vertex => validMergeSemesterIndex === -1 ? vertex.courseCode === courseCode : vertex.semester === validMergeSemesterIndex + 1)
-        // TODO: If we could not merge the course, we need to merge it forward and push all post reqs back
+        // If we could not merge the course, we need to merge it forward and push all post reqs back
         if (validMergeSemesterIndex === -1) {
             mergedVertex.semester = maxSemesterIndex + 1
-            const postReqNodes = await calculateCoursePath(mergedVertex, mergedCurriculum, [], true)
-            for (const node of postReqNodes) {
+            // Grab the first layer of post-reqs from the merged vertex
+            const firstLayerPostReqs = mergedSemesters.flat().filter(v => mergedVertex.edges.find(edge => edge.courseCode === v.courseCode))
+            for (const node of firstLayerPostReqs) {
                 // Move the postreq forward the smallest amount we can
-                // FIXME: What if a post-req is itself a duplicate?
+                // NOTE: I don't think it matters if a post-req is itself is a duplicate
                 const vertex = mergedSemesters.flat().find(vertex => vertex.courseCode === node.courseCode)
-                // FIXME: We cannot always push it forward by 1, it may need to be more
-                vertex.semester = vertex.semester < mergedVertex.semester ? mergedVertex.semester + 1 : vertex.semester + 1
+                if (mergedVertex.semester > vertex.semester ) { // Layer 1 post-req has ended up behind the current course
+                    // We need to shift the current "branch" starting from the current vertex
+                    await ShiftBranch(vertex, mergedVertex, mergedSemesters)
+                }
+            }
+        } else {
+            // We found a semester we can merge to, however we still need look to see if any post-reqs need pushing back
+            mergedVertex.semester = validMergeSemesterIndex + 1
+            for (const edge of mergedVertex.edges) { // LATER: Look at seeing if we can optimize this step
+                const currVertex = mergedSemesters.flat().find(v => v.courseCode === edge.courseCode)
+                await ShiftBranch(currVertex, mergedVertex, mergedSemesters)
             }
         }
-        else mergedVertex.semester = validMergeSemesterIndex + 1
-        // Remove duplicates that are not at the location of the merged vertex
-
-        // Replace/insert the merged vertex into the proper semester
-        // FIXME: We can't 100% find the index
-        const mergeToVertexIndex = mergedSemesters[mergeToVertex.semester - 1].findIndex(vertex => vertex.courseCode === mergeToVertex.courseCode)
-        const mergeToSemester = mergedSemesters[mergeToVertex.semester - 1]//[mergeToVertexIndex] = mergedVertex
-        if (mergeToVertexIndex === -1) {
-            // mergeToSemester.push()
+        // Remove any occurance of the duplicate before inserting the merged instance
+        for (let i = 0; i < mergedSemesters.length; i++) {
+            const currSemester = mergedSemesters[i]
+            let duplicateIndex = currSemester.findIndex(vertex => vertex.courseCode === courseCode)
+            while (duplicateIndex !== -1) {
+                currSemester.splice(duplicateIndex, 1)
+                duplicateIndex = currSemester.findIndex(vertex => vertex.courseCode === courseCode)
+            }
         }
-        // Ensure all courses are in the correct semesters after we've been shifting them
-
+        // Replace/insert the merged vertex into the proper semester
+        mergedSemesters[mergedVertex.semester - 1].push({ ...mergedVertex })
     }
 
-    // Not needed if mergedSemesters is already an object reference to semester prop
-    //mergedCurriculum.semesters = mergedSemesters
+    // NOTE: All of the moving around before this point has been purely on paper, the actual location of the courses has not changed (yet)
+    // Cleanup step: Ensure all courses are in the correct semesters after we've been shifting them around
+    const mergedSemestersCopy = [ ...mergedSemesters ]
+    for (let i = 0; i < mergedSemesters.length; i++) {
+        const semester = mergedSemesters[i]
+        for (const course of semester) {
+            if (course.semester - 1 !== i) {
+                // Remove old vertex
+                const oldSemesterIndex = mergedSemestersCopy.findIndex(sem => sem.find(v => v.courseCode === course.courseCode))
+                const oldVertexIndex = mergedSemestersCopy[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
+                mergedSemestersCopy[oldSemesterIndex].splice(oldVertexIndex, 1)
+                // Add an extra semester if we need to
+                if (course.semester > mergedSemestersCopy.length) mergedSemestersCopy.push([])
+                // Add new vertex
+                mergedSemestersCopy[course.semester - 1].push(course)
+            }
+        }
+    }
+
+    mergedCurriculum.semesters = mergedSemestersCopy
     return mergedCurriculum
 }
 
 async function OptimizeCurriculum(curriculum: Analytics.Curriculum): Promise<Analytics.Curriculum> {
     return curriculum
+}
+
+// NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
+async function ShiftBranch(currentVertex: Analytics.Vertex, previousVertex: Analytics.Vertex, semesters: Analytics.Vertex[][]): Promise<void> {
+    if (previousVertex.edges.map(edge => edge.courseCode).includes(currentVertex.courseCode)) {
+        // Co-req
+        currentVertex.semester = previousVertex.semester
+        return 
+    }
+    const currentEdges: string[] = currentVertex.edges.map(e => e.courseCode)
+    const currentSemester = currentVertex.semester
+    const previousSemester = previousVertex.semester
+    const courses = semesters.flat()
+    const postreqs: Analytics.Vertex[] = courses.filter(v => currentEdges.includes(v.courseCode))
+    if (currentSemester <= previousSemester) { // Move courses that are not in the correct semester
+        currentVertex.semester = previousSemester + 1
+    }
+    for (const edgeNode of postreqs) {
+        await ShiftBranch(edgeNode, currentVertex, semesters)
+    }
 }
 
 async function calculateCoursePath(course: Analytics.Vertex, curriculum: Analytics.Curriculum, foundNodes: Analytics.Vertex[] = [], isLookingForward?: boolean): Promise<Analytics.Vertex[]> {

@@ -3,15 +3,17 @@ import * as Analytics from '../types/analytics'
 
 // TODO: Calculate metrics for the curricula
 export async function ParseAnalytics(programStacks: string[]): Promise<Analytics.Curriculum> {
+    console.log(`Client requests the following stacks: ${programStacks.join(', ')}`)
     const curricula: Analytics.Curriculum[] = []
     // Load the curriculum data
     for await (const programStack of programStacks) {
         const fileContents = await readFile(`../../json/${programStack}.json`, 'utf-8').catch(err => { if (err) throw err })
         curricula.push(JSON.parse(fileContents as string).data)
+        console.log(`Found ${programStack}`)
     }
     // Return early if needed
     if (curricula.length === 1) return curricula[0]
-
+    console.log('Multiple curricula found')
     const mergedCurricula = await MergeCurricula(curricula)
     const optimizedDegreePlan = await OptimizeCurriculum(mergedCurricula)
 
@@ -25,24 +27,36 @@ calculate paths for the course in each curriculum is appears in
 use the semester spacing in each path to determine where the duplicate course should be placed for merging
 */
 async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analytics.Curriculum> {
+    console.log('Starting merge step')
     const mergedCurriculum: Analytics.Curriculum = {
-        semesters: new Array(Math.max(...curricula.flatMap(c => c.semesters.map(a => a.length)))).fill(null).map(x => []),
+        semesters: new Array(Math.max(...curricula.flatMap(c => c.semesters.length))).fill(null).map(x => []),
         totalCredits: curricula.reduce((a, b) => a + b.totalCredits, 0)
     }
+    console.log(`Generated ${mergedCurriculum.semesters.length} blank semesters`)
     // Create object reference/pointer to the semesters as a shorthand
     const mergedSemesters: Analytics.Vertex[][] = mergedCurriculum.semesters
     
     const courseListSets: Array<Set<string>> = []
 
+    console.log('Loading course information')
     // For each curriculum, create a Set of all classes course codes
     for (const curriculum of curricula) {
         const allCourses = curriculum.semesters.flat()
         for (const course of allCourses) {
+            console.log(JSON.stringify(course))
             mergedSemesters[course.semester - 1].push(course)
         }
-        courseListSets.push(new Set(...allCourses.map(course => course.courseCode)))
+        courseListSets.push(new Set(allCourses.map(course => course.courseCode)))
+    }
+    console.log('Course information loaded')
+
+    for (const a of courseListSets) { // DEBUG
+        for (const b of a) {
+            console.log(`[Course Info] ${b}`)
+        }
     }
 
+    console.log('Checking for duplicate courses')
     // Determine what course codes are shared accross two or more curriculums
     let duplicateCourseCodesSet: Set<string> = new Set()
     for (let i = 0; i < courseListSets.length; i++) {
@@ -54,22 +68,28 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
             if (intersection.size > 0) duplicateCourseCodesSet = duplicateCourseCodesSet.union(intersection)
         }
     }
+    console.log(`Found ${duplicateCourseCodesSet.size} duplicate courses`)
+    // for (const k of duplicateCourseCodesSet) {
+    //     console.log(`From dupes set: ${k}`)
+    // }
 
     // For each course that occurs more than once, calcuate its path in all curricula is appears in and determine what semester it needs to be placed in (for now)
     for (const courseCode of duplicateCourseCodesSet) {
+        console.log(`Checking duplicate: ${courseCode}`)
         const paths: Analytics.Vertex[][] = []
         let mergedVertex: Analytics.Vertex | null = null
         // Grab verticies and curricula for the course code
         const familiarCurricula = curricula.filter(curriculum => curriculum.semesters.flat().map(vertex => vertex.courseCode).includes(courseCode))
-        for (const currentCurriculum of familiarCurricula) {
+        for await (const currentCurriculum of familiarCurricula) {
             // Calculate path for each vertex
             const vertex: Analytics.Vertex = currentCurriculum.semesters.flat().find(vertex => vertex.courseCode === courseCode)
             const path = await calculateCoursePath(vertex, currentCurriculum)
             if (!mergedVertex) {
                 mergedVertex = { ...vertex }
             } else {
-                mergedVertex.edges = [...mergedVertex.edges, ...vertex.edges].filter((edge, i, arr) => arr.findIndex(edge2 => edge.courseCode === edge2.courseCode) === i)
+                mergedVertex.edges = [...mergedVertex.edges, ...vertex.edges].filter((edge, i, arr) => arr.findIndex(edge2 => edge === edge2) === i)
             }
+            console.log(JSON.stringify(mergedVertex))
             paths.push(path)
         }
         // Determine semester spacing for placing the merged vertex
@@ -128,26 +148,33 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
 
         // If we could not merge the course, we need to merge it forward and push all post reqs back
         if (validMergeSemesterIndex === -1) {
+            console.log(`No valid semester found to merge ${courseCode} to, merging forward to latest occurance of course`)
             mergedVertex.semester = maxSemesterIndex + 1
             // Grab the first layer of post-reqs from the merged vertex
-            const firstLayerPostReqs = mergedSemesters.flat().filter(v => mergedVertex.edges.find(edge => edge.courseCode === v.courseCode))
+            const firstLayerPostReqs = mergedSemesters.flat().filter(v => mergedVertex.edges.find(edge => edge === v.courseCode))
             for (const node of firstLayerPostReqs) {
                 // Move the postreq forward the smallest amount we can
                 // NOTE: I don't think it matters if a post-req is itself is a duplicate
-                const vertex = mergedSemesters.flat().find(vertex => vertex.courseCode === node.courseCode)
-                if (mergedVertex.semester > vertex.semester ) { // Layer 1 post-req has ended up behind the current course
+                //const vertex = mergedSemesters.flat().find(vertex => vertex.courseCode === node.courseCode)
+                if (mergedVertex.semester > node.semester ) { // Layer 1 post-req has ended up behind the current course
+                    console.log(`Shifting branch for ${courseCode} staring at ${node.courseCode}`)
                     // We need to shift the current "branch" starting from the current vertex
-                    await ShiftBranch(vertex, mergedVertex, mergedSemesters)
+                    await ShiftBranch(node, mergedVertex, mergedSemesters)
                 }
             }
         } else {
+            console.log(`Found a valid candidate semester to merge duplicate ${courseCode} to: ${validMergeSemesterIndex + 1}`)
             // We found a semester we can merge to, however we still need look to see if any post-reqs need pushing back
             mergedVertex.semester = validMergeSemesterIndex + 1
             for (const edge of mergedVertex.edges) { // LATER: Look at seeing if we can optimize this step
-                const currVertex = mergedSemesters.flat().find(v => v.courseCode === edge.courseCode)
+                const currVertex = mergedSemesters.flat().find(v => v.courseCode === edge)
+                console.log(JSON.stringify(currVertex))
+                console.log(edge)
+                console.log(`Shifting branch for ${courseCode} starting at ${edge}`)
                 await ShiftBranch(currVertex, mergedVertex, mergedSemesters)
             }
         }
+        console.log(`Removing excess instances of ${courseCode}`)
         // Remove any occurance of the duplicate before inserting the merged instance
         for (let i = 0; i < mergedSemesters.length; i++) {
             const currSemester = mergedSemesters[i]
@@ -159,10 +186,12 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
         }
         // Replace/insert the merged vertex into the proper semester
         mergedSemesters[mergedVertex.semester - 1].push({ ...mergedVertex })
+        console.log(`Completed checks for duplicate: ${courseCode}`)
     }
 
     // NOTE: All of the moving around before this point has been purely on paper, the actual location of the courses has not changed (yet)
     // Cleanup step: Ensure all courses are in the correct semesters after we've been shifting them around
+    console.log('Cleaning up merge step')
     const mergedSemestersCopy = [ ...mergedSemesters ]
     for (let i = 0; i < mergedSemesters.length; i++) {
         const semester = mergedSemesters[i]
@@ -181,6 +210,7 @@ async function MergeCurricula(curricula: Analytics.Curriculum[]): Promise<Analyt
     }
 
     mergedCurriculum.semesters = mergedSemestersCopy
+    console.log('Merge step complete')
     return mergedCurriculum
 }
 
@@ -190,12 +220,12 @@ async function OptimizeCurriculum(curriculum: Analytics.Curriculum): Promise<Ana
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 async function ShiftBranch(currentVertex: Analytics.Vertex, previousVertex: Analytics.Vertex, semesters: Analytics.Vertex[][]): Promise<void> {
-    if (previousVertex.edges.map(edge => edge.courseCode).includes(currentVertex.courseCode)) {
+    if (previousVertex.edges.includes(currentVertex.courseCode)) {
         // Co-req
         currentVertex.semester = previousVertex.semester
         return 
     }
-    const currentEdges: string[] = currentVertex.edges.map(e => e.courseCode)
+    const currentEdges: string[] = currentVertex.edges
     const currentSemester = currentVertex.semester
     const previousSemester = previousVertex.semester
     const courses = semesters.flat()
@@ -204,6 +234,8 @@ async function ShiftBranch(currentVertex: Analytics.Vertex, previousVertex: Anal
         currentVertex.semester = previousSemester + 1
     }
     for (const edgeNode of postreqs) {
+        console.log(JSON.stringify(currentVertex))
+        console.log(JSON.stringify(edgeNode))
         await ShiftBranch(edgeNode, currentVertex, semesters)
     }
 }
@@ -212,12 +244,12 @@ async function calculateCoursePath(course: Analytics.Vertex, curriculum: Analyti
     const path: Analytics.Vertex[] = [
         // Look forward one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === true 
-            ? curriculum.semesters.flat().filter(vertex => course.edges.map(edge => edge.courseCode).includes(vertex.courseCode))
+            ? curriculum.semesters.flat().filter(vertex => course.edges.includes(vertex.courseCode))
             : []
         ),
         // Look backwards one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === false 
-            ? curriculum.semesters.flat().filter(vertex => vertex.edges.map(edge => edge.courseCode).includes(course.courseCode))
+            ? curriculum.semesters.flat().filter(vertex => vertex.edges.includes(course.courseCode))
             : []
         )
     ]
@@ -227,7 +259,7 @@ async function calculateCoursePath(course: Analytics.Vertex, curriculum: Analyti
     for (const node of path) {
         if (foundNodes.includes(node)) continue
         foundNodes.push(node)
-        await calculateCoursePath(node, curriculum, foundNodes, isLookingForward === undefined ? node.edges.find(edge => edge.courseCode === course.courseCode) === undefined : isLookingForward)
+        await calculateCoursePath(node, curriculum, foundNodes, isLookingForward === undefined ? node.edges.find(edge => edge === course.courseCode) === undefined : isLookingForward)
     }
 
     return foundNodes

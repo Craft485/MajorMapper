@@ -17,9 +17,9 @@ export type Vertex = {
     metrics?: Metrics
 }
 
-export type Edge = {
+export type Edge = string/*{
     courseCode: string
-}
+}*/
 
 /** Metrics based on https://curricularanalytics.org/metrics */
 export type Metrics = {

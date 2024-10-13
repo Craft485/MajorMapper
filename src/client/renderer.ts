@@ -10,25 +10,13 @@ paths = new Map<string, Path2D>()
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
 
-ctx.strokeStyle = 'white'
+ctx.strokeStyle = 'white' // Set default stroke color
 ctx.lineWidth = 5
 
 document.body.style.cssText = `--course-vertical-spacing: ${verticalSpacing}px;`
 
 function getRandomRange(min: number, max: number): number {
     return Math.random() * (max - min) + min
-}
-
-/** @deprecated */
-function convertStringToRGB(str: string): [r: number, g: number, b: number] {
-    const charCodes = str.split('').map(char => char.charCodeAt(0))
-    let r = 0, g = 0, b = 0
-    for (let i = 0; i < charCodes.length; i+=3) {
-        r += charCodes[i] || 0
-        g += charCodes[i + 1] || 0
-        b += charCodes[i + 2] || 0
-    }
-    return [r, g, b]
 }
 
 function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement): Path2D {
@@ -109,7 +97,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     },0`.replaceAll(/(\n|\t)+/g, '').replaceAll(/\s{2,}/g, ' ')
 
     const actualDeltaX = path.split(' ').map(str => str.startsWith('l') ? parseFloat(str.split(',')[0].substring(1)) : 0).reduce((acc, curr) => acc + curr, 0)
-    //console.log(deltaX, actualDeltaX)
+
     if (actualDeltaX < deltaX) path += ` l${deltaX - actualDeltaX},0`
 
     console.log(path)
@@ -140,7 +128,7 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
         const startNode = forwardEdges.includes(edge) ? course : edgeElement
         const endNode = forwardEdges.includes(edge) ? edgeElement : course
         ctx.strokeStyle = `#${startNode.getAttribute('course-hex')}`
-        ctx.stroke(calculatePath(startNode, endNode) /*forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course)*/)
+        ctx.stroke(calculatePath(startNode, endNode))
         // Recurse from the current edge
         showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
     }
@@ -150,6 +138,7 @@ function render(renderData: { data: Curriculum }): void {
     const curricula = renderData.data, semesters = curricula.semesters
     contentContainer.innerHTML = ''
     contentContainer.parentElement.classList.add('active')
+    paths.clear()
     let semesterCount = 1
 
     for (const semester of semesters) {

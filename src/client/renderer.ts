@@ -19,6 +19,7 @@ function getRandomRange(min: number, max: number): number {
     return Math.random() * (max - min) + min
 }
 
+/** @deprecated */
 function convertStringToRGB(str: string): [r: number, g: number, b: number] {
     const charCodes = str.split('').map(char => char.charCodeAt(0))
     let r = 0, g = 0, b = 0
@@ -138,7 +139,7 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
         foundEdges.push(edge)
         const startNode = forwardEdges.includes(edge) ? course : edgeElement
         const endNode = forwardEdges.includes(edge) ? edgeElement : course
-        ctx.strokeStyle = `rgb(${convertStringToRGB(startNode.id).join(' ')})`
+        ctx.strokeStyle = `#${startNode.getAttribute('course-hex')}`
         ctx.stroke(calculatePath(startNode, endNode) /*forwardEdges.includes(edge) ? calculatePath(course, edgeElement) : calculatePath(edgeElement, course)*/)
         // Recurse from the current edge
         showPreReqs(edgeElement, foundEdges, isLookingForward === undefined ? forwardEdges.includes(edge) : isLookingForward)
@@ -160,6 +161,7 @@ function render(renderData: { data: Curriculum }): void {
             courseBlock.className = 'course'
             courseBlock.setAttribute('edges', course.edges.join(','))
             courseBlock.setAttribute('semester', `${semesterCount}`)
+            courseBlock.setAttribute('course-hex', course.color)
             courseBlock.innerHTML = `
                 <p class="course-code">${course.courseCode}</p>
                 <div class="context-menu">

@@ -13,6 +13,7 @@ export type Vertex = {
     courseName: string
     semester: number
     credits: number
+    color?: string
     /** Labled as optional because this is not fully implemented */
     metrics?: Metrics
 }

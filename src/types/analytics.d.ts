@@ -18,11 +18,9 @@ export type Vertex = {
     metrics?: Metrics
 }
 
-export type Edge = string/*{
-    courseCode: string
-}*/
+/** NOTE: This type may be expanded in the future */
+export type Edge = string
 
-/** Metrics based on https://curricularanalytics.org/metrics */
 export type Metrics = {
     delayFactor: number
     blockingFactor: number

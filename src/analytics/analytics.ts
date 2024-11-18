@@ -23,7 +23,7 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
     }
     console.log('Multiple curricula found')
     const mergedCurricula = await MergeCurricula(curricula)
-    for (const course of mergedCurricula.semesters.flat()) {
+    for (const course of mergedCurricula.semesters.flat()) { // Generate colors based on the unique course codes
         course.color = GenerateHexCodeFromCourseCode(course.courseCode)
     }
     const optimizedDegreePlan = await OptimizeCurriculum(mergedCurricula)

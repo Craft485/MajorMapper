@@ -1,5 +1,6 @@
 import { ShiftBranch, calculateCoursePath } from './utils'
 import { Curriculum, Vertex } from '../types/analytics'
+import { readFile, writeFile } from 'fs/promises'
 
 /**
 Identify common courses
@@ -194,3 +195,23 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     console.log('Merge step complete')
     return mergedCurriculum
 }
+
+async function MergeUnitTest(stacks: string[]): Promise<void> {
+    const fileContents = []
+    for (const stack of stacks) {
+        const C1 = await readFile(`../../json/${stack}.json`, 'utf-8').catch(err => { if (err) throw err })        
+        fileContents.push(JSON.parse(C1 as string).data)
+    }
+    await MergeCurricula(fileContents).then(r => {
+        const output = process.argv.find(x => x.startsWith('--o:'))
+        if (output) {
+            writeFile(`../../testing/${output.split(':')[1]}.json`, JSON.stringify(r), { encoding: 'utf-8' })
+        } else {
+            console.log(output)
+        }
+    })
+    console.log('Merge test complete')
+}
+
+const mergeTest = process.argv.find(x => x.startsWith('--test:merge:'))
+if (mergeTest) MergeUnitTest(mergeTest.split(':')[2].split(','))

@@ -1,7 +1,7 @@
 import { Curriculum, Vertex } from '../types/analytics'
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
-export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][]): Promise<void> {
+export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
     if (previousVertex.edges.includes(currentVertex.courseCode)) {
         // Co-req
         currentVertex.semester = previousVertex.semester
@@ -11,14 +11,16 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     const currentSemester = currentVertex.semester
     const previousSemester = previousVertex.semester
     const courses = semesters.flat()
-    const postreqs: Vertex[] = courses.filter(v => currentEdges.includes(v.courseCode))
-    if (currentSemester <= previousSemester) { // Move courses that are not in the correct semester
+    const dependencies: Vertex[] = courses.filter(v => shiftingForward ? currentEdges.includes(v.courseCode) : v.edges.includes(currentVertex.courseCode))
+    if (currentSemester <= previousSemester && shiftingForward) { // Move courses that are not in the correct semester
         currentVertex.semester = previousSemester + 1
+    } else if (currentSemester >= previousSemester && !shiftingForward) {
+        currentVertex.semester = previousSemester - 1
     }
-    for (const edgeNode of postreqs) {
+    for (const node of dependencies) {
         console.log(JSON.stringify(currentVertex))
-        console.log(JSON.stringify(edgeNode))
-        await ShiftBranch(edgeNode, currentVertex, semesters)
+        console.log(JSON.stringify(node))
+        await ShiftBranch(node, currentVertex, semesters)
     }
 }
 

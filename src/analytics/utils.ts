@@ -48,3 +48,7 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
 
     return foundNodes
 }
+
+export function DeepCopy<Type>(obj: Type): Type {
+    return JSON.parse(JSON.stringify(obj))
+}

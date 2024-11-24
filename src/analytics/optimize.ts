@@ -40,6 +40,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 if it was valid, update the outer variables with this new information and break
             If the current problem semester is now valid, break out of the for loop
         */
+        let successfulShiftOccurred = false
         // For each simple path (starting with the shortest)
         for (let i = 0; i < simplePaths.length; i++) {
             console.log('Point B')
@@ -56,10 +57,12 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 console.log('Point CCCCCCCCCCCC')
                 // Find the earliest possible candidate semester (as an index)
                 const candidateSemesters = optimizedSemesters.map((semester, sIndex) => creditHours[sIndex] < 18 ? semester : null)
+                const minimumCreditsAmongCandidateSemesters = MIN(...candidateSemesters.filter(Boolean).map(s => s.reduce((acc, v) => acc + v.credits, 0)))
                 console.log(`There are ${candidateSemesters.filter(Boolean).length} candidate semesters`)
-                const candidateSemesterIndex = candidateSemesters.findIndex((_, index) => {
+                const candidateSemesterIndex = candidateSemesters.findIndex((candidate, index) => {
+                    if (candidate === null) return false
                     const isNotRepeat = !(checkedSemesterIndicies.includes(index))
-                    const hasMinCredits = creditHours[index] === MIN(...candidateSemesters.map(s => s?.length > 0 ? s.reduce((acc, v) => acc + v.credits, 0) : 0))
+                    const hasMinCredits = creditHours[index] === minimumCreditsAmongCandidateSemesters
                     console.log(`${index} | ${isNotRepeat} | ${hasMinCredits}`)
                     return isNotRepeat && hasMinCredits
                 })
@@ -84,6 +87,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 const postShiftCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
                 const shiftWasValid = !(MIN(...branches.map(x => x.semester)) < 1 || postShiftCreditHours.find((hours, i) => hours > 18 && hours > initialStateOfCreditHours[i]))
                 if (shiftWasValid) {
+                    successfulShiftOccurred = true
                     console.log(`${candidateSemesterIndex} was found to be a valid semester to shift to`)
                     // Once we find a shift thats valid according to the semester properties, we need to actually move the course vertices to other semester arrays
                     for (let i = 0; i < tempCurriculum.length; i++) {
@@ -114,8 +118,10 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             if (currentSemester.reduce((acc, v): number => acc + v.credits, 0) <= 18) break
         }
         // If we failed to move anything out of the current semester, we need to add an additional semester
-        const newSemesterCount = optimizedSemesters.push([]) // FIXME: This is happening regardless of any conditions, under what circumstances do we want to add a new semester?
-        console.log(`Added a new semester, there are now ${newSemesterCount} semesters`)
+        if (!successfulShiftOccurred) {
+            const newSemesterCount = optimizedSemesters.push([]) // FIXME: This is happening regardless of any conditions, under what circumstances do we want to add a new semester?
+            console.log(`Added a new semester, there are now ${newSemesterCount} semesters`)
+        }
         // Update the credit hours array before going to the next iteration
         creditHours.length = 0
         creditHours.push(...optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)))
@@ -123,5 +129,6 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
     console.log('Optimize step complete')
     curriculum.semesters = optimizedSemesters
     console.log(JSON.stringify(optimizedSemesters))
+    console.log('Final credit hours per semester: '+optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)).join(', '))
     return curriculum
 }

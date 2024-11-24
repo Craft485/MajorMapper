@@ -8,9 +8,9 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
     const originalSemesters: Vertex[][] = curriculum.semesters
     const optimizedSemesters: Vertex[][] = DeepCopy(originalSemesters)
     const creditHours = optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0))
-    console.log(creditHours.join(', '))
+    console.log(`Initial credit hours: ${creditHours.join(', ')}`)
     while (MAX(...creditHours) > 18) { // While there are semesters out there that are still over 18 credit hours...
-        console.log('Point AAAAAAAAAAAAAAAAAA')
+        console.log('Point A')
         const currentSemesterIndex = optimizedSemesters.findIndex((_, semesterIndex) => semesterIndex === creditHours.findIndex(hours => hours === MAX(...creditHours)))
         console.log('Optimizing semester index ' + (currentSemesterIndex))
         const currentSemester = optimizedSemesters[currentSemesterIndex]
@@ -27,9 +27,6 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             pathLengths.splice(pathIndex, 0, pathLength)
             simplePaths.splice(pathIndex, 0, simplePath)
         }
-        // Sort simple paths based on the path length (number of unique semesters that occur in the path)
-        // simplePaths.sort((pathA, pathB) => pathA.filter((v, i, a) => i === a.map(x => x.semester).indexOf(v.semester)).length - pathB.filter((v, i, a) => i === a.map(x => x.semester).indexOf(v.semester)).length)
-        // console.log(JSON.stringify(simplePaths))
         /**
         for each path in simple paths
             While there are still potential semesters to check
@@ -43,25 +40,23 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 if it was valid, update the outer variables with this new information and break
             If the current problem semester is now valid, break out of the for loop
         */
-        // const checkedSemesterIndicies: number[] = [ currentSemesterIndex ]
         // For each simple path (starting with the shortest)
         for (let i = 0; i < simplePaths.length; i++) {
-            console.log('Point BBBBBBBBBBBBBBBB')
+            console.log('Point B')
             console.log(simplePaths[i].map(v => v.courseCode).join(', '))
             // Gather basic information about the path and the course we are trying to move out of the current semester
-            const path: Vertex[] = DeepCopy<Vertex[]>(simplePaths[i].toSorted((v1, v2) => v1.semester - v2.semester)) // Using toSorted here to create a deep copy with no references/pointers to the original simplePaths array
+            const path: Vertex[] = DeepCopy<Vertex[]>(simplePaths[i].toSorted((v1, v2) => v1.semester - v2.semester))
             const courseCode: string = foundPaths[i]
             console.log(`Trying to optimize for course ${courseCode} in path ${path.map(v => v.courseCode).join(', ')}`)
             const course: Vertex = DeepCopy<Vertex>(path.find(v => v.courseCode === courseCode)) // Grab a copy of the course, not a pointer
             // Keep track of semesters we don't want to check
-            const checkedSemesterIndicies: number[] = [ currentSemesterIndex ] // BUG: This is ending up out of scope meaning we get stuck in an infinite loop
+            const checkedSemesterIndicies: number[] = [ currentSemesterIndex ] 
             // While there are semesters we could still check
             while (checkedSemesterIndicies.length < optimizedSemesters.length) {
                 console.log('Point CCCCCCCCCCCC')
                 // Find the earliest possible candidate semester (as an index)
                 const candidateSemesters = optimizedSemesters.map((semester, sIndex) => creditHours[sIndex] < 18 ? semester : null)
-                console.log(`there are ${candidateSemesters.length} candidatessssssssssss`)
-                // console.log(candidateSemesters)
+                console.log(`There are ${candidateSemesters.filter(Boolean).length} candidate semesters`)
                 const candidateSemesterIndex = candidateSemesters.findIndex((_, index) => {
                     const isNotRepeat = !(checkedSemesterIndicies.includes(index))
                     const hasMinCredits = creditHours[index] === MIN(...candidateSemesters.map(s => s?.length > 0 ? s.reduce((acc, v) => acc + v.credits, 0) : 0))
@@ -89,9 +84,8 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 const postShiftCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
                 const shiftWasValid = !(MIN(...branches.map(x => x.semester)) < 1 || postShiftCreditHours.find((hours, i) => hours > 18 && hours > initialStateOfCreditHours[i]))
                 if (shiftWasValid) {
-                    console.log('valid thing found')
-                    console.log(JSON.stringify(tempCourse))
-                    console.log(JSON.stringify(tempCurriculum))
+                    console.log(`${candidateSemesterIndex} was found to be a valid semester to shift to`)
+                    // Once we find a shift thats valid according to the semester properties, we need to actually move the course vertices to other semester arrays
                     for (let i = 0; i < tempCurriculum.length; i++) {
                         const semester = tempCurriculum[i]
                         for (const course of semester) {
@@ -109,11 +103,10 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                     }
                     // The shift was valid, save the changes to the main variables
                     optimizedSemesters.length = 0
-                    optimizedSemesters.push(...tempCurriculum) // FYI: This isn't removing the reference to tempCurr I don't think, in the future we may want to use DeepCopy as a way to opitmize memory management
+                    optimizedSemesters.push(...tempCurriculum)
                     // Recalculate credit hours
                     creditHours.length = 0
                     creditHours.push(...optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)))            
-                    // Verify that we can safely break here
                     break
                 }
             }
@@ -121,7 +114,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             if (currentSemester.reduce((acc, v): number => acc + v.credits, 0) <= 18) break
         }
         // If we failed to move anything out of the current semester, we need to add an additional semester
-        const newSemesterCount = optimizedSemesters.push([])
+        const newSemesterCount = optimizedSemesters.push([]) // FIXME: This is happening regardless of any conditions, under what circumstances do we want to add a new semester?
         console.log(`Added a new semester, there are now ${newSemesterCount} semesters`)
         // Update the credit hours array before going to the next iteration
         creditHours.length = 0

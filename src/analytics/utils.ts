@@ -41,7 +41,7 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
     if (isLookingForward === undefined) path.push(course)
 
     for (const node of path) {
-        if (foundNodes.includes(node)) continue
+        if (foundNodes.map(n => n.courseCode).includes(node.courseCode)) continue
         foundNodes.push(node)
         await calculateCoursePath(node, curriculum, foundNodes, isLookingForward === undefined ? node.edges.find(edge => edge === course.courseCode) === undefined : isLookingForward)
     }

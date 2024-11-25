@@ -19,6 +19,17 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         const simplePaths: Vertex[][] = [] // This array is parralel with foundPaths
         for (const course of currentSemester.flat()) { // For each course in the curriculum, calculate and store its simple path
             if (foundPaths.includes(course.courseCode)) continue
+            const coreqs = optimizedSemesters.flat().filter(v => v.edges.includes(course.courseCode) && course.edges.includes(v.courseCode))
+            if (coreqs.length > 0) {
+                let coreqAlreadyPresent = false
+                for (const coreq of coreqs) {
+                    if (simplePaths.flat().flatMap(v => v.edges).includes(coreq.courseCode)) {
+                        coreqAlreadyPresent = true
+                        break
+                    }
+                }
+                if (coreqAlreadyPresent) continue
+            }
             const simplePath = await calculateCoursePath(course, curriculum)
             const pathLength = simplePath.filter((v, i, a) => i === a.map(x => x.semester).indexOf(v.semester)).length
             let pathIndex = pathLengths.findLastIndex(length => length <= pathLength)
@@ -27,6 +38,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             pathLengths.splice(pathIndex, 0, pathLength)
             simplePaths.splice(pathIndex, 0, simplePath)
         }
+        // console.log(JSON.stringify(simplePaths))
         /**
         for each path in simple paths
             While there are still potential semesters to check
@@ -95,7 +107,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                         for (const course of semester) {
                             if (course.semester - 1 !== i) {
                                 // Remove old vertex
-                                const oldSemesterIndex = tempCurriculum.findIndex(sem => sem.find(v => v.courseCode === course.courseCode))
+                                const oldSemesterIndex = tempCurriculum[forwardShift ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode)) // ???: Currently unclear if we need to search for the old semester a specifc way depending on the direction of the shift
                                 const oldVertexIndex = tempCurriculum[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
                                 tempCurriculum[oldSemesterIndex].splice(oldVertexIndex, 1)
                                 // Add an extra semester if we need to
@@ -119,7 +131,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         }
         // If we failed to move anything out of the current semester, we need to add an additional semester
         if (!successfulShiftOccurred) {
-            const newSemesterCount = optimizedSemesters.push([]) // FIXME: This is happening regardless of any conditions, under what circumstances do we want to add a new semester?
+            const newSemesterCount = optimizedSemesters.push([])
             console.log(`Added a new semester, there are now ${newSemesterCount} semesters`)
         }
         // Update the credit hours array before going to the next iteration

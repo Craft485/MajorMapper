@@ -142,7 +142,8 @@ function render(renderData: { data: Curriculum }): void {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
     let semesterCount = 1
 
-    for (const semester of semesters) {
+    for (let i = 0; i < semesters.length; i++) {
+        const semester = semesters[i]
         const column = document.createElement('div')
         column.className = 'semester'
         for (const course of semester) {
@@ -158,10 +159,20 @@ function render(renderData: { data: Curriculum }): void {
                     <p>Credits: <span class="credits">${course.credits}</span></p>
                     <p class="course-name">${course.courseName}</p>
                 </div>`
-            courseBlock.addEventListener('click', e => showPreReqs(courseBlock))
+            courseBlock.addEventListener('click', _ => showPreReqs(courseBlock))
             column.appendChild(courseBlock)
         }
         semesterCount++
-        contentContainer.appendChild(column)
+        const columnParent = document.createElement('div')
+        columnParent.className = 'semester-container'
+        columnParent.appendChild(column)
+        const semesterInfoBlock = document.createElement('div')
+        semesterInfoBlock.className = 'semester-info'
+        semesterInfoBlock.innerHTML = `
+            <p>${semester.reduce((acc, curr) => acc + curr.credits, 0)} Credit Hours</p>
+            <p>Semester ${i + 1}</p>
+        `
+        columnParent.appendChild(semesterInfoBlock)
+        contentContainer.appendChild(columnParent)
     }
 }

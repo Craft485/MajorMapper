@@ -2,9 +2,12 @@ import { Curriculum, Vertex } from '../types/analytics'
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
-    if (previousVertex.edges.includes(currentVertex.courseCode)) {
+    console.log(`Shifting ${currentVertex.courseCode} in semester ${currentVertex.semester} according to ${previousVertex.courseCode} in ${previousVertex.semester} | Is a forward shift: ${shiftingForward}`)
+    if (previousVertex.edges.includes(currentVertex.courseCode) && currentVertex.edges.includes(previousVertex.courseCode)) {
         // Co-req
+        console.log(`${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}`)
         currentVertex.semester = previousVertex.semester
+        console.log(`Since ${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}, it was shifted to semester ${currentVertex.semester}`)
         return 
     }
     const currentEdges: string[] = currentVertex.edges
@@ -17,10 +20,11 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     } else if (currentSemester >= previousSemester && !shiftingForward) {
         currentVertex.semester = previousSemester - 1
     }
+    console.log(`Shifted ${currentVertex.courseCode} to semester ${currentVertex.semester}`)
     for (const node of dependencies) {
         console.log(JSON.stringify(currentVertex))
         console.log(JSON.stringify(node))
-        await ShiftBranch(node, currentVertex, semesters)
+        await ShiftBranch(node, currentVertex, semesters, shiftingForward)
     }
 }
 

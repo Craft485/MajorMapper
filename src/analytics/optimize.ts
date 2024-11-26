@@ -86,29 +86,32 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 const tempCurriculum: Vertex[][] = DeepCopy<Vertex[][]>(optimizedSemesters)
                 const tempCourse: Vertex = tempCurriculum.flat().find(c => c.courseCode === courseCode)
                 const forwardShift = candidateSemesterIndex > currentSemesterIndex
-                // Grab just the part of the path that might be moving (NOTE: Slice will only return a shallow copy so we still need to use DeepCopy to remove any pointers)
-                const branches: Vertex[] = DeepCopy<Vertex[]>(forwardShift ? path.slice(path.findIndex(v => v.semester === course.semester)) : path.slice(0, path.findLastIndex(v => v.semester === course.semester)))
+                // Grab just the part of the path that might be moving 
+                // NOTE: Slice will only return a shallow copy so we still need to use DeepCopy to remove any pointers
+                // Since this a copy of whats in the path (which in turn in a copy of the actual curriculum) we need to then map this to the objects in the temp curriculum to establish references again
+                const branches: Vertex[] = DeepCopy<Vertex[]>(forwardShift ? path.slice(path.findIndex(v => v.semester === course.semester)) : path.slice(0, path.findLastIndex(v => v.semester === course.semester))).map(courseCopy => tempCurriculum.flat().find(temp => temp.courseCode === courseCopy.courseCode))
                 const initialStateOfCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
                 const firstLayerNodes = branches.filter(v => forwardShift ? tempCourse.edges.includes(v.courseCode) : v.edges.includes(courseCode))
                 // Make the first move manually, then starting shifting each branch
                 tempCourse.semester = candidateSemesterIndex + 1
                 // Try to make a shift, then later we can check to see if its result is valid
-                for (const node of firstLayerNodes) await ShiftBranch(node, tempCourse, tempCurriculum, forwardShift) /// NOTE: This is assuming that the rework of the shift branch util is correct, TEST THIS
-                // TODO: Validate the shift somehow, we need to check for valid semesters and that moving the courses didn't cause any other semesters to go above 18 credit hours
+                for (let node = 0; node < firstLayerNodes.length; node++) await ShiftBranch(firstLayerNodes[node], tempCourse, tempCurriculum, forwardShift)
+                // Validate the shift, we need to check for valid semesters and that moving the courses didn't cause any other semesters to go above 18 credit hours
                 console.log('Validating shift...')
                 const postShiftCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
                 const shiftWasValid = !(MIN(...branches.map(x => x.semester)) < 1 || postShiftCreditHours.find((hours, i) => hours > 18 && hours > initialStateOfCreditHours[i]))
                 if (shiftWasValid) {
                     successfulShiftOccurred = true
-                    console.log(`${candidateSemesterIndex} was found to be a valid semester to shift to`)
+                    console.log(`${candidateSemesterIndex+1} was found to be a valid semester to shift to for course ${courseCode} | Was forward shift: ${forwardShift}`)
                     // Once we find a shift thats valid according to the semester properties, we need to actually move the course vertices to other semester arrays
                     for (let i = 0; i < tempCurriculum.length; i++) {
-                        const semester = tempCurriculum[i]
+                        const semester = DeepCopy<Vertex[]>(tempCurriculum[i])
                         for (const course of semester) {
                             if (course.semester - 1 !== i) {
                                 // Remove old vertex
                                 const oldSemesterIndex = tempCurriculum[forwardShift ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode)) // ???: Currently unclear if we need to search for the old semester a specifc way depending on the direction of the shift
                                 const oldVertexIndex = tempCurriculum[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
+                                console.log(`Old semester: ${oldSemesterIndex + 1} | New Semester ${course.semester} | For course ${course.courseCode}`)
                                 tempCurriculum[oldSemesterIndex].splice(oldVertexIndex, 1)
                                 // Add an extra semester if we need to
                                 if (course.semester > tempCurriculum.length) tempCurriculum.push([])

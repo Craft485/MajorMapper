@@ -10,7 +10,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
     const creditHours = optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0))
     console.log(`Initial credit hours: ${creditHours.join(', ')}`)
     while (MAX(...creditHours) > 18) { // While there are semesters out there that are still over 18 credit hours...
-        console.log('Point A')
+        console.log('Point A') // DEBUG: This should be removed later
         const currentSemesterIndex = optimizedSemesters.findIndex((_, semesterIndex) => semesterIndex === creditHours.findIndex(hours => hours === MAX(...creditHours)))
         console.log('Optimizing semester index ' + (currentSemesterIndex))
         const currentSemester = optimizedSemesters[currentSemesterIndex]
@@ -19,6 +19,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         const simplePaths: Vertex[][] = [] // This array is parralel with foundPaths
         for (const course of currentSemester.flat()) { // For each course in the curriculum, calculate and store its simple path
             if (foundPaths.includes(course.courseCode)) continue
+            // ???: I'm unclear as to if this check for coreqs is required or not, should probably test this at some point?
             const coreqs = optimizedSemesters.flat().filter(v => v.edges.includes(course.courseCode) && course.edges.includes(v.courseCode))
             if (coreqs.length > 0) {
                 let coreqAlreadyPresent = false
@@ -38,8 +39,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             pathLengths.splice(pathIndex, 0, pathLength)
             simplePaths.splice(pathIndex, 0, simplePath)
         }
-        // console.log(JSON.stringify(simplePaths))
-        /**
+        /** General outline of the optimization algorithm
         for each path in simple paths
             While there are still potential semesters to check
                 Pick a course whos corresponding simple path is the shortest within the current problem semester
@@ -48,14 +48,16 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 2. The candidate semester has minimum credit hours
                 if there exists no such candidate, break out of this while
                 otherwise, try to shift the branches in the current path
-                check if the shift was valid
+                check if the shift was valid by
+                1. see if any of the semester properties became negative
+                2. see if the movement of a course caused another semester to go over 18 credit hours
                 if it was valid, update the outer variables with this new information and break
             If the current problem semester is now valid, break out of the for loop
         */
         let successfulShiftOccurred = false
         // For each simple path (starting with the shortest)
         for (let i = 0; i < simplePaths.length; i++) {
-            console.log('Point B')
+            console.log('Point B') // DEBUG: This should be removed later
             console.log(simplePaths[i].map(v => v.courseCode).join(', '))
             // Gather basic information about the path and the course we are trying to move out of the current semester
             const path: Vertex[] = DeepCopy<Vertex[]>(simplePaths[i].toSorted((v1, v2) => v1.semester - v2.semester))
@@ -66,11 +68,12 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
             const checkedSemesterIndicies: number[] = [ currentSemesterIndex ] 
             // While there are semesters we could still check
             while (checkedSemesterIndicies.length < optimizedSemesters.length) {
-                console.log('Point CCCCCCCCCCCC')
+                console.log('Point C') // DEBUG: This should be removed later
                 // Find the earliest possible candidate semester (as an index)
                 const candidateSemesters = optimizedSemesters.map((semester, sIndex) => creditHours[sIndex] < 18 ? semester : null)
                 const minimumCreditsAmongCandidateSemesters = MIN(...candidateSemesters.filter(Boolean).map(s => s.reduce((acc, v) => acc + v.credits, 0)))
                 console.log(`There are ${candidateSemesters.filter(Boolean).length} candidate semesters`)
+                // Using findIndex as opposed to findLastIndex here because we want to favor moving a course earlier into the degree plan if possible
                 const candidateSemesterIndex = candidateSemesters.findIndex((candidate, index) => {
                     if (candidate === null) return false
                     const isNotRepeat = !(checkedSemesterIndicies.includes(index))

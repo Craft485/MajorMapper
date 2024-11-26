@@ -139,6 +139,7 @@ function render(renderData: { data: Curriculum }): void {
     contentContainer.innerHTML = ''
     contentContainer.parentElement.classList.add('active')
     paths.clear()
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
     let semesterCount = 1
 
     for (const semester of semesters) {

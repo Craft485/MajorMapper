@@ -100,6 +100,9 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
 
     if (actualDeltaX < deltaX) path += ` l${deltaX - actualDeltaX},0`
 
+    // Add endcap/arrow
+    path += ` M${endingElementBoundingBox.x  + (startingSemester === endingSemester ? endingElementBoundingBox.width + 10 : -10)},${endingElementBoundingBox.y + (endingElementBoundingBox.height * 0.66)} l0,-${endingElementBoundingBox.height / 3 - 0.5} l${startingSemester === endingSemester ? '-' : ''}${endingElementBoundingBox.height / 6},${endingElementBoundingBox.height / 6} z`
+
     console.log(path)
 
     paths.set(`${startingElement.id}|${endingElement.id}`, new Path2D(path))
@@ -165,7 +168,6 @@ function render(renderData: { data: Curriculum }): void {
         semesterCount++
         const columnParent = document.createElement('div')
         columnParent.className = 'semester-container'
-        columnParent.appendChild(column)
         const semesterInfoBlock = document.createElement('div')
         semesterInfoBlock.className = 'semester-info'
         semesterInfoBlock.innerHTML = `
@@ -173,6 +175,7 @@ function render(renderData: { data: Curriculum }): void {
             <p>Semester ${i + 1}</p>
         `
         columnParent.appendChild(semesterInfoBlock)
+        columnParent.appendChild(column)
         contentContainer.appendChild(columnParent)
     }
 }

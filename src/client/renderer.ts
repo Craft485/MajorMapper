@@ -27,7 +27,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     endingElementBoundingBox = endingElement.getBoundingClientRect(),
     startX = startingElementBoundingBox.x + startingElementBoundingBox.width,
     startY = startingElementBoundingBox.y + (startingElementBoundingBox.height / 2),
-    endX = endingElementBoundingBox.x + endingElementBoundingBox.width,
+    endX = endingElementBoundingBox.x + (startingSemester === endingSemester ? endingElementBoundingBox.width : 0),
     endY = endingElementBoundingBox.y + (endingElementBoundingBox.height / 2),
     // Height and width will be the same for all course elements on the page
     height = startingElementBoundingBox.height,
@@ -93,7 +93,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     l${
         startingSemester === endingSemester || startingSemester + 1 === endingSemester 
         ? 0 
-        : halfWidth
+        : halfWidth - randomXOffset
     },0`.replaceAll(/(\n|\t)+/g, '').replaceAll(/\s{2,}/g, ' ')
 
     const actualDeltaX = path.split(' ').map(str => str.startsWith('l') ? parseFloat(str.split(',')[0].substring(1)) : 0).reduce((acc, curr) => acc + curr, 0)
@@ -101,7 +101,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     if (actualDeltaX < deltaX) path += ` l${deltaX - actualDeltaX},0`
 
     // Add endcap/arrow
-    path += ` M${endingElementBoundingBox.x  + (startingSemester === endingSemester ? endingElementBoundingBox.width + 10 : -10)},${endingElementBoundingBox.y + (endingElementBoundingBox.height * 0.66)} l0,-${endingElementBoundingBox.height / 3 - 0.5} l${startingSemester === endingSemester ? '-' : ''}${endingElementBoundingBox.height / 6},${endingElementBoundingBox.height / 6} z`
+    path += ` l${startingSemester === endingSemester ? '' : '-'}${endingElementBoundingBox.height / 6},${endingElementBoundingBox.height / 6} l0,-${endingElementBoundingBox.height / 3 - 0.5} l${startingSemester === endingSemester ? '-' : ''}${endingElementBoundingBox.height / 6},${endingElementBoundingBox.height / 6}`
 
     console.log(path)
 

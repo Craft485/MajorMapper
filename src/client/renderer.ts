@@ -76,7 +76,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
         ? -halfWidth - randomXOffset // If courses are in the same semester (coreqs)
         : (
             startingSemester + 1 === endingSemester 
-            ? halfWidth // Courses are in adjacent semesters
+            ? halfWidth - Math.abs(randomXOffset) // Courses are in adjacent semesters
             : 2 * width * semesterDifference
         )
     },0 
@@ -93,7 +93,7 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     l${
         startingSemester === endingSemester || startingSemester + 1 === endingSemester 
         ? 0 
-        : halfWidth - randomXOffset
+        : halfWidth - Math.abs(randomXOffset)
     },0`.replaceAll(/(\n|\t)+/g, '').replaceAll(/\s{2,}/g, ' ')
 
     const actualDeltaX = path.split(' ').map(str => str.startsWith('l') ? parseFloat(str.split(',')[0].substring(1)) : 0).reduce((acc, curr) => acc + curr, 0)

@@ -1,6 +1,7 @@
 export type Curriculum = {
     semesters: Vertex[][]
     totalCredits: number
+    structuralComplexity?: number
 }
 
 export type Vertex = {

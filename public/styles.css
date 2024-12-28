@@ -169,3 +169,42 @@ button.clear-view {
 .prereq-shown {
     background-color: rgb(96, 128, 128);
 }
+
+.metrics {
+    display: grid;
+    grid-template-areas:
+        "bf df"
+        "cf sc";
+    gap: 1rem 1rem;
+    margin-bottom: 3px;
+}
+
+.metrics > * {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    align-content: center;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: hsl(from var(--bearcats-black) h s calc(l - 5));
+}
+
+.blocking-factor {
+    grid-area: bf;
+    border-color: hsl(180 100% 30% / 1);
+}
+
+.delay-factor {
+    grid-area: df;
+    border-color: hsl(90 100% 30% / 1);
+}
+
+.centrality {
+    grid-area: cf;
+    border-color: hsl(16 100% 30% / 1);
+}
+
+.complexity {
+    grid-area: sc;
+    border-color: rebeccapurple;
+}

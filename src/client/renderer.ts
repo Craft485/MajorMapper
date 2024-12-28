@@ -161,6 +161,24 @@ function render(renderData: { data: Curriculum }): void {
                 <div class="context-menu">
                     <p>Credits: <span class="credits">${course.credits}</span></p>
                     <p class="course-name">${course.courseName}</p>
+                    <div class="metrics">
+                        <fieldset class="blocking-factor">
+                            <legend><abbr title="Blocking Factor">BF</abbr></legend>
+                            ${course.metrics.blockingFactor || 'N/A'}
+                        </fieldset>
+                        <fieldset class="delay-factor">
+                            <legend><abbr title="Delay Factor">DF</abbr></legend>
+                            ${course.metrics.delayFactor || 'N/A'}
+                        </fieldset>
+                        <fieldset class="centrality">
+                            <legend><abbr title="Centrality Factor">CF</abbr></legend>
+                            ${course.metrics.centrality || 'N/A'}
+                        </fieldset>
+                        <fieldset class="complexity">
+                            <legend><abbr title="Structural Complexity">SC</abbr></legend>
+                            ${course.metrics.structualComplexity || 'N/A'}
+                        </fieldset>
+                    </div>
                 </div>`
             courseBlock.addEventListener('click', _ => showPreReqs(courseBlock))
             column.appendChild(courseBlock)
@@ -171,8 +189,9 @@ function render(renderData: { data: Curriculum }): void {
         const semesterInfoBlock = document.createElement('div')
         semesterInfoBlock.className = 'semester-info'
         semesterInfoBlock.innerHTML = `
-            <p>${semester.reduce((acc, curr) => acc + curr.credits, 0)} Credit Hours</p>
             <p>Semester ${i + 1}</p>
+            <p>${semester.reduce((acc, curr) => acc + curr.credits, 0)} Credit Hours</p>
+            <p><abbr title="Semester Structural Complexity">SSC</abbr>: ${semester.reduce((acc, curr) => acc + curr.metrics.structualComplexity, 0)}</p>
         `
         columnParent.appendChild(semesterInfoBlock)
         columnParent.appendChild(column)

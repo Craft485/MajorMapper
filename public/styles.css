@@ -96,7 +96,7 @@ button.clear-view {
 }
 
 #canvas {
-    background-color: black;
+    background-color: hsl(from var(--bearcats-black) h s calc(l - 5));
     height: 100%;
     width: 100%;
 }
@@ -143,15 +143,20 @@ button.clear-view {
     background-color: var(--bearcats-black);
     padding: 5px;
     border: black solid thin;
+    border-radius: 5px;
 }
 
 .course:hover > .context-menu {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .course {
     display: block;
-    border: var(--calhoun-red) solid thin;
+    border: var(--calhoun-red) solid 2px;
+    border-color: var(--course-hex);
+    border-radius: 15px;
     width: 50%;
     align-self: center;
     margin-bottom: 50px;
@@ -160,6 +165,10 @@ button.clear-view {
 
 .course:hover {
     cursor: pointer;
+}
+
+.course-name {
+    margin-top: 0;
 }
 
 .semester .course:first-of-type {
@@ -172,14 +181,16 @@ button.clear-view {
 
 .metrics {
     display: grid;
+    justify-items: center;
     grid-template-areas:
         "bf df"
         "cf sc";
     gap: 1rem 1rem;
     margin-bottom: 3px;
+    align-items: center;
 }
 
-.metrics > * {
+.metrics > fieldset {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -187,24 +198,25 @@ button.clear-view {
     border: 2px solid black;
     border-radius: 10px;
     background-color: hsl(from var(--bearcats-black) h s calc(l - 5));
+    width: 5rem;
 }
 
 .blocking-factor {
     grid-area: bf;
-    border-color: hsl(180 100% 30% / 1);
+    border-color: hsl(180 100% 30% / 1) !important;
 }
 
 .delay-factor {
     grid-area: df;
-    border-color: hsl(90 100% 30% / 1);
+    border-color: hsl(90 100% 30% / 1) !important;
 }
 
 .centrality {
     grid-area: cf;
-    border-color: hsl(16 100% 30% / 1);
+    border-color: hsl(16 100% 30% / 1) !important;
 }
 
 .complexity {
     grid-area: sc;
-    border-color: rebeccapurple;
+    border-color: rebeccapurple !important;
 }

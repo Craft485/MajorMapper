@@ -156,6 +156,7 @@ function render(renderData: { data: Curriculum }): void {
             courseBlock.setAttribute('edges', course.edges.join(','))
             courseBlock.setAttribute('semester', `${semesterCount}`)
             courseBlock.setAttribute('course-hex', course.color)
+            courseBlock.style.cssText = `--course-hex: #${course.color};` // Expose the hex code to the css
             courseBlock.innerHTML = `
                 <p class="course-code">${course.courseCode}</p>
                 <div class="context-menu">

@@ -96,7 +96,7 @@ button.clear-view {
 }
 
 #canvas {
-    background-color: hsl(from var(--bearcats-black) h s calc(l - 5));
+    background-color: black;
     height: 100%;
     width: 100%;
 }
@@ -176,7 +176,7 @@ button.clear-view {
 }
 
 .prereq-shown {
-    background-color: rgb(96, 128, 128);
+    background-color: hsl(from var(--course-hex) h min(50, 0.5 * s) min(50, calc(l - 15)));
 }
 
 .metrics {

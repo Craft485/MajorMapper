@@ -30,6 +30,10 @@ button:hover {
     cursor: pointer;
 }
 
+select:focus-visible {
+    outline: none;
+}
+
 #title-bar {
     width: 100%;
     display: flex;

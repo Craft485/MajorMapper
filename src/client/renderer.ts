@@ -182,6 +182,7 @@ function render(renderData: { data: Curriculum }): void {
                     </div>
                 </div>`
             courseBlock.addEventListener('click', _ => showPreReqs(courseBlock))
+            courseBlock.addEventListener('mouseover', _ => UpdateContextMenuPos(courseBlock))
             column.appendChild(courseBlock)
         }
         semesterCount++
@@ -197,5 +198,18 @@ function render(renderData: { data: Curriculum }): void {
         columnParent.appendChild(semesterInfoBlock)
         columnParent.appendChild(column)
         contentContainer.appendChild(columnParent)
+    }
+}
+
+// Function to check for context menus creating overflow, and fixing them if so
+function UpdateContextMenuPos(parent: HTMLSpanElement) {
+    const menu = parent.querySelector<HTMLDivElement>('.context-menu')
+    const { x, y, height, width } = menu.getBoundingClientRect()
+    const parentRect = parent.getBoundingClientRect()
+    if (y + height > window.innerHeight) {
+        menu.style.top = `${parentRect.y - height}px`
+    }
+    if (x + width > window.innerWidth) {
+        menu.style.right = '0'
     }
 }

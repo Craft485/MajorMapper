@@ -12,6 +12,7 @@ body {
     background: radial-gradient(circle at bottom, rgb(120 113 139) 0%, rgba(51, 51, 51, 1) 90%);
     color: var(--main-street-mist);
     font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden; /* TODO: Handle content overflow better than this */
 }
 
 h1, h2, h3 {
@@ -81,11 +82,9 @@ select:focus-visible {
 }
 
 button.clear-view {
-    display: none;
+    /* Using "pos: abs" allows me to position it relative to its containing element without affecting the document flow anywhere else */
     position: absolute;
-    z-index: 2;
-    top: 5px;
-    right: 5px;
+    right: 0;
 }
 
 #renderer, #canvas, #program-content {
@@ -100,9 +99,43 @@ button.clear-view {
 }
 
 #canvas {
-    background-color: black;
+    background-color: var(--bearcats-black);
     height: 100%;
     width: 100%;
+}
+
+#content-header {
+    display: flex;
+    /* margin: top right bottom left; */
+    margin: 10px 0 5px 0;
+    align-items: center;
+    padding-bottom: 2px;
+    border-bottom: solid 2px var(--calhoun-red);
+}
+
+#content-header > * {
+    display: inline-block;
+    text-decoration: underline;
+    margin: 0 5px;
+}
+
+/* "What Am I Looking At" button */
+/* button#WAILA {
+
+}
+
+button#show-all-lines-toggle {
+
+} */
+
+button#show-all-lines-toggle.toggled-off::before {
+    content: "❌";
+    text-decoration: underline black solid;
+}
+
+button#show-all-lines-toggle.toggled-on::before {
+    content: "✅";
+    text-decoration: underline black solid;
 }
 
 #program-content {
@@ -110,14 +143,22 @@ button.clear-view {
 }
 
 #renderer.active > #program-content {
-    background: transparent;
+    /* background: transparent; */
+    display: block;
+    /* justify-content: space-evenly;
+    align-items: stretch;
+    overflow: auto; */
+}
+
+#renderer.active #semesters {
+    /* background: transparent; */
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
     overflow: auto;
 }
 
-#renderer.active + button.clear-view,
+/* #renderer.active button.clear-view, */
 #renderer.active > #canvas,
 #renderer.active {
     display: block;
@@ -175,6 +216,11 @@ button.clear-view {
     margin-top: 0;
 }
 
+.course-code {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .semester .course:first-of-type {
     margin-top: var(--course-vertical-spacing);
 }
@@ -223,4 +269,29 @@ button.clear-view {
 .complexity {
     grid-area: sc;
     border-color: rebeccapurple !important;
+}
+
+#sub-menus {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    justify-content: center;
+    background-color: var(--bearcats-black);
+}
+
+#sub-menu-clear {
+    display: none;
+    position: absolute;
+    top: 5px;
+    left: 75%;
+}
+
+.sub-menu {
+    display: none;
+    width: 50%;
+    background-color: rgb(0, 0, 0);
 }

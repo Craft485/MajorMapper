@@ -1,11 +1,14 @@
 import { Curriculum } from "../types/analytics"
 
-const contentContainer = document.getElementById('program-content'),
+const contentContainer = document.getElementById('semesters'),
+renderer = document.getElementById('renderer'),
 canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
 ctx = canvas.getContext('2d'),
 verticalSpacing = window.innerHeight * 0.05,
 halfVerticalSpacing = verticalSpacing / 2,
 paths = new Map<string, Path2D>()
+
+let ClearCanvas = true
 
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
@@ -111,9 +114,11 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
 }
 
 function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLookingForward?: boolean): void {
-    if (isLookingForward === undefined) {
+    if (isLookingForward === undefined && ClearCanvas) {
         Array.from(document.querySelectorAll<HTMLSpanElement>('.prereq-shown')).forEach(e => e.classList.remove('prereq-shown'))
         ctx.clearRect(0, 0, canvas.width, canvas.height)
+        document.getElementById('show-all-lines-toggle').classList.add('toggled-off')
+        document.getElementById('show-all-lines-toggle').classList.remove('toggled-on')
     }
     course.classList.add('prereq-shown')
     if (foundEdges.length === 0) foundEdges.push(course.id)
@@ -140,7 +145,7 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
 function render(renderData: { data: Curriculum }): void {
     const curricula = renderData.data, semesters = curricula.semesters
     contentContainer.innerHTML = ''
-    contentContainer.parentElement.classList.add('active')
+    renderer.classList.add('active')
     paths.clear()
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
     let semesterCount = 1
@@ -211,5 +216,43 @@ function UpdateContextMenuPos(parent: HTMLSpanElement) {
     }
     if (x + width > window.innerWidth) {
         menu.style.right = '0'
+    }
+}
+
+const submenus = Array.from(document.querySelectorAll<HTMLElement>('#sub-menus > article'))
+
+/* Accessed from the HTML */
+function ToggleSubMenu(menu: string) {
+    const submenu = menu ? document.querySelector<HTMLElement>(`#sub-menus > #${menu}`) : null
+    if (!submenu && menu !== '') {
+        console.log(`Unable to find sub-menu ${menu}`)
+        return
+    }
+    submenus.forEach(element => element.style.display = 'none')
+    if (submenu) {
+        document.getElementById('sub-menus').style.display = 'flex'
+        document.getElementById('sub-menu-clear').style.display = 'block'
+        submenu.style.display = 'block'
+    } else {
+        document.getElementById('sub-menus').style.display = 'none'
+        document.getElementById('sub-menu-clear').style.display = 'none'
+    }
+}
+
+/* Called from HTML */
+function ShowAllLines() {
+    const toggle = document.getElementById('show-all-lines-toggle')
+    if (toggle.classList.contains('toggled-off')) {
+        toggle.classList.remove('toggled-off')
+        toggle.classList.add('toggled-on')
+        // Draw all requisite lines to the canvas
+        ClearCanvas = false
+        Array.from(document.querySelectorAll<HTMLElement>('.course')).forEach(e => e.click())
+        ClearCanvas = true
+    } else if (toggle.classList.contains('toggled-on')) {
+        toggle.classList.remove('toggled-on')
+        toggle.classList.add('toggled-off')
+        Array.from(document.querySelectorAll<HTMLElement>('.course')).forEach(e => e.classList.remove('prereq-shown'))
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
 }

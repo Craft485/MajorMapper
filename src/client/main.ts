@@ -53,6 +53,7 @@ function requestProgramListData(): void {
 /** Called from the HTML */
 const submit = (): void => {
     const stacks = Array.from(document.querySelectorAll<HTMLSelectElement>('.fos-select-menu > select')).map(element => element?.value).filter(Boolean)
+    document.getElementById('stacks').innerText = stacks.map(stack => allPrograms[stack].ProgramTitle).join(' + ')
     if (stacks.length) {
         fetch(`/submit?q=${stacks.join(',')}`, { method: 'POST' })
             .then(r => r.json())

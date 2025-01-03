@@ -199,6 +199,7 @@ button#show-all-lines-toggle.toggled-on::before {
 
 .course {
     display: block;
+    box-sizing: border-box;
     border: var(--calhoun-red) solid 2px;
     border-color: var(--course-hex);
     border-radius: 15px;

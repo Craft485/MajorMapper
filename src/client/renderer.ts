@@ -143,6 +143,8 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
 }
 
 function render(renderData: { data: Curriculum }): void {
+    document.getElementById('show-all-lines-toggle').classList.remove('toggled-on')
+    document.getElementById('show-all-lines-toggle').classList.add('toggled-off')
     const curricula = renderData.data, semesters = curricula.semesters
     contentContainer.innerHTML = ''
     renderer.classList.add('active')

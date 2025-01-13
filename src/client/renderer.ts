@@ -165,10 +165,10 @@ function render(renderData: { data: Curriculum }): void {
             courseBlock.setAttribute('course-hex', course.color)
             courseBlock.style.cssText = `--course-hex: #${course.color};` // Expose the hex code to the css
             courseBlock.innerHTML = `
-                <p class="course-code">${course.courseCode}</p>
+                <p class="course-code"><abbr title="${course.courseCode}">${course.courseCode}</abbr></p>
                 <div class="context-menu">
                     <p>Credits: <span class="credits">${course.credits}</span></p>
-                    <p class="course-name">${course.courseName}</p>
+                    <p class="course-name"><abbr title="${course.courseCode}">${course.courseName}</abbr></p>
                     <div class="metrics">
                         <fieldset class="blocking-factor">
                             <legend><abbr title="Blocking Factor">BF</abbr></legend>

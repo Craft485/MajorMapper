@@ -225,12 +225,11 @@ function render(renderData: { data: Curriculum }): void {
 }
 
 // Function to check for context menus creating overflow, and fixing them if so
-function UpdateContextMenuPos(parent: HTMLSpanElement) { // FIXME: This breaks on scroll, think it has something to do with the "bottom" of the page being bigger than what we assume here
+function UpdateContextMenuPos(parent: HTMLSpanElement) {
     const menu = parent.querySelector<HTMLDivElement>('.context-menu')
     menu.style.top = '' // Reset the fix in case we've scrolled elsewhere and its no longer needed
     const { y, height, width } = menu.getBoundingClientRect()
     const parentRect = parent.getBoundingClientRect()
-    // TODO: Run some more tests on this fix
     if (y + height > contentContainer.clientHeight) {
         // Using scrollY here to account for scrolling which was breaking the y position originally
         menu.style.top = `${parentRect.y - height + window.scrollY}px`
@@ -287,8 +286,6 @@ function DegreePlanOnScroll() {
     for (const [label, path] of SVGPaths) {
         const courses = label.split('|')
         const startingElementBounds = document.getElementById(courses[0]).getBoundingClientRect()
-        /* DEBUG: This check is for testing purposes only */ 
-        // if (courses[0] === 'ENGL1001') console.log(`${startingElementBounds.x} + ${startingElementBounds.width} = ${startingElementBounds.x + startingElementBounds.width}`)
         // Update the M instruction to be the new start point based on the courses bounding box
         // NOTE: We don't need to worry about the exact amount of scrolling that has occured in the x direction, bounding rect is enough
         const newPath = path.replace(/^M\-?(\d+(?:.\d+)?),\-?(\d+(?:.\d+)?)/, _ => `M${startingElementBounds.x + startingElementBounds.width},${startingElementBounds.y + (startingElementBounds.height / 2) + window.scrollY}`)

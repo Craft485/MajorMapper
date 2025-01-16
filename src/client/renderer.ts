@@ -4,11 +4,13 @@ const contentContainer = document.getElementById('semesters'),
 renderer = document.getElementById('renderer'),
 canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
 ctx = canvas.getContext('2d'),
+paths = new Map<string, Path2D>(),
+SVGPaths: [label: string, path: string][] = []
+
+let ClearCanvas = true,
 verticalSpacing = window.innerHeight * 0.05,
 halfVerticalSpacing = verticalSpacing / 2,
-paths = new Map<string, Path2D>()
-
-let ClearCanvas = true
+lastClickedCourse: HTMLSpanElement = null
 
 canvas.height = window.innerHeight
 canvas.width = window.innerWidth
@@ -42,7 +44,8 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
     deltaX = Math.abs(startX - endX),
     semesterDifference = endingSemester - startingSemester - 1,
     randomXOffset = (Math.random() < 0.5 ? -1 : 1) * getRandomRange(0, 10)
-    let path = `M${startX},${startY} 
+    // NOTE: We don't need to account for scrolling in the x direction here, only the y
+    let path = `M${startX},${startY + window.scrollY} 
     l${halfWidth + randomXOffset},0 
     l0,${
         // If endpoint is below start point
@@ -108,7 +111,9 @@ function calculatePath(startingElement: HTMLElement, endingElement: HTMLElement)
 
     console.log(path)
 
-    paths.set(`${startingElement.id}|${endingElement.id}`, new Path2D(path))
+    const label = `${startingElement.id}|${endingElement.id}`
+    SVGPaths.push([label, path])
+    paths.set(label, new Path2D(path))
 
     return new Path2D(path)
 }
@@ -119,6 +124,7 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         document.getElementById('show-all-lines-toggle').classList.add('toggled-off')
         document.getElementById('show-all-lines-toggle').classList.remove('toggled-on')
+        lastClickedCourse = course
     }
     course.classList.add('prereq-shown')
     if (foundEdges.length === 0) foundEdges.push(course.id)
@@ -149,6 +155,7 @@ function render(renderData: { data: Curriculum }): void {
     contentContainer.innerHTML = ''
     renderer.classList.add('active')
     paths.clear()
+    SVGPaths.length = 0
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
     let semesterCount = 1
 
@@ -206,10 +213,19 @@ function render(renderData: { data: Curriculum }): void {
         columnParent.appendChild(column)
         contentContainer.appendChild(columnParent)
     }
+    // Content overflow handling
+    renderer.style.height = `${window.outerHeight}px`
+    renderer.style.width = `${window.outerWidth}px`
+    canvas.height = window.outerHeight
+    canvas.width = window.outerWidth
+    verticalSpacing = window.outerHeight * 0.05
+    halfVerticalSpacing = verticalSpacing / 2
+    document.body.style.cssText = `--course-vertical-spacing: ${verticalSpacing}px;`
+    ctx.lineWidth = 5
 }
 
 // Function to check for context menus creating overflow, and fixing them if so
-function UpdateContextMenuPos(parent: HTMLSpanElement) {
+function UpdateContextMenuPos(parent: HTMLSpanElement) { // FIXME: This breaks on scroll, think it has something to do with the "bottom" of the page being bigger than what we assume here
     const menu = parent.querySelector<HTMLDivElement>('.context-menu')
     const { x, y, height, width } = menu.getBoundingClientRect()
     const parentRect = parent.getBoundingClientRect()
@@ -241,8 +257,9 @@ function ToggleSubMenu(menu: string) {
     }
 }
 
-/* Called from HTML */
+/* Called from both HTML and JS */
 function ShowAllLines() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     const toggle = document.getElementById('show-all-lines-toggle')
     if (toggle.classList.contains('toggled-off')) {
         toggle.classList.remove('toggled-off')
@@ -251,10 +268,40 @@ function ShowAllLines() {
         ClearCanvas = false
         Array.from(document.querySelectorAll<HTMLElement>('.course')).forEach(e => e.click())
         ClearCanvas = true
+        lastClickedCourse = null
     } else if (toggle.classList.contains('toggled-on')) {
         toggle.classList.remove('toggled-on')
         toggle.classList.add('toggled-off')
         Array.from(document.querySelectorAll<HTMLElement>('.course')).forEach(e => e.classList.remove('prereq-shown'))
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
 }
+
+function DegreePlanOnScroll() {
+    paths.clear()
+    const updatedSVGPaths: typeof SVGPaths = []
+    for (const [label, path] of SVGPaths) {
+        const courses = label.split('|')
+        const startingElementBounds = document.getElementById(courses[0]).getBoundingClientRect()
+        /* DEBUG: This check is for testing purposes only */ 
+        // if (courses[0] === 'ENGL1001') console.log(`${startingElementBounds.x} + ${startingElementBounds.width} = ${startingElementBounds.x + startingElementBounds.width}`)
+        // Update the M instruction to be the new start point based on the courses bounding box
+        // NOTE: We don't need to worry about the exact amount of scrolling that has occured in the x direction, bounding rect is enough
+        const newPath = path.replace(/^M\-?(\d+(?:.\d+)?),\-?(\d+(?:.\d+)?)/, _ => `M${startingElementBounds.x + startingElementBounds.width},${startingElementBounds.y + (startingElementBounds.height / 2) + window.scrollY}`)
+        // Save the new path
+        updatedSVGPaths.push([label, newPath])
+        paths.set(label, new Path2D(newPath))
+    }
+    SVGPaths.length = 0
+    SVGPaths.push(...updatedSVGPaths)
+    // Force the canvas to redraw the lines (should be able to use the cached lines)
+    const toggle = document.getElementById('show-all-lines-toggle')
+    if (toggle.classList.contains('toggled-on')) { // Deal with showing all lines
+        toggle.classList.remove('toggled-on') // Lies and deceit to trick the ShowAllLines function into doing what we need
+        toggle.classList.add('toggled-off')
+        ShowAllLines()
+    } else {
+        lastClickedCourse?.click() // Showing only the lines that stem from a single course
+    }
+}
+
+contentContainer.addEventListener('scroll', _ => DegreePlanOnScroll())

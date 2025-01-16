@@ -227,14 +227,17 @@ function render(renderData: { data: Curriculum }): void {
 // Function to check for context menus creating overflow, and fixing them if so
 function UpdateContextMenuPos(parent: HTMLSpanElement) { // FIXME: This breaks on scroll, think it has something to do with the "bottom" of the page being bigger than what we assume here
     const menu = parent.querySelector<HTMLDivElement>('.context-menu')
-    const { x, y, height, width } = menu.getBoundingClientRect()
+    menu.style.top = '' // Reset the fix in case we've scrolled elsewhere and its no longer needed
+    const { y, height, width } = menu.getBoundingClientRect()
     const parentRect = parent.getBoundingClientRect()
-    if (y + height > window.innerHeight) {
-        menu.style.top = `${parentRect.y - height}px`
+    // TODO: Run some more tests on this fix
+    if (y + height > contentContainer.clientHeight) {
+        // Using scrollY here to account for scrolling which was breaking the y position originally
+        menu.style.top = `${parentRect.y - height + window.scrollY}px`
     }
-    if (x + width > window.innerWidth) {
-        menu.style.right = '0'
-    }
+    let newX = parentRect.x
+    if (newX + width > contentContainer.clientWidth) newX -= (newX + width) - contentContainer.clientWidth
+    menu.style.left = `${newX}px`
 }
 
 const submenus = Array.from(document.querySelectorAll<HTMLElement>('#sub-menus > article'))
@@ -277,6 +280,8 @@ function ShowAllLines() {
 }
 
 function DegreePlanOnScroll() {
+    // Quick and ugly fix for updating the x position of any context menus (just in case they're being displayed while the user is scrolling)
+    Array.from(document.querySelectorAll<HTMLDivElement>('.context-menu')).forEach(e => { e.style.left = `${e.parentElement.getBoundingClientRect().x}px` })
     paths.clear()
     const updatedSVGPaths: typeof SVGPaths = []
     for (const [label, path] of SVGPaths) {

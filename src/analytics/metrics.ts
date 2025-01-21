@@ -5,7 +5,7 @@ import { calculateCoursePath } from './utils'
 export async function CalculateMetrics(curriculum: Curriculum): Promise<Curriculum> {
     const courses: Vertex[] = curriculum.semesters.flat()
     curriculum.structuralComplexity = 0
-    for (const vertex of courses) { // Loop over every vertex in the graph, caclulate the courses metrics and total them to find all the degree plans metrics at the same time
+    for (const vertex of courses) { // Loop over every vertex in the graph, calculate the courses metrics and total them to find all the degree plans metrics at the same time
         // Get all courses that relate to the current course of interest, excluding any that have a mutual co-req relationship with the current vertex
         const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !(course.edges.includes(vertex.courseCode) && vertex.edges.includes(course.courseCode)))
         // Build an array of all path permutations through the current vertex of interest
@@ -54,28 +54,5 @@ export async function BuildPathPermutations(courses: Vertex[], permutations: Ver
         // console.log(newPermutations.map(path => path.map(v => v.courseCode).join(' -> ')).join('\n') + '\n\n\n\n')
         // If every path we have ends in a sink node, then we are done, otherwise we need to recurse
         return sinkNodeCount === permutations.length ? permutations : await BuildPathPermutations(courses, newPermutations)
-    }
-}
-
-/** @deprecated */
-async function CalculateLongestPath(vertices : Vertex[], courses: Vertex[], lookingForward?: boolean, pathLength: number = 0): Promise<number> {
-    if (lookingForward === undefined) { // Top-level recurse call
-        const backwardsAdjancencies = courses.filter(course => course.edges.includes(vertices[0].courseCode))
-        const forwardsAdjancencies = courses.filter(course => vertices[0].edges.includes(course.courseCode))
-        const pathLengthBack = await CalculateLongestPath(backwardsAdjancencies, courses, false, 1)
-        const pathLengthForward = await CalculateLongestPath(forwardsAdjancencies, courses, true, 1)
-        return pathLengthBack + pathLengthForward + 1
-    } else {
-        const newAdjacencies: Vertex[] = []
-        for (const vertex of vertices) {
-            newAdjacencies.push(
-                ...courses.filter(v => 
-                    lookingForward 
-                    ? vertex.edges.includes(v.courseCode) && !v.edges.includes(vertex.courseCode) // Do not consider mutual co-req relationships when determining metrics
-                    : v.edges.includes(vertex.courseCode) && !vertex.edges.includes(v.courseCode)
-                ).filter(v2 => newAdjacencies.find(course => v2.courseCode === course.courseCode) === undefined)
-            )
-        }
-        return newAdjacencies.length ? await CalculateLongestPath(newAdjacencies, courses, lookingForward, ++pathLength) : pathLength
     }
 }

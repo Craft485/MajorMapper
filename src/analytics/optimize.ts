@@ -133,7 +133,8 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 }
             }
             // Check if the semester is now valid, if it is, we can break
-            if (currentSemester.reduce((acc, v): number => acc + v.credits, 0) <= 18) break
+            // NOTE: We cannot use currentSemester at this point because its possible that its no longer referencing an actual piece of data
+            if (optimizedSemesters[currentSemesterIndex].reduce((acc, v): number => acc + v.credits, 0) <= 18) break
         }
         // If we failed to move anything out of the current semester, we need to add an additional semester
         if (!successfulShiftOccurred) {

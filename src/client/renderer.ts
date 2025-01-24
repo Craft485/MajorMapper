@@ -191,7 +191,7 @@ function render(renderData: { data: Curriculum }): void {
                         </fieldset>
                         <fieldset class="complexity">
                             <legend><abbr title="Structural Complexity">SC</abbr></legend>
-                            ${course.metrics.structualComplexity || 'N/A'}
+                            ${course.metrics.structuralComplexity || 'N/A'}
                         </fieldset>
                     </div>
                 </div>`
@@ -207,7 +207,7 @@ function render(renderData: { data: Curriculum }): void {
         semesterInfoBlock.innerHTML = `
             <p>Semester ${i + 1}</p>
             <p>${semester.reduce((acc, curr) => acc + curr.credits, 0)} Credit Hours</p>
-            <p><abbr title="Semester Structural Complexity">SSC</abbr>: ${semester.reduce((acc, curr) => acc + curr.metrics.structualComplexity, 0)}</p>
+            <p><abbr title="Semester Structural Complexity">SSC</abbr>: ${semester.reduce((acc, curr) => acc + curr.metrics.structuralComplexity, 0)}</p>
         `
         columnParent.appendChild(semesterInfoBlock)
         columnParent.appendChild(column)

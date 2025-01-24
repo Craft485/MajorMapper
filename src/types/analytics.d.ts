@@ -15,7 +15,6 @@ export type Vertex = {
     semester: number
     credits: number
     color?: string
-    /** Labled as optional because this is not fully implemented */
     metrics?: Metrics
 }
 
@@ -26,5 +25,5 @@ export type Metrics = {
     delayFactor: number
     blockingFactor: number
     centrality: number
-    structualComplexity: number
+    structuralComplexity: number
 }

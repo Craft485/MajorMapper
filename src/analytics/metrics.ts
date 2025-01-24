@@ -1,4 +1,4 @@
-import { Curriculum, Vertex, Edge, Metrics } from '../types/analytics'
+import { Curriculum, Vertex, Metrics } from '../types/analytics'
 import { calculateCoursePath } from './utils'
 
 /** Metrics are based on https://curricularanalytics.org/help/metrics and https://cran.r-project.org/web/packages/CurricularAnalytics/vignettes/CurricularAnalytics.html */
@@ -24,9 +24,9 @@ export async function CalculateMetrics(curriculum: Curriculum): Promise<Curricul
             delayFactor: DelayFactor,
             blockingFactor: BlockingFactor,
             centrality: Centrality,
-            structualComplexity: DelayFactor + BlockingFactor
+            structuralComplexity: DelayFactor + BlockingFactor
         } as Metrics
-        curriculum.structuralComplexity += vertex.metrics.structualComplexity
+        curriculum.structuralComplexity += vertex.metrics.structuralComplexity
     }
     return curriculum
 }

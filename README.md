@@ -93,6 +93,7 @@ CF(v_i) = \sum_{l=1}^{|P_{v_i}|}\#(p_l)
 ```
 
 **Structural Complexity (SC):**
+
 For a single node
 
 $$ h(v_k) = DF(v_k) + BF(v_k) $$

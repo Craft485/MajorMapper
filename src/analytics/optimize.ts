@@ -112,7 +112,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                         for (const course of semester) {
                             if (course.semester - 1 !== i) {
                                 // Remove old vertex
-                                const oldSemesterIndex = tempCurriculum[forwardShift ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode)) // ???: Currently unclear if we need to search for the old semester a specifc way depending on the direction of the shift
+                                const oldSemesterIndex = tempCurriculum[forwardShift ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode))
                                 const oldVertexIndex = tempCurriculum[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
                                 console.log(`Old semester: ${oldSemesterIndex + 1} | New Semester ${course.semester} | For course ${course.courseCode}`)
                                 tempCurriculum[oldSemesterIndex].splice(oldVertexIndex, 1)

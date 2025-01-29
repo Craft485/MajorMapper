@@ -15,9 +15,10 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     const previousSemester = previousVertex.semester
     const courses = semesters.flat()
     const dependencies: Vertex[] = courses.filter(v => shiftingForward ? currentEdges.includes(v.courseCode) : v.edges.includes(currentVertex.courseCode))
-    if (currentSemester <= previousSemester && shiftingForward) { // Move courses that are not in the correct semester
+    // Move courses that are not in the correct semester
+    if (currentSemester <= previousSemester && shiftingForward) { // Forward
         currentVertex.semester = previousSemester + 1
-    } else if (currentSemester >= previousSemester && !shiftingForward) { // TODO: It is currently unclear if this is accurate, seems like its not a case that comes up very often in the current tests
+    } else if (currentSemester >= previousSemester && !shiftingForward) { // Backward
         currentVertex.semester = previousSemester - 1
     }
     console.log(`Shifted ${currentVertex.courseCode} to semester ${currentVertex.semester}`)

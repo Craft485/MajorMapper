@@ -8,10 +8,10 @@ export async function CalculateMetrics(curriculum: Curriculum): Promise<Curricul
     for (const vertex of courses) { // Loop over every vertex in the graph, calculate the courses metrics and total them to find all the degree plans metrics at the same time
         // Get all courses that relate to the current course of interest, excluding any that have a mutual co-req relationship with the current vertex
         const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !(course.edges.includes(vertex.courseCode) && vertex.edges.includes(course.courseCode)))
-        if (vertex.courseCode === 'MATH2063') console.log(`Subset for ${vertex.courseCode}: ${JSON.stringify(subset)}`)
+        // DEBUG: if (vertex.courseCode === 'MATH2063') console.log(`Subset for ${vertex.courseCode}: ${JSON.stringify(subset)}`)
         // Build an array of all path permutations through the current vertex of interest
         const paths = (await BuildPathPermutations(subset, [])).filter(path => path.find(course => course.courseCode === vertex.courseCode) !== undefined)
-        if (vertex.courseCode === 'MATH2063') console.log(`Paths for ${vertex.courseCode}: ${JSON.stringify(paths)}`)
+        // DEBUG: if (vertex.courseCode === 'MATH2063') console.log(`Paths for ${vertex.courseCode}: ${JSON.stringify(paths)}`)
         const pathLengths = paths.map(path => path.length)
         // DF will be the longest path present in the list of path permutations
         const DelayFactor = Math.max(...pathLengths)

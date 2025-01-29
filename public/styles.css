@@ -36,6 +36,10 @@ select:focus-visible {
     outline: none;
 }
 
+.select-menu {
+    text-align: center;
+}
+
 #title-bar {
     width: 100%;
     display: flex;

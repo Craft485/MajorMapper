@@ -99,7 +99,8 @@ For a single node
 $$ h(v_k) = DF(v_k) + BF(v_k) $$
 
 **Other:**
-Additionally, here are some basic extrapolations that can be made from the above equations:
+
+Additionally, here are some basic extrapolations that can be made from the above equations (more will be added in the future):
 
 Structural Complexity for an entire curriculum graph:
 ![Graph Complexity](assets/graph_complexity.png)

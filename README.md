@@ -38,6 +38,7 @@ The following is a rough outline for how this app works conceptuality
 All equations shown here assume that:
 
 Any curriculum can be denoted as a DAG of verticies and edges such that
+
 $$ G_{c} = (V, E) $$
 
 $$ \text{Where each } v \in V = \{v_{1},...,v_n\} \text{ represents a course} $$
@@ -49,15 +50,20 @@ Where course *i* must be completed prior to or in conjunction with course *j*
 What follows is the definitions and short explanations for each metric that is being calculated per course.
 
 **Delay Factor (DF):**
+
 For a single node
 
-$$ DF(v_k) = \max_{i,j,l,m}\{\#(\ce{v_i->[P_l]v_k->[P_m]v_j})\} $$
+<!-- Need to use a proper math code block here because GitHub can't render # otherwise for some reason -->
+```math
+DF(v_k) = \max_{i,j,l,m}\{\#(\ce{v_i->[P_l]v_k->[P_m]v_j})\}
+```
 
 For an entire curriculum graph
 
 $$ DF(G_c) = \sum_{v_k\in{V}}DF(v_k) $$
 
 **Blocking Factor (BF):**
+
 For a single node
 
 $$ BF(v_i)=\sum_{v_j\in{V}}{I(v_i,v_j)} $$
@@ -69,7 +75,9 @@ For an entire curriculum graph
 $$ BF(G_c) = \sum_{v_k\in{V}}BF(v_k) $$
 
 **Centrality Factor (CF):**
+
 A course can be considered central based on the number of long paths that include it.
+
 A long path is any path that satisfies the following:
 
 - Nodes i, j, and k are all distinct
@@ -80,7 +88,9 @@ A long path is any path that satisfies the following:
 Let $P_{v_i} = \{p_1,p_2,...\}$ denote the set of all paths defined as above
 Then the centrality of a single node is given by
 
-$$ CF(v_i) = \sum_{l=1}^{|P_{v_i}|}\#(p_l) $$
+```math
+CF(v_i) = \sum_{l=1}^{|P_{v_i}|}\#(p_l)
+```
 
 **Structural Complexity (SC):**
 For a single node

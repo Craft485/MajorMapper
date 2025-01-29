@@ -35,12 +35,12 @@ function requestProgramListData(): void {
                 // If location for current progam is not an option, add it
                 if (!locations.includes(program.LocationCode)) {
                     locations.push(program.LocationCode)
-                    document.querySelector('.location-select-menu > select').innerHTML += `<option value='${program.LocationCode.replaceAll(' ', '-')}'>${program.LocationCode}</option>`
+                    document.querySelector('.location-select-menu > select').innerHTML += `<option value='${program.LocationCode}'>${program.LocationCode}</option>`
                 }
                 // If college for current program is not an option, add it
                 if (!colleges.includes(program.CollegeCode)) {
                     colleges.push(program.CollegeCode)
-                    document.querySelector('.college-select-menu > select').innerHTML += `<option value='${program.CollegeCode.replaceAll(' ', '-')}'>${program.CollegeCode}</option>`
+                    document.querySelector('.college-select-menu > select').innerHTML += `<option value='${program.CollegeCode}'>${program.CollegeCode}</option>`
                 }
                 // Add the program as an option in the dropdown
                 document.querySelector('.fos-select-menu > select').innerHTML += `<option value='${program.ProgramStack}'>${program.ProgramTitle}`
@@ -60,6 +60,22 @@ const submit = (): void => {
             .then(render)
     }
 }
+
+// Event handler to apply filters to the FOS selection
+window.addEventListener('change', e => {
+    const element: HTMLSelectElement = e.target as HTMLSelectElement
+    console.log(element)
+    if (element.parentElement.classList.contains('fos-select-menu')) return
+    const FOSMenu: HTMLSelectElement = element.parentElement.parentElement.querySelector('.fos-select-menu > select')
+    if (element.tagName === 'SELECT') { // Checking for is the change occured on a select element
+        // Update FOS selector based on all currently selected filters
+        const filters = Array.from(element.parentElement.parentElement.querySelectorAll('.select-menu')).map((e: HTMLSelectElement) => [e.getAttribute('filter') || null, e.selectedOptions[0].value || null]).slice(0, -1).filter(v => v[0] !== null && v[1] !== null)
+        let filteredFOSStacks = [...Object.keys(allPrograms)]
+        for (const [filter, value] of filters) filteredFOSStacks = filteredFOSStacks.filter(stack => allPrograms[stack][filter] === value)
+        FOSMenu.innerHTML = `<option value=''>--- Select Field of Study ---</option>`
+        for (const stack of filteredFOSStacks) FOSMenu.innerHTML += `<option value='${stack}'>${allPrograms[stack].ProgramTitle}`
+    }
+})
 
 /** Called from HTML */
 const exitRender = (): void => document.getElementById('renderer').classList.remove('active')

@@ -16,6 +16,8 @@ export type Vertex = {
     credits: number
     color?: string
     metrics?: Metrics
+    /** A list of one or more numbers that represent the zero-based semester indicies in which a course *must* occur */
+    semesterLock?: number[]
 }
 
 /** NOTE: This type may be expanded in the future */

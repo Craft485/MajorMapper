@@ -7,14 +7,16 @@
                   "courseCode": "EECE1100",
                   "courseName": "Introduction to EECS for EE, CompE, and EET Majors",
                   "credits": 1,
-                  "semester": 1
+                  "semester": 1,
+                  "semesterLock": [0]
                 },
                 {
                   "edges": ["EECE2051C", "ENED1120", "EECE1080C"],
                   "courseCode": "ENED1100",
                   "courseName": "Foundations of Engineering Design Thinking I (C- min)",
                   "credits": 3,
-                  "semester": 1
+                  "semester": 1,
+                  "semesterLock": [0]
                 },
                 {
                   "edges": ["ENGL4092"],
@@ -72,21 +74,24 @@
                   "courseCode": "ENED1120",
                   "courseName": "Foundations of Engineering Design Thinking II",
                   "credits": 3,
-                  "semester": 2
+                  "semester": 2,
+                  "semesterLock": [1]
                 },
                 {
                   "edges": ["MATH2076", "MATH2063", "EECE2065"],
                   "courseCode": "MATH1062",
                   "courseName": "Calculus II (C- min)",
                   "credits": 4,
-                  "semester": 2
+                  "semester": 2,
+                  "semesterLock": [1]
                 },
                 {
                   "edges": ["PD2050"],
                   "courseCode": "PD1011",
                   "courseName": "Introduction to COOP for CEAS (C- min)",
                   "credits": 1,
-                  "semester": 2
+                  "semester": 2,
+                  "semesterLock": [1]
                 }
             ],
             [
@@ -229,7 +234,8 @@
                   "courseCode": "EECE5001",
                   "courseName": "Electrical Engineering Senior Design I (C- min)",
                   "credits": 3,
-                  "semester": 7
+                  "semester": 7,
+                  "semesterLock": [-2]
                 }
             ],
             [
@@ -238,7 +244,8 @@
                   "courseCode": "EECE5002",
                   "courseName": "Electrical Engineering Senior Design II (C- min)",
                   "credits": 3,
-                  "semester": 8
+                  "semester": 8,
+                  "semesterLock": [-1]
                 }
             ]
         ]

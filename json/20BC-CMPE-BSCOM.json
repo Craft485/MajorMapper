@@ -79,14 +79,16 @@
                   "courseCode": "MATH1062",
                   "courseName": "Calculus II (C- min)",
                   "credits": 4,
-                  "semester": 2
+                  "semester": 2,
+                  "semesterLock": [1]
                 },
                 {
                   "edges": ["PD2050"],
                   "courseCode": "PD1011",
                   "courseName": "Introduction to COOP for CEAS (C- min)",
                   "credits": 1,
-                  "semester": 2
+                  "semester": 2,
+                  "semesterLock": [1]
                 }
             ],
             [
@@ -211,7 +213,8 @@
                   "courseCode": "PD2050",
                   "courseName": "Mid-Curricular Co-op Community for Engineering",
                   "credits": 1,
-                  "semester": 5
+                  "semester": 5,
+                  "semesterLock": [4, 5]
                 }
             ],
             [
@@ -250,7 +253,8 @@
                   "courseCode": "EECE5031",
                   "courseName": "Computer Engineering Senior Design I (C- min)",
                   "credits": 3,
-                  "semester": 7
+                  "semester": 7,
+                  "semesterLock": [-2]
                 }
             ],
             [
@@ -259,7 +263,8 @@
                   "courseCode": "EECE5032",
                   "courseName": "Computer Engineering Senior Design II (C- min)",
                   "credits": 3,
-                  "semester": 8
+                  "semester": 8,
+                  "semesterLock": [-1]
                 }
             ]
         ]

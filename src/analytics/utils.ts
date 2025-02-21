@@ -29,6 +29,10 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     }
 }
 
+export function AreCoReqs(c1: Vertex, c2: Vertex): boolean {
+    return c1.edges.includes(c2.courseCode) && c2.edges.includes(c1.courseCode)
+}
+
 export async function calculateCoursePath(course: Vertex, curriculum: Curriculum, foundNodes: Vertex[] = [], isLookingForward?: boolean): Promise<Vertex[]> {
     const path: Vertex[] = [
         // Look forward one layer, if possible
@@ -48,7 +52,15 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
     for (const node of path) {
         if (foundNodes.map(n => n.courseCode).includes(node.courseCode)) continue
         foundNodes.push(node)
-        await calculateCoursePath(node, curriculum, foundNodes, isLookingForward === undefined ? node.edges.find(edge => edge === course.courseCode) === undefined : isLookingForward)
+        await calculateCoursePath(node, 
+                                  curriculum, 
+                                  foundNodes, 
+                                  AreCoReqs(course, node) 
+                                  ? undefined
+                                  : (isLookingForward === undefined 
+                                    ? node.edges.find(edge => edge === course.courseCode) === undefined 
+                                    : isLookingForward)
+        )
     }
 
     return foundNodes

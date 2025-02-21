@@ -83,7 +83,7 @@ export function CalculateCreditHours(semesters: Vertex[][], credits?: number[]):
 }
 
 export async function UpdateRelativeSemesterLocks(semesters: Vertex[][]): Promise<void> {
-    // TODO: Check for any relative locks and (force?) update them
+    // Check for any relative locks and (force?) update them
     const temp = DeepCopy<Vertex[][]>(semesters)
     let relativeLocksWereUpdated = false
     for (let i = 0; i < temp.length; i++) {

@@ -3,6 +3,11 @@ import { Curriculum, Vertex } from '../types/analytics'
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
     console.log(`Shifting ${currentVertex.courseCode} in semester ${currentVertex.semester} according to ${previousVertex.courseCode} in ${previousVertex.semester} | Is a forward shift: ${shiftingForward}`)
+    if (currentVertex.semesterLock?.length) { // Check for locks
+        console.log(`${currentVertex.courseCode} is locked to semester(s) ${currentVertex.semesterLock.join(',')}`)
+        currentVertex.semester = -1 // This will act as a fail signal
+        return
+    }
     if (previousVertex.edges.includes(currentVertex.courseCode) && currentVertex.edges.includes(previousVertex.courseCode)) {
         // Co-req
         console.log(`${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}`)
@@ -68,4 +73,39 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
 
 export function DeepCopy<Type>(obj: Type): Type {
     return JSON.parse(JSON.stringify(obj))
+}
+
+export function CalculateCreditHours(semesters: Vertex[][], credits?: number[]): number[] {
+    if (!credits) credits = []
+    credits.length = 0
+    credits.push(...semesters.map(s => s.reduce((total, course) => total + course.credits, 0)))
+    return credits
+}
+
+export async function UpdateRelativeSemesterLocks(semesters: Vertex[][]): Promise<void> {
+    // TODO: Check for any relative locks and (force?) update them
+    const temp = DeepCopy<Vertex[][]>(semesters)
+    let relativeLocksWereUpdated = false
+    for (let i = 0; i < temp.length; i++) {
+        const tempSemester = DeepCopy<Vertex[]>(temp[i])
+        for (const course of tempSemester) {
+            const relativeLock = course.semesterLock?.find(lock => lock < 0) || undefined
+            if (relativeLock !== undefined) { // If the course has at least one relative semester lock
+                relativeLocksWereUpdated = true
+                // Remove old vertex
+                const oldSemesterIndex = temp.findIndex(sem => sem.find(v => v.courseCode === course.courseCode))
+                const oldVertexIndex = temp[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
+                console.log(`Old semester: ${oldSemesterIndex + 1} | New Semester ${course.semester} | For course ${course.courseCode} | Due to a relative lock being found after an additional semester was added`)
+                temp[oldSemesterIndex].splice(oldVertexIndex, 1)
+                // Update the semester prop on the course (relativeLock is an index, so we need to offset by +1)
+                course.semester = relativeLock + semesters.length + 1
+                // Add new vertex
+                temp.at(relativeLock).push(course)
+            }
+        }
+    }   
+    if (relativeLocksWereUpdated) {
+        semesters.length = 0
+        semesters.push(...temp)
+    }
 }

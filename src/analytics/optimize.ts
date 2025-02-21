@@ -1,5 +1,5 @@
 import { Curriculum, Vertex } from '../types/analytics'
-import { calculateCoursePath, ShiftBranch, DeepCopy } from './utils'
+import { calculateCoursePath, ShiftBranch, DeepCopy, UpdateRelativeSemesterLocks, CalculateCreditHours } from './utils'
 
 const { max:MAX, min:MIN } = Math
 
@@ -7,7 +7,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
     console.log('Starting optimize step')
     const originalSemesters: Vertex[][] = curriculum.semesters
     const optimizedSemesters: Vertex[][] = DeepCopy(originalSemesters)
-    const creditHours = optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0))
+    const creditHours = CalculateCreditHours(optimizedSemesters)
     console.log(`Initial credit hours: ${creditHours.join(', ')}`)
     while (MAX(...creditHours) > 18) { // While there are semesters out there that are still over 18 credit hours...
         console.log('Point A') // DEBUG: This should be removed later
@@ -19,7 +19,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         const simplePaths: Vertex[][] = [] // This array is parralel with foundPaths
         for (const course of currentSemester.flat()) { // For each course in the curriculum, calculate and store its simple path
             if (foundPaths.includes(course.courseCode)) continue
-            // ???: I'm unclear as to if this check for coreqs is required or not, should probably test this at some point?
+            // Prevent coreqs from being included multiple times
             const coreqs = optimizedSemesters.flat().filter(v => v.edges.includes(course.courseCode) && course.edges.includes(v.courseCode))
             if (coreqs.length > 0) {
                 let coreqAlreadyPresent = false
@@ -88,12 +88,13 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 console.log(`Checked ${checkedSemesterIndicies.join(', ')}`)
                 const tempCurriculum: Vertex[][] = DeepCopy<Vertex[][]>(optimizedSemesters)
                 const tempCourse: Vertex = tempCurriculum.flat().find(c => c.courseCode === courseCode)
+                if (tempCourse.semesterLock?.length) continue
                 const forwardShift = candidateSemesterIndex > currentSemesterIndex
                 // Grab just the part of the path that might be moving 
                 // NOTE: Slice will only return a shallow copy so we still need to use DeepCopy to remove any pointers
                 // Since this a copy of whats in the path (which in turn in a copy of the actual curriculum) we need to then map this to the objects in the temp curriculum to establish references again
                 const branches: Vertex[] = DeepCopy<Vertex[]>(forwardShift ? path.slice(path.findIndex(v => v.semester === course.semester)) : path.slice(0, path.findLastIndex(v => v.semester === course.semester))).map(courseCopy => tempCurriculum.flat().find(temp => temp.courseCode === courseCopy.courseCode))
-                const initialStateOfCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
+                const initialStateOfCreditHours: number[] = CalculateCreditHours(tempCurriculum)
                 const firstLayerNodes = branches.filter(v => forwardShift ? tempCourse.edges.includes(v.courseCode) : v.edges.includes(courseCode))
                 // Make the first move manually, then starting shifting each branch
                 tempCourse.semester = candidateSemesterIndex + 1
@@ -101,13 +102,13 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 for (let node = 0; node < firstLayerNodes.length; node++) await ShiftBranch(firstLayerNodes[node], tempCourse, tempCurriculum, forwardShift)
                 // Validate the shift, we need to check for valid semesters and that moving the courses didn't cause any other semesters to go above 18 credit hours
                 console.log('Validating shift...')
-                const postShiftCreditHours: number[] = tempCurriculum.map(semester => semester.reduce((acc, course) => acc + course.credits, 0))
+                const postShiftCreditHours: number[] = CalculateCreditHours(tempCurriculum)
                 const shiftWasValid = !(MIN(...branches.map(x => x.semester)) < 1 || postShiftCreditHours.find((hours, i) => hours > 18 && hours > initialStateOfCreditHours[i]))
                 if (shiftWasValid) {
                     successfulShiftOccurred = true
                     console.log(`${candidateSemesterIndex+1} was found to be a valid semester to shift to for course ${courseCode} | Was forward shift: ${forwardShift}`)
                     // Once we find a shift thats valid according to the semester properties, we need to actually move the course vertices to other semester arrays
-                    for (let i = 0; i < tempCurriculum.length; i++) {
+                    for (let i = 0; i < tempCurriculum.length; i++) { // ???: We are currently somewhat duplicating this block, can we bring this out to a function?
                         const semester = DeepCopy<Vertex[]>(tempCurriculum[i])
                         for (const course of semester) {
                             if (course.semester - 1 !== i) {
@@ -117,7 +118,10 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                                 console.log(`Old semester: ${oldSemesterIndex + 1} | New Semester ${course.semester} | For course ${course.courseCode}`)
                                 tempCurriculum[oldSemesterIndex].splice(oldVertexIndex, 1)
                                 // Add an extra semester if we need to
-                                if (course.semester > tempCurriculum.length) tempCurriculum.push([])
+                                if (course.semester > tempCurriculum.length) {
+                                    tempCurriculum.push([])
+                                    await UpdateRelativeSemesterLocks(tempCurriculum)
+                                }
                                 // Add new vertex
                                 tempCurriculum[course.semester - 1].push(course)
                             }
@@ -127,8 +131,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                     optimizedSemesters.length = 0
                     optimizedSemesters.push(...tempCurriculum)
                     // Recalculate credit hours
-                    creditHours.length = 0
-                    creditHours.push(...optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)))            
+                    CalculateCreditHours(optimizedSemesters, creditHours)           
                     break
                 }
             }
@@ -140,10 +143,10 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         if (!successfulShiftOccurred) {
             const newSemesterCount = optimizedSemesters.push([])
             console.log(`Added a new semester, there are now ${newSemesterCount} semesters`)
+            await UpdateRelativeSemesterLocks(optimizedSemesters)
         }
         // Update the credit hours array before going to the next iteration
-        creditHours.length = 0
-        creditHours.push(...optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)))
+        CalculateCreditHours(optimizedSemesters, creditHours)
     }
     console.log('Optimize step complete')
     curriculum.semesters = optimizedSemesters

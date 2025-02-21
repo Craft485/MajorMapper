@@ -1,4 +1,4 @@
-import { ShiftBranch, calculateCoursePath } from './utils'
+import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateRelativeSemesterLocks } from './utils'
 import { Curriculum, Vertex } from '../types/analytics'
 import { readFile, writeFile } from 'fs/promises'
 
@@ -51,9 +51,6 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
         }
     }
     console.log(`Found ${duplicateCourseCodesSet.size} duplicate courses`)
-    // for (const k of duplicateCourseCodesSet) {
-    //     console.log(`From dupes set: ${k}`)
-    // }
 
     // For each course that occurs more than once, calcuate its path in all curricula is appears in and determine what semester it needs to be placed in (for now)
     for (const courseCode of duplicateCourseCodesSet) {
@@ -70,6 +67,7 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
                 mergedVertex = { ...vertex }
             } else {
                 mergedVertex.edges = [...mergedVertex.edges, ...vertex.edges].filter((edge, i, arr) => arr.findIndex(edge2 => edge === edge2) === i)
+                mergedVertex.semesterLock = [ ...(mergedVertex.semesterLock || []), ...(vertex.semesterLock || []) ].filter((v, i, a) => a.findIndex(v2 => v === v2) === i)
             }
             console.log(JSON.stringify(mergedVertex))
             paths.push(path)
@@ -135,13 +133,23 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
             // Grab the first layer of post-reqs from the merged vertex
             const firstLayerPostReqs = mergedSemesters.flat().filter(v => mergedVertex.edges.find(edge => edge === v.courseCode))
             for (const node of firstLayerPostReqs) {
+                const tempMergedSemesters = DeepCopy<Vertex[][]>(mergedSemesters)
+                const tempMergedVertex = tempMergedSemesters.flat().find(v => v.courseCode === mergedVertex.courseCode)
+                const tempNode = tempMergedSemesters.flat().find(v => v.courseCode === node.courseCode)
                 // Move the postreq forward the smallest amount we can
                 // NOTE: I don't think it matters if a post-req is itself is a duplicate
                 //const vertex = mergedSemesters.flat().find(vertex => vertex.courseCode === node.courseCode)
                 if (mergedVertex.semester > node.semester ) { // Layer 1 post-req has ended up behind the current course
                     console.log(`Shifting branch for ${courseCode} staring at ${node.courseCode}`)
                     // We need to shift the current "branch" starting from the current vertex
-                    await ShiftBranch(node, mergedVertex, mergedSemesters)
+                    await ShiftBranch(tempNode, tempMergedVertex, tempMergedSemesters)
+                    // Check for fail signal
+                    const shiftFailed = tempMergedSemesters.flat().find(course => course.semester < 1)
+                    if (!shiftFailed) {
+                        // Shift was valid
+                        mergedSemesters.length = 0
+                        mergedSemesters.push(...tempMergedSemesters)
+                    }
                 }
             }
         } else {
@@ -149,11 +157,20 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
             // We found a semester we can merge to, however we still need look to see if any post-reqs need pushing back
             mergedVertex.semester = validMergeSemesterIndex + 1
             for (const edge of mergedVertex.edges) { // LATER: Look at seeing if we can optimize this step
-                const currVertex = mergedSemesters.flat().find(v => v.courseCode === edge)
+                const tempMergedSemesters = DeepCopy<Vertex[][]>(mergedSemesters)
+                const tempMergedVertex = tempMergedSemesters.flat().find(v => v.courseCode === mergedVertex.courseCode)
+                const currVertex = tempMergedSemesters.flat().find(v => v.courseCode === edge)
                 console.log(JSON.stringify(currVertex))
                 console.log(edge)
                 console.log(`Shifting branch for ${courseCode} starting at ${edge}`)
-                await ShiftBranch(currVertex, mergedVertex, mergedSemesters)
+                await ShiftBranch(currVertex, tempMergedVertex, tempMergedSemesters)
+                // Check for fail signal
+                const shiftFailed = tempMergedSemesters.flat().find(course => course.semester < 1)
+                if (!shiftFailed) {
+                    // Shift was valid
+                    mergedSemesters.length = 0
+                    mergedSemesters.push(...tempMergedSemesters)
+                }
             }
         }
         console.log(`Removing excess instances of ${courseCode}`)
@@ -174,7 +191,7 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     // NOTE: All of the moving around before this point has been purely on paper, the actual location of the courses has not changed (yet)
     // Cleanup step: Ensure all courses are in the correct semesters after we've been shifting them around
     console.log('Cleaning up merge step')
-    const mergedSemestersCopy = [ ...mergedSemesters ]
+    const mergedSemestersCopy = DeepCopy<Vertex[][]>(mergedSemesters)
     for (let i = 0; i < mergedSemesters.length; i++) {
         const semester = mergedSemesters[i]
         for (const course of semester) {
@@ -184,7 +201,10 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
                 const oldVertexIndex = mergedSemestersCopy[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
                 mergedSemestersCopy[oldSemesterIndex].splice(oldVertexIndex, 1)
                 // Add an extra semester if we need to
-                if (course.semester > mergedSemestersCopy.length) mergedSemestersCopy.push([])
+                if (course.semester > mergedSemestersCopy.length) {
+                    mergedSemestersCopy.push([])
+                    await UpdateRelativeSemesterLocks(mergedSemestersCopy)
+                }
                 // Add new vertex
                 mergedSemestersCopy[course.semester - 1].push(course)
             }

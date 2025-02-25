@@ -1,8 +1,7 @@
 {
   "name": "majormapper",
-  "description": "Compare core classes accross multiple UC curriculums",
+  "description": "A UC degree planner",
   "version": "0.0.1",
-  "main": "scrapper.mjs",
   "dependencies": {
     "express": "^4.18.3"
   },
@@ -11,7 +10,8 @@
     "server": "cd src/server && tsc -p ./tsconfig.json && cd ../..",
     "analytics": "cd src/analytics && tsc -p ./tsconfig.json && cd ../..",
     "build": "cd src && tsc -p ./tsconfig.json && cd .. && node src/utils/build-cleanup.mjs --script",
-    "start": "cd out/server && node server.js"
+    "start": "cd out/server && node server.js",
+    "dev": "clear && npm run build && npm run start"
   },
   "keywords": [],
   "author": "Colin Davis",

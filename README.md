@@ -105,6 +105,22 @@ Additionally, here are some basic extrapolations that can be made from the above
 Structural Complexity for an entire curriculum graph:
 ![Graph Complexity](assets/graph_complexity.png)
 
+## Semester Locking
+
+In order to create more reasonable outputs, its important to restrict the movement of certain courses. Certainly, its unreasonable for a student to take their senior design courses their freshman year. This is where the idea of "semester locking" comes into play.
+
+A course can have multiple semester locks depending on circumstances
+
+There are two types of locks: absolute and relative
+
+Absolute: a positive integer between 0 and (number of semester - 1) that represents a hard, constant, lock to a semester
+
+Relative: a negative integer where abs(lock) is between 1 and the number of semesters, representing a count backwards in the curriculum starting from the last semester (which is index -1)
+
+This enables us to ensure that a student will meet certain timely course requirements such as senior design, professional development, or calculus.
+
+**NOTE: not all courses need a semester lock, in fact very few will probably have them**
+
 ### Regards to old versions of this project
 
 The original version of this project sought to scrape publicly available information from UC. This proved difficult to do with the inconsistencies between curriculums. Additionally, there was no feasible way to obtain information regarding prerequisite information (ie. there was no way for the program to tell that Calculus 1 is required to take Calculus 2) which is the ultimate reason I moved away from the approach altogether.

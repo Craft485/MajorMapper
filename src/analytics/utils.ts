@@ -109,3 +109,35 @@ export async function UpdateRelativeSemesterLocks(semesters: Vertex[][]): Promis
         semesters.push(...temp)
     }
 }
+
+/**
+ * Routine to scan a curriculum for courses that need to be moved to another semester, then moves them
+ * @param semesterData 2D array of course data
+ * @param replaceEarliestOccurance If true, use Array#findIndex, otherwise use Array#findLastIndex. Defaults to true
+ * 
+ * @returns {Promise<void>}
+ */
+export async function UpdateMovedCourses(semesterData: Vertex[][], replaceEarliestOccurance: Boolean = true): Promise<void> {
+    const semesters = DeepCopy<Vertex[][]>(semesterData)
+    for (let i = 0; i < semesterData.length; i++) {
+        const semester = DeepCopy<Vertex[]>(semesters[i])
+        for (const course of semester) {
+            if (course.semester - 1 !== i) {
+                // Remove old vertex    
+                const oldSemesterIndex = semesters[replaceEarliestOccurance ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode))
+                const oldVertexIndex = semesters[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
+                semesters[oldSemesterIndex].splice(oldVertexIndex, 1)
+                // Add an extra semester if we need to
+                if (course.semester > semesters.length) {
+                    semesters.push([])
+                    await UpdateRelativeSemesterLocks(semesters)
+                }
+                // Add the new vertex
+                semesters[course.semester - 1].push(course)
+                console.log(`Old Semester: ${oldSemesterIndex + 1} | New Semester: ${course.semester} | For Course: ${course.courseCode}`)
+            }
+        }
+    }
+    semesterData.length = 0
+    semesterData.push(...semesters)
+}

@@ -1,4 +1,4 @@
-import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateRelativeSemesterLocks } from './utils'
+import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateRelativeSemesterLocks, UpdateMovedCourses } from './utils'
 import { Curriculum, Vertex } from '../types/analytics'
 import { readFile, writeFile } from 'fs/promises'
 
@@ -191,27 +191,9 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     // NOTE: All of the moving around before this point has been purely on paper, the actual location of the courses has not changed (yet)
     // Cleanup step: Ensure all courses are in the correct semesters after we've been shifting them around
     console.log('Cleaning up merge step')
-    const mergedSemestersCopy = DeepCopy<Vertex[][]>(mergedSemesters)
-    for (let i = 0; i < mergedSemesters.length; i++) {
-        const semester = mergedSemesters[i]
-        for (const course of semester) {
-            if (course.semester - 1 !== i) {
-                // Remove old vertex
-                const oldSemesterIndex = mergedSemestersCopy.findIndex(sem => sem.find(v => v.courseCode === course.courseCode))
-                const oldVertexIndex = mergedSemestersCopy[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
-                mergedSemestersCopy[oldSemesterIndex].splice(oldVertexIndex, 1)
-                // Add an extra semester if we need to
-                if (course.semester > mergedSemestersCopy.length) {
-                    mergedSemestersCopy.push([])
-                    await UpdateRelativeSemesterLocks(mergedSemestersCopy)
-                }
-                // Add new vertex
-                mergedSemestersCopy[course.semester - 1].push(course)
-            }
-        }
-    }
+ 
+    await UpdateMovedCourses(mergedSemesters)
 
-    mergedCurriculum.semesters = mergedSemestersCopy
     console.log('Merge step complete')
     return mergedCurriculum
 }

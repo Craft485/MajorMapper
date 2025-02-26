@@ -1,5 +1,5 @@
 import { Curriculum, Vertex } from '../types/analytics'
-import { calculateCoursePath, ShiftBranch, DeepCopy, UpdateRelativeSemesterLocks, CalculateCreditHours } from './utils'
+import { calculateCoursePath, ShiftBranch, DeepCopy, UpdateRelativeSemesterLocks, CalculateCreditHours, UpdateMovedCourses } from './utils'
 
 const { max:MAX, min:MIN } = Math
 
@@ -108,25 +108,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                     successfulShiftOccurred = true
                     console.log(`${candidateSemesterIndex+1} was found to be a valid semester to shift to for course ${courseCode} | Was forward shift: ${forwardShift}`)
                     // Once we find a shift thats valid according to the semester properties, we need to actually move the course vertices to other semester arrays
-                    for (let i = 0; i < tempCurriculum.length; i++) { // ???: We are currently somewhat duplicating this block, can we bring this out to a function?
-                        const semester = DeepCopy<Vertex[]>(tempCurriculum[i])
-                        for (const course of semester) {
-                            if (course.semester - 1 !== i) {
-                                // Remove old vertex
-                                const oldSemesterIndex = tempCurriculum[forwardShift ? "findIndex" : "findLastIndex"](sem => sem.find(v => v.courseCode === course.courseCode))
-                                const oldVertexIndex = tempCurriculum[oldSemesterIndex].findIndex(vertex => vertex.courseCode === course.courseCode)
-                                console.log(`Old semester: ${oldSemesterIndex + 1} | New Semester ${course.semester} | For course ${course.courseCode}`)
-                                tempCurriculum[oldSemesterIndex].splice(oldVertexIndex, 1)
-                                // Add an extra semester if we need to
-                                if (course.semester > tempCurriculum.length) {
-                                    tempCurriculum.push([])
-                                    await UpdateRelativeSemesterLocks(tempCurriculum)
-                                }
-                                // Add new vertex
-                                tempCurriculum[course.semester - 1].push(course)
-                            }
-                        }
-                    }
+                    await UpdateMovedCourses(tempCurriculum, forwardShift)
                     // The shift was valid, save the changes to the main variables
                     optimizedSemesters.length = 0
                     optimizedSemesters.push(...tempCurriculum)

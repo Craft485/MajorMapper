@@ -131,7 +131,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         CalculateCreditHours(optimizedSemesters, creditHours)
     }
     console.log('Optimize step complete')
-    curriculum.semesters = optimizedSemesters
+    curriculum.semesters = optimizedSemesters.filter(s => s.length > 0)
     console.log(JSON.stringify(optimizedSemesters))
     console.log('Final credit hours per semester: '+optimizedSemesters.map(s => s.reduce((total, course) => total + course.credits, 0)).join(', '))
     return curriculum

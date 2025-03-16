@@ -1,6 +1,7 @@
 import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateRelativeSemesterLocks, UpdateMovedCourses } from './utils'
 import { Curriculum, Vertex } from '../types/analytics'
 import { readFile, writeFile } from 'fs/promises'
+import { createHash } from 'node:crypto'
 
 /**
 Identify common courses
@@ -195,6 +196,8 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     await UpdateMovedCourses(mergedSemesters)
 
     console.log('Merge step complete')
+    // TODO: This line fixes the issue for COMPE+CS/CS+COMPE, but doesn't work for compe+ee/ee+compe
+    mergedCurriculum.semesters = mergedCurriculum.semesters.map(semester => semester.sort((a, b) => createHash('md5').update(a.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0) - createHash('md5').update(b.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0)))
     return mergedCurriculum
 }
 

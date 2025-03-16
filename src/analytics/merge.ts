@@ -1,4 +1,4 @@
-import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateRelativeSemesterLocks, UpdateMovedCourses } from './utils'
+import { ShiftBranch, calculateCoursePath, DeepCopy, UpdateMovedCourses } from './utils'
 import { Curriculum, Vertex } from '../types/analytics'
 import { readFile, writeFile } from 'fs/promises'
 import { createHash } from 'node:crypto'
@@ -33,7 +33,7 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     }
     console.log('Course information loaded')
 
-    for (const a of courseListSets) { // DEBUG
+    for (const a of courseListSets) { // DEBUG:
         for (const b of a) {
             console.log(`[Course Info] ${b}`)
         }
@@ -80,13 +80,11 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
          * For each empty semester we find, we need to validate it by seeing that there are no courses between it and the vertex in each path
          * If there are no valid empty semesters, we need to merge forward to the farthest/max semester and push all post reqs in other paths forward by a dynamic number of semesters that needs to be kept at a min
         */
-        // TODO: Is it possible for either of these to be -1? if so we need to figure out some error handeling
         const minSemesterIndex = mergedSemesters.findIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
         const maxSemesterIndex = mergedSemesters.findLastIndex(semester => semester.find(vertex => vertex.courseCode === courseCode))
         // Will be -1 while there is no valid semester to merge to, otherwise it is the index of the mergedSemesters array
         let validMergeSemesterIndex = -1
         // Find empty semesters and check if they are valid candidates
-        // TODO: double check this range is actually what we want
         for (let currentSemesterIndex = minSemesterIndex; currentSemesterIndex <= maxSemesterIndex; currentSemesterIndex++) {
             const currentSemester = currentSemesterIndex + 1
             const duplicateVertices: Map<number, Vertex> = new Map
@@ -196,7 +194,6 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     await UpdateMovedCourses(mergedSemesters)
 
     console.log('Merge step complete')
-    // TODO: This line fixes the issue for COMPE+CS/CS+COMPE, but doesn't work for compe+ee/ee+compe
     mergedCurriculum.semesters = mergedCurriculum.semesters.map(semester => semester.sort((a, b) => createHash('md5').update(a.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0) - createHash('md5').update(b.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0)))
     return mergedCurriculum
 }

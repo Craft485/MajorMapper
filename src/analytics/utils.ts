@@ -2,17 +2,17 @@ import { Curriculum, Vertex } from '../types/analytics'
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
-    console.log(`Shifting ${currentVertex.courseCode} in semester ${currentVertex.semester} according to ${previousVertex.courseCode} in ${previousVertex.semester} | Is a forward shift: ${shiftingForward}`)
+    // console.log(`Shifting ${currentVertex.courseCode} in semester ${currentVertex.semester} according to ${previousVertex.courseCode} in ${previousVertex.semester} | Is a forward shift: ${shiftingForward}`)
     if (currentVertex.semesterLock?.length) { // Check for locks
-        console.log(`${currentVertex.courseCode} is locked to semester(s) ${currentVertex.semesterLock.join(',')}`)
+        // console.log(`${currentVertex.courseCode} is locked to semester(s) ${currentVertex.semesterLock.join(',')}`)
         currentVertex.semester = -1 // This will act as a fail signal
         return
     }
     if (previousVertex.edges.includes(currentVertex.courseCode) && currentVertex.edges.includes(previousVertex.courseCode)) {
         // Co-req
-        console.log(`${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}`)
+        // console.log(`${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}`)
         currentVertex.semester = previousVertex.semester
-        console.log(`Since ${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}, it was shifted to semester ${currentVertex.semester}`)
+        // console.log(`Since ${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}, it was shifted to semester ${currentVertex.semester}`)
         return 
     }
     const currentEdges: string[] = currentVertex.edges
@@ -26,10 +26,10 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     } else if (currentSemester >= previousSemester && !shiftingForward) { // Backward
         currentVertex.semester = previousSemester - 1
     }
-    console.log(`Shifted ${currentVertex.courseCode} to semester ${currentVertex.semester}`)
+    // console.log(`Shifted ${currentVertex.courseCode} to semester ${currentVertex.semester}`)
     for (const node of dependencies) {
-        console.log(JSON.stringify(currentVertex))
-        console.log(JSON.stringify(node))
+        // console.log(JSON.stringify(currentVertex))
+        // console.log(JSON.stringify(node))
         await ShiftBranch(node, currentVertex, semesters, shiftingForward)
     }
 }
@@ -134,10 +134,14 @@ export async function UpdateMovedCourses(semesterData: Vertex[][], replaceEarlie
                 }
                 // Add the new vertex
                 semesters[course.semester - 1].push(course)
-                console.log(`Old Semester: ${oldSemesterIndex + 1} | New Semester: ${course.semester} | For Course: ${course.courseCode}`)
+                // console.log(`Old Semester: ${oldSemesterIndex + 1} | New Semester: ${course.semester} | For Course: ${course.courseCode}`)
             }
         }
     }
     semesterData.length = 0
     semesterData.push(...semesters)
+}
+
+export async function GetPreReqs(curriculum: Curriculum, course: Vertex): Promise<Vertex[]> {
+    return (await calculateCoursePath(course, curriculum, [], false)).filter(v => v.semester < course.semester)
 }

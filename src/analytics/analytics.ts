@@ -4,6 +4,7 @@ import { OptimizeCurriculum } from './optimize'
 import { MergeCurricula } from './merge'
 import { readFile, writeFile } from 'fs/promises'
 import { CalculateMetrics } from './metrics'
+import { Optimize as EGA } from './EGA'
 
 export async function ParseAnalytics(programStacks: string[]): Promise<Analytics.Curriculum> {
     console.log(`Client requests the following stacks: ${programStacks.join(', ')}`)
@@ -32,5 +33,7 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
     await writeFile('./merged-buffer.json', JSON.stringify(mergedCurricula), { encoding: 'utf-8' })
     const optimizedDegreePlan = await OptimizeCurriculum(mergedCurricula)
     await writeFile('./buffer.json', JSON.stringify(optimizedDegreePlan), { encoding: 'utf-8' })
-    return optimizedDegreePlan
+    const finalDegreePlan: Analytics.Curriculum = await EGA([optimizedDegreePlan])
+    await writeFile('./EGA-buffer.json', JSON.stringify(finalDegreePlan), { encoding: 'utf-8' })
+    return finalDegreePlan
 }

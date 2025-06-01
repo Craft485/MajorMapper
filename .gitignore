@@ -1,6 +1,7 @@
 node_modules
 *.log
 *.test.*
+*.notes.*
 output
 dist
 old

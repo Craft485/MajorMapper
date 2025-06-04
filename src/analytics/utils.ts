@@ -3,7 +3,7 @@ import { Curriculum, Vertex } from '../types/analytics'
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
     // console.log(`Shifting ${currentVertex.courseCode} in semester ${currentVertex.semester} according to ${previousVertex.courseCode} in ${previousVertex.semester} | Is a forward shift: ${shiftingForward}`)
-    if (currentVertex.semesterLock?.length) { // Check for locks
+    if (currentVertex.semesterLock?.length || previousVertex.semesterLock?.length) { // Check for locks
         // console.log(`${currentVertex.courseCode} is locked to semester(s) ${currentVertex.semesterLock.join(',')}`)
         currentVertex.semester = -1 // This will act as a fail signal
         return
@@ -61,7 +61,7 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
                                   curriculum, 
                                   foundNodes, 
                                   AreCoReqs(course, node) 
-                                  ? undefined
+                                  ? isLookingForward
                                   : (isLookingForward === undefined 
                                     ? node.edges.find(edge => edge === course.courseCode) === undefined 
                                     : isLookingForward)

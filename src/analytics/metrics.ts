@@ -19,7 +19,7 @@ export async function CalculateMetrics(curriculum: Curriculum): Promise<Curricul
         // Old version: paths.map(path => path.slice(path.findIndex(course => course.courseCode === vertex.courseCode) + 1)).flat().filter((v, i, a) => a.findIndex(c => c.courseCode === v.courseCode) === i).length
         const BlockingFactor = subset.filter(course => course.semester > vertex.semester).length
         const Centrality = pathLengths.reduce((acc, curr) => acc + curr, 0)
-
+        console.log(`BLOCKING FACTOR SUBSET FILTER FOR ${vertex.courseCode}: ` + subset.filter(course => course.semester > vertex.semester).map(c=>c.courseCode).join(', '))
         vertex.metrics = {
             delayFactor: DelayFactor,
             blockingFactor: BlockingFactor,

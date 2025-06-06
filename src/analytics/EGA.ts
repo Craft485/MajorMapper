@@ -6,11 +6,11 @@ import { Curriculum } from '../types/analytics'
 import { DeepCopy, ShiftBranch, GetPreReqs, UpdateMovedCourses } from './utils'
 import * as lodash from 'lodash'
 
-const MAX_GENERATION_COUNT = 15, CHILDREN_PER_PARENT_PER_GENERATION = 5
+const MAX_GENERATION_COUNT = 15, CHILDREN_PER_PARENT_PER_GENERATION = 10
 
 export async function Optimize(curriculums: Curriculum[], currentGeneration: number = 1, hashedCurriculums: Set<string> = new Set): Promise<Curriculum> {
     if (currentGeneration > MAX_GENERATION_COUNT) {
-        let bestScore = Score(curriculums[0]) , bestScoreIndex = 0
+        let bestScore = Score(curriculums[0]), bestScoreIndex = 0
         for (let j = 1; j < curriculums.length; j++) {
             const currScore = Score(curriculums[j])
             if (bestScore > currScore) {
@@ -34,6 +34,7 @@ export async function Optimize(curriculums: Curriculum[], currentGeneration: num
                 if (singleCopyAllowedThrough) {
                     child = null
                     if (movedCourses.length === courses.length) {
+                        console.log(`[E/GA] Exhausted list of courses, skipping anymore children for ${c + 1}.${_ + 1}`)
                         break
                     }
                     continue
@@ -68,18 +69,21 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
             if (maxWeightedScore < currScore) {
                 maxWeightedScore = currScore
                 maxWeightedScoreIndex = courseIndex
+            } else if (maxWeightedScore === currScore && +/(\d+)/.exec(availableCourses[courseIndex].courseCode)[0] < +/(\d+)/.exec(availableCourses[maxWeightedScoreIndex].courseCode)[0]) { // Favor courses with lower course numbers
+                maxWeightedScoreIndex = courseIndex
             }
         }
         let courseToMove = availableCourses[maxWeightedScoreIndex]
         alreadyAttemptedMoves.push(courseToMove.courseCode)
+        if (courseToMove.semesterLock?.length) continue
         // console.log(`[Mutation]: Trying to move ${courseToMove.courseCode}`)
         const minSemesterIndex = (await GetPreReqs(tempCurriculum, courseToMove)).filter((v, i, a) => a.findIndex(v2 => v2.semester === v.semester) === i).length
-        if (minSemesterIndex + 1 < courseToMove.semester) { // We can move the course to earlier in the semester
-            const potentialSemesters = new Array(courseToMove.semester - (minSemesterIndex + 1)).fill(0).map((_, i) => minSemesterIndex + i)
+        if (minSemesterIndex + 1 < courseToMove.semester) { // We can try to move the course to earlier in the plan
+            const potentialSemesterIndices = new Array(courseToMove.semester - (minSemesterIndex + 1)).fill(0).map((_, i) => minSemesterIndex + i)
             // console.log(`Potenial semester indicies: ${potentialSemesters.join(', ')}`)
-            for (let s = 0; s < potentialSemesters.length; s++) {
+            for (let s = 0; s < potentialSemesterIndices.length; s++) {
                 const firstLayerPreReqs = courses.filter(v => v.edges.includes(courseToMove.courseCode))
-                courseToMove.semester = potentialSemesters[s] + 1
+                courseToMove.semester = potentialSemesterIndices[s] + 1
                 for (const prereq of firstLayerPreReqs) {
                     ShiftBranch(prereq, courseToMove, tempCurriculum.semesters, false)
                 }
@@ -107,7 +111,7 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
  * @param curriculum Full curriculum object
  * @returns Returns a number that represents both of the parameters of the CBCB model as a squared distance to the origin
  */
-const Score = (curriculum: Curriculum): number => curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) //** 2 + Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2
+const Score = (curriculum: Curriculum): number => /*Math.sqrt(*/curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) //** 2 + Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2)
 
 import { readFile } from 'fs/promises'
 if (process.argv.find(s => s.includes('EGA'))) {

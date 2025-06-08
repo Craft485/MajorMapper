@@ -30,7 +30,9 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
     for (const node of dependencies) {
         // console.log(JSON.stringify(currentVertex))
         // console.log(JSON.stringify(node))
-        await ShiftBranch(node, currentVertex, semesters, shiftingForward)
+        if (currentSemester !== currentVertex.semester) {
+            await ShiftBranch(node, currentVertex, semesters, shiftingForward)
+        }
     }
 }
 
@@ -144,4 +146,17 @@ export async function UpdateMovedCourses(semesterData: Vertex[][], replaceEarlie
 
 export async function GetPreReqs(curriculum: Curriculum, course: Vertex): Promise<Vertex[]> {
     return (await calculateCoursePath(course, curriculum, [], false)).filter(v => v.semester < course.semester)
+}
+
+export async function FindCoreqs(courses: readonly Vertex[], course: Vertex, coreqs: Vertex[] = [], isTop = true): Promise<Vertex[]> {
+    if (coreqs.length === 0) coreqs.push(course)
+    const coreqsFromCurrCourse = courses.filter(c => AreCoReqs(c, course) && coreqs.find(v => v.courseCode === c.courseCode) === undefined)
+    for (const coreq of coreqsFromCurrCourse) {
+        if (!coreqs.find(v => v.courseCode === coreq.courseCode)) {
+            coreqs.push(coreq)
+            FindCoreqs(courses, coreq, coreqs, false)
+        }
+    }
+    if (isTop) coreqs.shift()
+    return coreqs
 }

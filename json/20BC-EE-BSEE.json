@@ -225,7 +225,8 @@
                   "courseCode": "PD2050",
                   "courseName": "Mid-Curricular Co-op Community for Engineering",
                   "credits": 1,
-                  "semester": 6
+                  "semester": 6,
+                  "semesterLock": [3]
                 }
             ],
             [

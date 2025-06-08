@@ -10,16 +10,7 @@ const MAX_GENERATION_COUNT = 15, CHILDREN_PER_PARENT_PER_GENERATION = 10
 
 export async function Optimize(curriculums: Curriculum[], currentGeneration: number = 1, hashedCurriculums: Set<string> = new Set): Promise<Curriculum> {
     if (currentGeneration > MAX_GENERATION_COUNT) {
-        let bestScore = Score(curriculums[0]), bestScoreIndex = 0
-        for (let j = 1; j < curriculums.length; j++) {
-            const currScore = Score(curriculums[j])
-            if (bestScore > currScore) {
-                bestScore = currScore
-                bestScoreIndex = j
-            }
-        }
-        console.log(`Found a best score of ${bestScore} out of ${curriculums.length} curriculums`)
-        return curriculums[bestScoreIndex]
+        return SelectBestCurriculumFromList(curriculums)
     }
     console.log(`[E/GA]: Starting generation ${currentGeneration} / ${MAX_GENERATION_COUNT}`)
     const nextGeneration = []
@@ -51,6 +42,10 @@ export async function Optimize(curriculums: Curriculum[], currentGeneration: num
         curriculums[c] = null
     }
     console.log(`[E/GA]: Found ${nextGeneration.length} viable mutations`)
+    if (nextGeneration.length === curriculums.length) {
+        console.log('No new mutations made, stopping EGA...')
+        return SelectBestCurriculumFromList(nextGeneration)
+    }
     return await Optimize(nextGeneration, currentGeneration + 1, hashedCurriculums)
 }
 
@@ -111,7 +106,20 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
  * @param curriculum Full curriculum object
  * @returns Returns a number that represents both of the parameters of the CBCB model as a squared distance to the origin
  */
-const Score = (curriculum: Curriculum): number => /*Math.sqrt(*/curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) //** 2 + Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2)
+const Score = (curriculum: Curriculum): number => curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) ** 2 + Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2
+
+function SelectBestCurriculumFromList(curriculums: Curriculum[]): Curriculum {
+    let bestScore = Score(curriculums[0]), bestScoreIndex = 0
+    for (let j = 1; j < curriculums.length; j++) {
+        const currScore = Score(curriculums[j])
+        if (bestScore > currScore) {
+            bestScore = currScore
+            bestScoreIndex = j
+        }
+    }
+    console.log(`Found a best score of ${bestScore} out of ${curriculums.length} curriculums`)
+    return curriculums[bestScoreIndex]
+}
 
 import { readFile } from 'fs/promises'
 if (process.argv.find(s => s.includes('EGA'))) {

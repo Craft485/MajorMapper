@@ -1,6 +1,7 @@
 import { Curriculum } from "../types/analytics"
 
 const contentContainer = document.getElementById('semesters'),
+contentHeader = document.getElementById('content-header'),
 renderer = document.getElementById('renderer'),
 canvas = document.querySelector<HTMLCanvasElement>('#canvas'),
 ctx = canvas.getContext('2d'),
@@ -153,6 +154,7 @@ function render(renderData: { data: Curriculum }): void {
     document.getElementById('show-all-lines-toggle').classList.add('toggled-off')
     const curricula = renderData.data, semesters = curricula.semesters
     contentContainer.innerHTML = ''
+    contentContainer.style.cssText = `height: ${window.innerHeight - contentHeader.offsetHeight - 42}px`
     renderer.classList.add('active')
     paths.clear()
     SVGPaths.length = 0

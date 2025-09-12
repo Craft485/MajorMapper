@@ -13,7 +13,7 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
     console.log('Starting merge step')
     const mergedCurriculum: Curriculum = {
         semesters: new Array(Math.max(...curricula.flatMap(c => c.semesters.length))).fill(null).map(x => []),
-        totalCredits: curricula.reduce((a, b) => a + b.totalCredits, 0) // FIXME: this is just incorrect, once we want to actually use this we'll need to fix it
+        totalCredits: 0
     }
     console.log(`Generated ${mergedCurriculum.semesters.length} blank semesters`)
     // Create object reference/pointer to the semesters as a shorthand
@@ -195,6 +195,7 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<Curriculu
 
     console.log('Merge step complete')
     mergedCurriculum.semesters = mergedCurriculum.semesters.map(semester => semester.sort((a, b) => createHash('md5').update(a.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0) - createHash('md5').update(b.courseCode).digest('hex').split('').reduce((a, c) => a + c.charCodeAt(0), 0)))
+    mergedCurriculum.totalCredits = mergedCurriculum.semesters.reduce((acc, curr) => acc + curr.reduce((acc2, curr2) => acc2 + curr2.credits, 0), 0)
     return mergedCurriculum
 }
 

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { Curriculum, Vertex } from '../types/analytics'
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
@@ -40,16 +41,17 @@ export function AreCoReqs(c1: Vertex, c2: Vertex): boolean {
     return c1.edges.includes(c2.courseCode) && c2.edges.includes(c1.courseCode)
 }
 
-export async function calculateCoursePath(course: Vertex, curriculum: Curriculum, foundNodes: Vertex[] = [], isLookingForward?: boolean): Promise<Vertex[]> {
+export async function calculateCoursePath(course: Vertex, curriculum: Curriculum | {[code: string]: Vertex}, foundNodes: Vertex[] = [], isLookingForward?: boolean): Promise<Vertex[]> {
+    // console.log(curriculum)
     const path: Vertex[] = [
         // Look forward one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === true 
-            ? curriculum.semesters.flat().filter(vertex => course.edges.includes(vertex.courseCode))
+            ? (curriculum.totalCredits !== undefined ? (curriculum.semesters as Vertex[][]).flat() : Object.values(curriculum as {[code: string]: Vertex})).filter(vertex => course.edges.includes(vertex.courseCode))
             : []
         ),
         // Look backwards one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === false 
-            ? curriculum.semesters.flat().filter(vertex => vertex.edges.includes(course.courseCode))
+            ? (curriculum.totalCredits !== undefined ? (curriculum.semesters as Vertex[][]).flat() : Object.values(curriculum as {[code: string]: Vertex})).filter(vertex => vertex.edges.includes(course.courseCode))
             : []
         )
     ]
@@ -144,8 +146,14 @@ export async function UpdateMovedCourses(semesterData: Vertex[][], replaceEarlie
     semesterData.push(...semesters)
 }
 
-export async function GetPreReqs(curriculum: Curriculum, course: Vertex): Promise<Vertex[]> {
-    return (await calculateCoursePath(course, curriculum, [], false)).filter(v => v.semester < course.semester)
+export async function GetPreReqs(curriculum: Vertex[], course: Vertex): Promise<Vertex[]> {
+    // Remove any courses that we know can't be prereqs
+    const prereqCandidates = curriculum.filter(v => v.semester <= course.semester)
+    // Convery from array to object
+    const prereqCandidatesLookup = {}
+    for (const v of curriculum) prereqCandidates[v.courseCode] = v
+    // Get the partial course path
+    return await calculateCoursePath(course, prereqCandidatesLookup, [], false)
 }
 
 export async function FindCoreqs(courses: readonly Vertex[], course: Vertex, coreqs: Vertex[] = [], isTop = true): Promise<Vertex[]> {
@@ -159,4 +167,56 @@ export async function FindCoreqs(courses: readonly Vertex[], course: Vertex, cor
     }
     if (isTop) coreqs.shift()
     return coreqs
+}
+
+export function CharSum(str: string): number {
+    return createHash('md5').update(str).digest('hex').split('').reduce((acc, curr) => acc + curr.charCodeAt(0), 0)
+}
+
+function GroupStrings(list: string[], predicate: (str: string) => number): string[][] {
+    const result = [ [ list[0] ] ]
+    let lastGroup = result[0]
+    let lastGroupScore = predicate(lastGroup[0])
+    for (let i = 1; i < list.length; i++) {
+        const str = list[i]
+        if (predicate(str) === lastGroupScore) {
+            lastGroup.push(str)
+        } else {
+            result.push([str])
+            lastGroup = result.at(-1)
+            lastGroupScore = predicate(lastGroup[0])
+        }
+    }
+    return result
+}
+
+export function SortStrings(list: string[]): string[] {
+    // Phase 1, sort then group by number
+    list.sort((a, b) => +/(\d+)/.exec(a)[0] - +/(\d+)/.exec(b)[0])
+    console.log('Phase 1.1: ', list)
+    const numberGrouping = GroupStrings(list, s => +/(\d+)/.exec(s)[0])
+    console.log('Phase 1.2: ', numberGrouping)
+    
+    // Phase 2, sort then group by length
+    numberGrouping.map(group => group.sort((a, b) => a.length - b.length))
+    console.log('Phase 2.1: ', numberGrouping)
+    const charSumGrouping = numberGrouping.map(group => GroupStrings(group, s => s.length))
+    console.log('Phase 2.2: ', charSumGrouping)
+    
+    // Phase 3, sort by charsum
+    charSumGrouping.map(group => group.map(subgroup => subgroup.sort((a, b) => CharSum(a) - CharSum(b))))
+    console.log('Phase 3.1: ', charSumGrouping)
+    
+    return charSumGrouping.flat(2)
+}
+
+export function SortVertices(list: Vertex[]): Vertex[] {
+    // Sort a given list of courses based on their course code
+    const courseCodeList = list.map(course => course.courseCode)
+    const sortedCourseCodeList = SortStrings(courseCodeList)
+    const result = []
+    for (const code of sortedCourseCodeList) { // There may be a more efficient way of doing this
+        result.push(list.find(v => v.courseCode === code))
+    }
+    return result
 }

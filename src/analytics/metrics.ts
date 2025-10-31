@@ -2,9 +2,9 @@ import { Curriculum, Vertex, Metrics } from '../types/analytics'
 import { calculateCoursePath } from './utils'
 
 /** Metrics are based on https://curricularanalytics.org/help/metrics and https://cran.r-project.org/web/packages/CurricularAnalytics/vignettes/CurricularAnalytics.html */
-export async function CalculateMetrics(curriculum: Curriculum): Promise<Curriculum> {
-    const courses: Vertex[] = curriculum.semesters.flat()
-    curriculum.structuralComplexity = 0
+export async function CalculateMetrics(curriculum: Curriculum | {[code: string]: Vertex}): Promise<Curriculum | {[code: string]: Vertex}> {
+    const courses: Vertex[] = curriculum.totalCredits !== undefined ? (curriculum.semesters as Vertex[][]).flat() : Object.values(curriculum)
+    if (curriculum.semesters instanceof Array) curriculum.structuralComplexity = 0
     for (const vertex of courses) { // Loop over every vertex in the graph, calculate the courses metrics and total them to find all the degree plans metrics at the same time
         // Get all courses that relate to the current course of interest, excluding any that have a mutual co-req relationship with the current vertex
         const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !(course.edges.includes(vertex.courseCode) && vertex.edges.includes(course.courseCode)))
@@ -26,7 +26,9 @@ export async function CalculateMetrics(curriculum: Curriculum): Promise<Curricul
             centrality: Centrality,
             structuralComplexity: DelayFactor + BlockingFactor
         } as Metrics
-        curriculum.structuralComplexity += vertex.metrics.structuralComplexity
+        if (curriculum.semesters instanceof Array) {
+            (curriculum.structuralComplexity as number) += vertex.metrics?.structuralComplexity || 0
+        }
     }
     return curriculum
 }

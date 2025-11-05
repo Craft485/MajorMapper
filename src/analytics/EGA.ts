@@ -72,7 +72,7 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
         alreadyAttemptedMoves.push(courseToMove.courseCode)
         if (courseToMove.semesterLock?.length) continue
         // console.log(`[Mutation]: Trying to move ${courseToMove.courseCode}`)
-        const minSemesterIndex = (await GetPreReqs(tempCurriculum, courseToMove)).filter((v, i, a) => a.findIndex(v2 => v2.semester === v.semester) === i).length
+        const minSemesterIndex = (await GetPreReqs(tempCurriculum.semesters.flat(), courseToMove)).filter((v, i, a) => a.findIndex(v2 => v2.semester === v.semester) === i).length
         if (minSemesterIndex + 1 < courseToMove.semester) { // We can try to move the course to earlier in the plan
             const potentialSemesterIndices = new Array(courseToMove.semester - (minSemesterIndex + 1)).fill(0).map((_, i) => minSemesterIndex + i)
             // console.log(`Potenial semester indicies: ${potentialSemesters.join(', ')}`)

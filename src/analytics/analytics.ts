@@ -25,15 +25,20 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
         await writeFile('./buffer.json', JSON.stringify(curricula[0]), { encoding: 'utf-8' })    
         return curricula[0]
     }
+    const plan: Analytics.Curriculum = {
+        semesters: [],
+        structuralComplexity: 0,
+        totalCredits: 0
+    }
     console.log('Multiple curricula found')
     const mergedCurricula = await MergeCurricula(curricula)
     await CalculateMetrics(mergedCurricula)
-    for (const course of mergedCurricula.semesters.flat()) { // Generate colors based on the unique course codes
+    for (const course of Object.values(mergedCurricula)) { // Generate colors based on the unique course codes
         course.color = GenerateHexCodeFromCourseCode(course.courseCode)
     }
     await writeFile('./merged-buffer.json', JSON.stringify(mergedCurricula), { encoding: 'utf-8' })
-    mergedCurricula.semesters = await Builder(mergedCurricula)
-    const optimizedDegreePlan = await OptimizeCurriculum(mergedCurricula)
+    plan.semesters = await Builder(mergedCurricula)
+    const optimizedDegreePlan = await OptimizeCurriculum(plan)
     await writeFile('./buffer.json', JSON.stringify(optimizedDegreePlan), { encoding: 'utf-8' })
     const finalDegreePlan: Analytics.Curriculum = await EGA([optimizedDegreePlan])
     await writeFile('./EGA-buffer.json', JSON.stringify(finalDegreePlan), { encoding: 'utf-8' })

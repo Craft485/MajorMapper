@@ -1,272 +1,496 @@
 {
-    "data": {
-        "semesters": [
-            [
-                {
-                  "edges": [],
-                  "courseCode": "EECE1100",
-                  "courseName": "Introduction to EECS for EE, CompE, and EET Majors",
-                  "credits": 1,
-                  "semester": 1
-                },
-                {
-                  "edges": ["EECE2051C", "ENED1120", "EECE1080C"],
-                  "courseCode": "ENED1100",
-                  "courseName": "Foundations of Engineering Design Thinking I (C- min)",
-                  "credits": 3,
-                  "semester": 1
-                },
-                {
-                  "edges": ["ENGL4092"],
-                  "courseCode": "ENGL1001",
-                  "courseName": "English Composition",
-                  "credits": 3,
-                  "semester": 1
-                },
-                {
-                  "edges": ["EECE2080C", "EECE2051C", "MATH1062", "PHYS2001"],
-                  "courseCode": "MATH1061",
-                  "courseName": "Calculus I (C- min)",
-                  "credits": 4,
-                  "semester": 1
-                },
-                {
-                  "edges": ["PHYS2076", "PHYS2001L", "MATH1061"],
-                  "courseCode": "PHYS2001",
-                  "courseName": "College Physics I (Calculus-based) (C- min)",
-                  "credits": 4,
-                  "semester": 1
-                },
-                {
-                  "edges": ["PHYS2001"],
-                  "courseCode": "PHYS2001L",
-                  "courseName": "College Physics Lab I (Calculus-based)",
-                  "credits": 1,
-                  "semester": 1
-                }
-            ],
-            [
-                {
-                  "edges": ["CHEM1040L"],
-                  "courseCode": "CHEM1040",
-                  "courseName": "General Chemistry I",
-                  "credits": 4,
-                  "semester": 2
-                },
-                {
-                  "edges": ["CHEM1040"],
-                  "courseCode": "CHEM1040L",
-                  "courseName": "General Chemistry Laboratory I",
-                  "credits": 1,
-                  "semester": 2
-                },
-                {
-                  "edges": ["EECE3026", "CS2071", "EECE2080C", "EECE2060C"],
-                  "courseCode": "EECE1080C",
-                  "courseName": "Programming for ECE (C- min)",
-                  "credits": 4,
-                  "semester": 2
-                },
-                {
-                  "edges": [],
-                  "courseCode": "ENED1120",
-                  "courseName": "Foundations of Engineering Design Thinking II (C- min)",
-                  "credits": 3,
-                  "semester": 2
-                },
-                {
-                  "edges": ["MATH2076", "MATH2063", "EECE2065"],
-                  "courseCode": "MATH1062",
-                  "courseName": "Calculus II (C- min)",
-                  "credits": 4,
-                  "semester": 2,
-                  "semesterLock": [1]
-                },
-                {
-                  "edges": ["PD2050"],
-                  "courseCode": "PD1011",
-                  "courseName": "Introduction to COOP for CEAS (C- min)",
-                  "credits": 1,
-                  "semester": 2,
-                  "semesterLock": [1]
-                }
-            ],
-            [
-                {
-                  "edges": ["EECE3065"],
-                  "courseCode": "EECE2051C",
-                  "courseName": "Network Analysis (C- min)",
-                  "credits": 4,
-                  "semester": 3
-                },
-                {
-                  "edges": ["EECE4038C", "EECE3026"],
-                  "courseCode": "EECE2060C",
-                  "courseName": "Digital Design (C- min)",
-                  "credits": 4,
-                  "semester": 3
-                },
-                {
-                  "edges": ["EECE3065"],
-                  "courseCode": "EECE2065",
-                  "courseName": "Differential Equations and Laplace Transforms (C- min)",
-                  "credits": 2,
-                  "semester": 3
-                },
-                {
-                  "edges": [],
-                  "courseCode": "MATH2063",
-                  "courseName": "Multivariable Calculus",
-                  "credits": 4,
-                  "semester": 3
-                },
-                {
-                  "edges": [],
-                  "courseCode": "PHYS2076",
-                  "courseName": "Semiconductor Physics for Engineers",
-                  "credits": 4,
-                  "semester": 3
-                }
-            ],
-            [
-                {
-                  "edges": [],
-                  "courseCode": "COMM1071",
-                  "courseName": "Introduction to Effective Speaking",
-                  "credits": 3,
-                  "semester": 4
-                },
-                {
-                  "edges": ["EECE2070L", "EECE3071", "EECE3071L"],
-                  "courseCode": "EECE2070",
-                  "courseName": "Electronics I (C- min)",
-                  "credits": 3,
-                  "semester": 4
-                },
-                {
-                  "edges": ["EECE2070", "EECE3071", "EECE3071L"],
-                  "courseCode": "EECE2070L",
-                  "courseName": "Electronics Laboratory I (C- min)",
-                  "credits": 1,
-                  "semester": 4
-                },
-                {
-                  "edges": ["EECE4040", "EECE3093C"],
-                  "courseCode": "EECE2080C",
-                  "courseName": "Engineering Data Structures (C- min)",
-                  "credits": 2,
-                  "semester": 4
-                },
-                {
-                  "edges": [],
-                  "courseCode": "EECE3065",
-                  "courseName": "Signals and Systems (C- min)",
-                  "credits": 4,
-                  "semester": 4
-                },
-                {
-                  "edges": [],
-                  "courseCode": "MATH2076",
-                  "courseName": "Linear Algebra",
-                  "credits": 3,
-                  "semester": 4
-                }
-            ],
-            [
-                {
-                  "edges": [],
-                  "courseCode": "CS2071",
-                  "courseName": "Discrete Computational Structures (C- min)",
-                  "credits": 3,
-                  "semester": 5
-                },
-                {
-                  "edges": ["EECE4029"],
-                  "courseCode": "EECE3026",
-                  "courseName": "Introduction to Computer Architecture & Organization (C- min)",
-                  "credits": 3,
-                  "semester": 5
-                },
-                {
-                  "edges": ["EECE3071L"],
-                  "courseCode": "EECE3071",
-                  "courseName": "Electronics II",
-                  "credits": 3,
-                  "semester": 5
-                },
-                {
-                  "edges": ["EECE3071"],
-                  "courseCode": "EECE3071L",
-                  "courseName": "Electronics Laboratory II",
-                  "credits": 1,
-                  "semester": 5
-                },
-                {
-                  "edges": [],
-                  "courseCode": "EECE3093C",
-                  "courseName": "Software Engineering (C- min)",
-                  "credits": 4,
-                  "semester": 5
-                },
-                {
-                  "edges": [],
-                  "courseCode": "PD2050",
-                  "courseName": "Mid-Curricular Co-op Community for Engineering",
-                  "credits": 1,
-                  "semester": 5,
-                  "semesterLock": [3, 4]
-                }
-            ],
-            [
-                {
-                  "edges": [],
-                  "courseCode": "EECE4029",
-                  "courseName": "Operating Systems & Systems Programming (C- min)",
-                  "credits": 3,
-                  "semester": 6
-                },
-                {
-                  "edges": [],
-                  "courseCode": "EECE4038C",
-                  "courseName": "Embedded System Design",
-                  "credits": 3,
-                  "semester": 6
-                },
-                {
-                  "edges": [],
-                  "courseCode": "EECE4040",
-                  "courseName": "Advanced Data Structures and Algorithms (C- min)",
-                  "credits": 3,
-                  "semester": 6
-                },
-                {
-                  "edges": [],
-                  "courseCode": "ENGL4092",
-                  "courseName": "Technical and Scientific Writing",
-                  "credits": 3,
-                  "semester": 6
-                }
-            ],
-            [
-                {
-                  "edges": ["EECE5032"],
-                  "courseCode": "EECE5031",
-                  "courseName": "Computer Engineering Senior Design I (C- min)",
-                  "credits": 3,
-                  "semester": 7,
-                  "semesterLock": [-2]
-                }
-            ],
-            [
-                {
-                  "edges": [],
-                  "courseCode": "EECE5032",
-                  "courseName": "Computer Engineering Senior Design II (C- min)",
-                  "credits": 3,
-                  "semester": 8,
-                  "semesterLock": [-1]
-                }
-            ]
+    "semesters": [
+        [
+            {
+                "courseCode": "EECE1100",
+                "courseName": "Introduction to EECS for EE, CompE, and EET Majors",
+                "credits": 1,
+                "semester": 1,
+                "postReqs": [],
+                "preReqs": [],
+                "coReqs": []
+            },
+            {
+                "courseCode": "ENED1100",
+                "courseName": "Foundations of Engineering Design Thinking I (C- min)",
+                "credits": 3,
+                "semester": 1,
+                "postReqs": [
+                    "EECE2051C",
+                    "ENED1120",
+                    "EECE1080C"
+                ],
+                "preReqs": [],
+                "coReqs": []
+            },
+            {
+                "courseCode": "ENGL1001",
+                "courseName": "English Composition",
+                "credits": 3,
+                "semester": 1,
+                "postReqs": [
+                    "ENGL4092"
+                ],
+                "preReqs": [],
+                "coReqs": []
+            },
+            {
+                "courseCode": "MATH1061",
+                "courseName": "Calculus I (C- min)",
+                "credits": 4,
+                "semester": 1,
+                "postReqs": [
+                    "EECE2080C",
+                    "EECE2051C",
+                    "MATH1062",
+                    "PHYS2001"
+                ],
+                "preReqs": [
+                    "PHYS2001"
+                ],
+                "coReqs": [
+                    "PHYS2001"
+                ]
+            },
+            {
+                "courseCode": "PHYS2001",
+                "courseName": "College Physics I (Calculus-based) (C- min)",
+                "credits": 4,
+                "semester": 1,
+                "postReqs": [
+                    "PHYS2076",
+                    "PHYS2001L",
+                    "MATH1061"
+                ],
+                "preReqs": [
+                    "MATH1061",
+                    "PHYS2001L"
+                ],
+                "coReqs": [
+                    "MATH1061",
+                    "PHYS2001L"
+                ]
+            },
+            {
+                "courseCode": "PHYS2001L",
+                "courseName": "College Physics Lab I (Calculus-based)",
+                "credits": 1,
+                "semester": 1,
+                "postReqs": [
+                    "PHYS2001"
+                ],
+                "preReqs": [
+                    "PHYS2001"
+                ],
+                "coReqs": [
+                    "PHYS2001"
+                ]
+            }
+        ],
+        [
+            {
+                "courseCode": "CHEM1040",
+                "courseName": "General Chemistry I",
+                "credits": 4,
+                "semester": 2,
+                "postReqs": [
+                    "CHEM1040L"
+                ],
+                "preReqs": [
+                    "CHEM1040L"
+                ],
+                "coReqs": [
+                    "CHEM1040L"
+                ]
+            },
+            {
+                "courseCode": "CHEM1040L",
+                "courseName": "General Chemistry Laboratory I",
+                "credits": 1,
+                "semester": 2,
+                "postReqs": [
+                    "CHEM1040"
+                ],
+                "preReqs": [
+                    "CHEM1040"
+                ],
+                "coReqs": [
+                    "CHEM1040"
+                ]
+            },
+            {
+                "courseCode": "EECE1080C",
+                "courseName": "Programming for ECE (C- min)",
+                "credits": 4,
+                "semester": 2,
+                "postReqs": [
+                    "EECE3026",
+                    "CS2071",
+                    "EECE2080C",
+                    "EECE2060C"
+                ],
+                "preReqs": [
+                    "ENED1100"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "ENED1120",
+                "courseName": "Foundations of Engineering Design Thinking II (C- min)",
+                "credits": 3,
+                "semester": 2,
+                "postReqs": [],
+                "preReqs": [
+                    "ENED1100"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "MATH1062",
+                "courseName": "Calculus II (C- min)",
+                "credits": 4,
+                "semester": 2,
+                "semesterLock": [
+                    1
+                ],
+                "postReqs": [
+                    "MATH2076",
+                    "MATH2063",
+                    "EECE2065"
+                ],
+                "preReqs": [
+                    "MATH1061"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "PD1011",
+                "courseName": "Introduction to COOP for CEAS (C- min)",
+                "credits": 1,
+                "semester": 2,
+                "semesterLock": [
+                    1
+                ],
+                "postReqs": [
+                    "PD2050"
+                ],
+                "preReqs": [],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "EECE2051C",
+                "courseName": "Network Analysis (C- min)",
+                "credits": 4,
+                "semester": 3,
+                "postReqs": [
+                    "EECE3065"
+                ],
+                "preReqs": [
+                    "ENED1100",
+                    "MATH1061"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE2060C",
+                "courseName": "Digital Design (C- min)",
+                "credits": 4,
+                "semester": 3,
+                "postReqs": [
+                    "EECE4038C",
+                    "EECE3026"
+                ],
+                "preReqs": [
+                    "EECE1080C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE2065",
+                "courseName": "Differential Equations and Laplace Transforms (C- min)",
+                "credits": 2,
+                "semester": 3,
+                "postReqs": [
+                    "EECE3065"
+                ],
+                "preReqs": [
+                    "MATH1062"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "MATH2063",
+                "courseName": "Multivariable Calculus",
+                "credits": 4,
+                "semester": 3,
+                "postReqs": [],
+                "preReqs": [
+                    "MATH1062"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "PHYS2076",
+                "courseName": "Semiconductor Physics for Engineers",
+                "credits": 4,
+                "semester": 3,
+                "postReqs": [],
+                "preReqs": [
+                    "PHYS2001"
+                ],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "COMM1071",
+                "courseName": "Introduction to Effective Speaking",
+                "credits": 3,
+                "semester": 4,
+                "postReqs": [],
+                "preReqs": [],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE2070",
+                "courseName": "Electronics I (C- min)",
+                "credits": 3,
+                "semester": 4,
+                "postReqs": [
+                    "EECE2070L",
+                    "EECE3071",
+                    "EECE3071L"
+                ],
+                "preReqs": [
+                    "EECE2070L"
+                ],
+                "coReqs": [
+                    "EECE2070L"
+                ]
+            },
+            {
+                "courseCode": "EECE2070L",
+                "courseName": "Electronics Laboratory I (C- min)",
+                "credits": 1,
+                "semester": 4,
+                "postReqs": [
+                    "EECE2070",
+                    "EECE3071",
+                    "EECE3071L"
+                ],
+                "preReqs": [
+                    "EECE2070"
+                ],
+                "coReqs": [
+                    "EECE2070"
+                ]
+            },
+            {
+                "courseCode": "EECE2080C",
+                "courseName": "Engineering Data Structures (C- min)",
+                "credits": 2,
+                "semester": 4,
+                "postReqs": [
+                    "EECE4040",
+                    "EECE3093C"
+                ],
+                "preReqs": [
+                    "MATH1061",
+                    "EECE1080C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE3065",
+                "courseName": "Signals and Systems (C- min)",
+                "credits": 4,
+                "semester": 4,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE2051C",
+                    "EECE2065"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "MATH2076",
+                "courseName": "Linear Algebra",
+                "credits": 3,
+                "semester": 4,
+                "postReqs": [],
+                "preReqs": [
+                    "MATH1062"
+                ],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "CS2071",
+                "courseName": "Discrete Computational Structures (C- min)",
+                "credits": 3,
+                "semester": 5,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE1080C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE3026",
+                "courseName": "Introduction to Computer Architecture & Organization (C- min)",
+                "credits": 3,
+                "semester": 5,
+                "postReqs": [
+                    "EECE4029"
+                ],
+                "preReqs": [
+                    "EECE1080C",
+                    "EECE2060C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE3071",
+                "courseName": "Electronics II",
+                "credits": 3,
+                "semester": 5,
+                "postReqs": [
+                    "EECE3071L"
+                ],
+                "preReqs": [
+                    "EECE2070",
+                    "EECE2070L",
+                    "EECE3071L"
+                ],
+                "coReqs": [
+                    "EECE3071L"
+                ]
+            },
+            {
+                "courseCode": "EECE3071L",
+                "courseName": "Electronics Laboratory II",
+                "credits": 1,
+                "semester": 5,
+                "postReqs": [
+                    "EECE3071"
+                ],
+                "preReqs": [
+                    "EECE2070",
+                    "EECE2070L",
+                    "EECE3071"
+                ],
+                "coReqs": [
+                    "EECE3071"
+                ]
+            },
+            {
+                "courseCode": "EECE3093C",
+                "courseName": "Software Engineering (C- min)",
+                "credits": 4,
+                "semester": 5,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE2080C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "PD2050",
+                "courseName": "Mid-Curricular Co-op Community for Engineering",
+                "credits": 1,
+                "semester": 5,
+                "semesterLock": [
+                    3,
+                    4
+                ],
+                "postReqs": [],
+                "preReqs": [
+                    "PD1011"
+                ],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "EECE4029",
+                "courseName": "Operating Systems & Systems Programming (C- min)",
+                "credits": 3,
+                "semester": 6,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE3026"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE4038C",
+                "courseName": "Embedded System Design",
+                "credits": 3,
+                "semester": 6,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE2060C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "EECE4040",
+                "courseName": "Advanced Data Structures and Algorithms (C- min)",
+                "credits": 3,
+                "semester": 6,
+                "postReqs": [],
+                "preReqs": [
+                    "EECE2080C"
+                ],
+                "coReqs": []
+            },
+            {
+                "courseCode": "ENGL4092",
+                "courseName": "Technical and Scientific Writing",
+                "credits": 3,
+                "semester": 6,
+                "postReqs": [],
+                "preReqs": [
+                    "ENGL1001"
+                ],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "EECE5031",
+                "courseName": "Computer Engineering Senior Design I (C- min)",
+                "credits": 3,
+                "semester": 7,
+                "semesterLock": [
+                    -2
+                ],
+                "postReqs": [
+                    "EECE5032"
+                ],
+                "preReqs": [],
+                "coReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "EECE5032",
+                "courseName": "Computer Engineering Senior Design II (C- min)",
+                "credits": 3,
+                "semester": 8,
+                "semesterLock": [
+                    -1
+                ],
+                "postReqs": [],
+                "preReqs": [
+                    "EECE5031"
+                ],
+                "coReqs": []
+            }
         ]
-    }
+    ],
+    "totalCredits": 100
 }

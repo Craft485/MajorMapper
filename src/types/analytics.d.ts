@@ -5,11 +5,6 @@ export type Curriculum = {
 }
 
 export type Vertex = {
-    /** 
-     * Edges represent a list of courses for which this course acts as a prereq for
-     * Co-reqs and be accomplished by having two classes point to each other
-     */
-    edges: Edge[]
     courseCode: string
     courseName: string
     semester: number
@@ -18,6 +13,12 @@ export type Vertex = {
     metrics?: Metrics
     /** A list of one or more numbers that represent the zero-based semester indicies in which a course *must* occur */
     semesterLock?: number[]
+    /** Courses that immediatley follow this one */
+    postReqs: Edge[]
+    /** Courses that are explicitly required to take this one */
+    preReqs: Edge[]
+    /** Courses that must be taken at the same time as this one */
+    coReqs: Edge[]
 }
 
 /** NOTE: This type may be expanded in the future */

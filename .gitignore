@@ -9,3 +9,4 @@ old-ver
 testing
 out
 *.old.*
+.vscode

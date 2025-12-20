@@ -30,3 +30,7 @@ export type Metrics = {
     centrality: number
     structuralComplexity: number
 }
+
+export type VertexMap = {
+    [code: string]: Vertex
+}

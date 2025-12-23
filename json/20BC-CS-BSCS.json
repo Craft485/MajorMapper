@@ -6,9 +6,9 @@
                 "courseName": "Introduction to Computer Science",
                 "credits": 1,
                 "semester": 1,
+                "coReqs": [],
                 "postReqs": [],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "ENED1100",
@@ -18,23 +18,23 @@
                 "semesterLock": [
                     0
                 ],
+                "coReqs": [],
                 "postReqs": [
                     "ENED1120",
                     "CS1021C"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "ENGL1001",
                 "courseName": "English Composition (C- min)",
                 "credits": 3,
                 "semester": 1,
+                "coReqs": [],
                 "postReqs": [
                     "ENGL2089"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "MATH1061",
@@ -44,12 +44,12 @@
                 "semesterLock": [
                     0
                 ],
+                "coReqs": [],
                 "postReqs": [
                     "MATH1062",
                     "PHYS2001"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             }
         ],
         [
@@ -58,36 +58,29 @@
                 "courseName": "General Chemistry I",
                 "credits": 4,
                 "semester": 2,
-                "postReqs": [
-                    "CHEM1040L"
-                ],
-                "preReqs": [
-                    "CHEM1040L"
-                ],
                 "coReqs": [
                     "CHEM1040L"
-                ]
+                ],
+                "postReqs": [],
+                "preReqs": []
             },
             {
                 "courseCode": "CHEM1040L",
                 "courseName": "General Chemistry Laboratory I",
                 "credits": 1,
                 "semester": 2,
-                "postReqs": [
-                    "CHEM1040"
-                ],
-                "preReqs": [
-                    "CHEM1040"
-                ],
                 "coReqs": [
                     "CHEM1040"
-                ]
+                ],
+                "postReqs": [],
+                "preReqs": []
             },
             {
                 "courseCode": "CS1021C",
                 "courseName": "Computer Science 1 (C- min)",
                 "credits": 4,
                 "semester": 2,
+                "coReqs": [],
                 "postReqs": [
                     "CS2071",
                     "CS2011",
@@ -96,8 +89,7 @@
                 ],
                 "preReqs": [
                     "ENED1100"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "ENED1120",
@@ -107,11 +99,11 @@
                 "semesterLock": [
                     1
                 ],
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "ENED1100"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "MATH1062",
@@ -121,13 +113,13 @@
                 "semesterLock": [
                     1
                 ],
+                "coReqs": [],
                 "postReqs": [
                     "MATH2076"
                 ],
                 "preReqs": [
                     "MATH1061"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "PD1011",
@@ -137,11 +129,11 @@
                 "semesterLock": [
                     1
                 ],
+                "coReqs": [],
                 "postReqs": [
                     "PD2050"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             }
         ],
         [
@@ -150,30 +142,31 @@
                 "courseName": "Introduction to Computer Systems (C- min)",
                 "credits": 3,
                 "semester": 3,
+                "coReqs": [],
                 "postReqs": [
                     "EECE4029"
                 ],
                 "preReqs": [
                     "CS1021C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "CS2023",
                 "courseName": "Python Programming (C- min)",
                 "credits": 3,
                 "semester": 3,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS1021C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "CS2028C",
                 "courseName": "Data Structures (C- min)",
                 "credits": 4,
                 "semester": 3,
+                "coReqs": [],
                 "postReqs": [
                     "EECE4029",
                     "CS3003",
@@ -186,28 +179,27 @@
                 ],
                 "preReqs": [
                     "CS1021C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "IT2030C",
                 "courseName": "Information Security and Assurance",
                 "credits": 3,
                 "semester": 3,
+                "coReqs": [],
                 "postReqs": [],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "MATH2076",
                 "courseName": "Linear Algebra (C- min)",
                 "credits": 3,
                 "semester": 3,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "MATH1062"
-                ],
-                "coReqs": []
+                ]
             }
         ],
         [
@@ -216,6 +208,7 @@
                 "courseName": "Discrete Computational Structures (C- min)",
                 "credits": 3,
                 "semester": 4,
+                "coReqs": [],
                 "postReqs": [
                     "CS4092",
                     "EECE3093C",
@@ -224,32 +217,31 @@
                 ],
                 "preReqs": [
                     "CS1021C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "CS3003",
                 "courseName": "Programming Languages",
                 "credits": 3,
                 "semester": 4,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "ENGL2089",
                 "courseName": "Intermediate Composition",
                 "credits": 3,
                 "semester": 4,
+                "coReqs": [],
                 "postReqs": [
                     "ENGL4092"
                 ],
                 "preReqs": [
                     "ENGL1001"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "PD2050",
@@ -260,22 +252,22 @@
                     3,
                     4
                 ],
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "PD1011"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "STAT2037",
                 "courseName": "Probability and Statistics I (C- min)",
                 "credits": 3,
                 "semester": 4,
+                "coReqs": [],
                 "postReqs": [
                     "CS4071"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             }
         ],
         [
@@ -284,46 +276,46 @@
                 "courseName": "Introduction to Effective Speaking",
                 "credits": 3,
                 "semester": 5,
+                "coReqs": [],
                 "postReqs": [],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "CS4071",
                 "courseName": "Design and Analysis of Algorithms (C- min)",
                 "credits": 3,
                 "semester": 5,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C",
                     "CS2071",
                     "STAT2037"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "CS4092",
                 "courseName": "Database Design and Development (C- min)",
                 "credits": 3,
                 "semester": 5,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C",
                     "CS2071"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "EECE3093C",
                 "courseName": "Software Engineering (C- min)",
                 "credits": 4,
                 "semester": 5,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C",
                     "CS2071"
-                ],
-                "coReqs": []
+                ]
             }
         ],
         [
@@ -332,45 +324,45 @@
                 "courseName": "Artificial Intelligence: Principles and Applications",
                 "credits": 3,
                 "semester": 6,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "CS4065",
                 "courseName": "Computer Networks and Networked Computing",
                 "credits": 3,
                 "semester": 6,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "EECE4029",
                 "courseName": "Operating Systems & Systems Programming (C- min)",
                 "credits": 3,
                 "semester": 6,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2011",
                     "CS2028C"
-                ],
-                "coReqs": []
+                ]
             },
             {
                 "courseCode": "ENGL4092",
                 "courseName": "Technical and Scientific Writing",
                 "credits": 3,
                 "semester": 6,
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "ENGL2089"
-                ],
-                "coReqs": []
+                ]
             }
         ],
         [
@@ -382,11 +374,11 @@
                 "semesterLock": [
                     -2
                 ],
+                "coReqs": [],
                 "postReqs": [
                     "CS5002"
                 ],
-                "preReqs": [],
-                "coReqs": []
+                "preReqs": []
             },
             {
                 "courseCode": "CS5170",
@@ -396,12 +388,12 @@
                 "semesterLock": [
                     -2
                 ],
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS2028C",
                     "CS2071"
-                ],
-                "coReqs": []
+                ]
             }
         ],
         [
@@ -413,11 +405,11 @@
                 "semesterLock": [
                     -1
                 ],
+                "coReqs": [],
                 "postReqs": [],
                 "preReqs": [
                     "CS5001"
-                ],
-                "coReqs": []
+                ]
             }
         ]
     ],

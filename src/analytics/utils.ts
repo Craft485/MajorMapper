@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { Curriculum, Vertex } from '../types/analytics'
+import { Curriculum, Vertex, VertexMap } from '../types/analytics'
 
 // NOTE: I'm worried that this could lead to bugs where a course is in the path of multiple duplicates (or is itself a duplicate) and ends up being moved somewhere it shouldn't
 export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex, semesters: Vertex[][], shiftingForward = true): Promise<void> {
@@ -9,18 +9,19 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
         currentVertex.semester = -1 // This will act as a fail signal
         return
     }
-    if (previousVertex.edges.includes(currentVertex.courseCode) && currentVertex.edges.includes(previousVertex.courseCode)) {
+
+    if (AreCoReqs(currentVertex, previousVertex)) {
         // Co-req
         // console.log(`${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}`)
         currentVertex.semester = previousVertex.semester
         // console.log(`Since ${currentVertex.courseCode} is a coreq with ${previousVertex.courseCode}, it was shifted to semester ${currentVertex.semester}`)
         return 
     }
-    const currentEdges: string[] = currentVertex.edges
+
     const currentSemester = currentVertex.semester
     const previousSemester = previousVertex.semester
     const courses = semesters.flat()
-    const dependencies: Vertex[] = courses.filter(v => shiftingForward ? currentEdges.includes(v.courseCode) : v.edges.includes(currentVertex.courseCode))
+    const dependencies: Vertex[] = ComputeVerticesFromCourseCodes(semesters.flat(), shiftingForward ? currentVertex.postReqs : currentVertex.preReqs)
     // Move courses that are not in the correct semester
     if (currentSemester <= previousSemester && shiftingForward) { // Forward
         currentVertex.semester = previousSemester + 1
@@ -38,20 +39,24 @@ export async function ShiftBranch(currentVertex: Vertex, previousVertex: Vertex,
 }
 
 export function AreCoReqs(c1: Vertex, c2: Vertex): boolean {
-    return c1.edges.includes(c2.courseCode) && c2.edges.includes(c1.courseCode)
+    return c1.coReqs.includes(c2.courseCode)
 }
 
-export async function calculateCoursePath(course: Vertex, curriculum: Curriculum | {[code: string]: Vertex}, foundNodes: Vertex[] = [], isLookingForward?: boolean): Promise<Vertex[]> {
+export async function calculateCoursePath(course: Vertex, curriculum: Curriculum | VertexMap, foundNodes: Vertex[] = [], isLookingForward?: boolean): Promise<Vertex[]> {
     // console.log(curriculum)
     const path: Vertex[] = [
         // Look forward one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === true 
-            ? (curriculum.totalCredits !== undefined ? (curriculum.semesters as Vertex[][]).flat() : Object.values(curriculum as {[code: string]: Vertex})).filter(vertex => course.edges.includes(vertex.courseCode))
+            ? ComputeVerticesFromCourseCodes(curriculum.totalCredits !== undefined 
+                ? (curriculum.semesters as Vertex[][]).flat() 
+                : Object.values(curriculum as VertexMap), course.postReqs)
             : []
         ),
         // Look backwards one layer, if possible
         ...(isLookingForward === undefined || isLookingForward === false 
-            ? (curriculum.totalCredits !== undefined ? (curriculum.semesters as Vertex[][]).flat() : Object.values(curriculum as {[code: string]: Vertex})).filter(vertex => vertex.edges.includes(course.courseCode))
+            ? ComputeVerticesFromCourseCodes(curriculum.totalCredits !== undefined 
+                ? (curriculum.semesters as Vertex[][]).flat() 
+                : Object.values(curriculum as VertexMap), course.preReqs)
             : []
         )
     ]
@@ -67,7 +72,7 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
                                   AreCoReqs(course, node) 
                                   ? isLookingForward
                                   : (isLookingForward === undefined 
-                                    ? node.edges.find(edge => edge === course.courseCode) === undefined 
+                                    ? node.postReqs.includes(course.courseCode) === undefined 
                                     : isLookingForward)
         )
     }
@@ -219,4 +224,8 @@ export function SortVertices(list: Vertex[]): Vertex[] {
         result.push(list.find(v => v.courseCode === code))
     }
     return result
+}
+
+export function ComputeVerticesFromCourseCodes(courses: Vertex[], courseCodes: string[]): Vertex[] {
+    return courses.filter(course => courseCodes.includes(course.courseCode))
 }

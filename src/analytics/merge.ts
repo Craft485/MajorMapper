@@ -22,8 +22,9 @@ export async function MergeCurricula(curricula: Curriculum[]): Promise<{ [code: 
                 result[currentCourse.courseCode] = DeepCopy<Vertex>(currentCourse)
             } else {
                 // Current course was already added, merge any additional edges that were not present in the other occurance of the course
-                result[currentCourse.courseCode].edges.push(...currentCourse.edges)
-                result[currentCourse.courseCode].edges = result[currentCourse.courseCode].edges.filter((v, i, a) => a.indexOf(v) === i)
+                result[currentCourse.courseCode].postReqs = Array.from(new Set(result[currentCourse.courseCode].postReqs).union(new Set(currentCourse.postReqs)))
+                result[currentCourse.courseCode].preReqs = Array.from(new Set(result[currentCourse.courseCode].preReqs).union(new Set(currentCourse.preReqs)))
+                result[currentCourse.courseCode].coReqs = Array.from(new Set(result[currentCourse.courseCode].coReqs).union(new Set(currentCourse.coReqs)))
             }
         }
     }

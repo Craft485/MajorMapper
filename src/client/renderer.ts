@@ -169,7 +169,7 @@ function render(renderData: { data: Curriculum }): void {
             const courseBlock = document.createElement('span')
             courseBlock.id = course.courseCode
             courseBlock.className = 'course'
-            courseBlock.setAttribute('edges', course.edges.join(','))
+            courseBlock.setAttribute('edges', course.postReqs.join(','))
             courseBlock.setAttribute('semester', `${semesterCount}`)
             courseBlock.setAttribute('course-hex', course.color)
             courseBlock.style.cssText = `--course-hex: #${course.color};` // Expose the hex code to the css

@@ -7,7 +7,7 @@ export async function CalculateMetrics(curriculum: Curriculum | {[code: string]:
     if (curriculum.semesters instanceof Array) curriculum.structuralComplexity = 0
     for (const vertex of courses) { // Loop over every vertex in the graph, calculate the courses metrics and total them to find all the degree plans metrics at the same time
         // Get all courses that relate to the current course of interest, excluding any that have a mutual co-req relationship with the current vertex
-        const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !(course.edges.includes(vertex.courseCode) && vertex.edges.includes(course.courseCode)))
+        const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !course.coReqs.includes(vertex.courseCode))
         // DEBUG: if (vertex.courseCode === 'MATH2063') console.log(`Subset for ${vertex.courseCode}: ${JSON.stringify(subset)}`)
         // Build an array of all path permutations through the current vertex of interest
         const paths = (await BuildPathPermutations(subset, [])).filter(path => path.find(course => course.courseCode === vertex.courseCode) !== undefined)
@@ -35,7 +35,7 @@ export async function CalculateMetrics(curriculum: Curriculum | {[code: string]:
 
 export async function BuildPathPermutations(courses: Vertex[], permutations: Vertex[][] = []): Promise<Vertex[][]> {
     if (permutations.length === 0) { // This call is the top of the recurse chain
-        const sourceNodes = courses.filter(course => courses.find(vertex => vertex.edges.includes(course.courseCode) && !course.edges.includes(vertex.courseCode)) === undefined)
+        const sourceNodes = courses.filter(course => courses.find(vertex => course.preReqs.includes(vertex.courseCode)) === undefined)
         for (const node of sourceNodes) { // Recursively build paths stemming from each source node
             permutations.push(...await BuildPathPermutations(courses, [[node]]))
         }
@@ -46,7 +46,7 @@ export async function BuildPathPermutations(courses: Vertex[], permutations: Ver
         let sinkNodeCount = 0
         for (const permutation of permutations) {
             const lastNode = permutation.at(-1)
-            const nextNodes = courses.filter(course => lastNode.edges.includes(course.courseCode) && !course.edges.includes(lastNode.courseCode))
+            const nextNodes = courses.filter(course => course.preReqs.includes(lastNode.courseCode))
             // console.log(`${lastNode.courseCode}: ${nextNodes.map(c => c.courseCode).join(', ')}\n`)
             if (nextNodes.length === 0) { // If we have already finished building this path, just save it and move on
                 newPermutations.push(permutation)

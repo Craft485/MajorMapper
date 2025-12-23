@@ -13,7 +13,7 @@ export async function ParseAnalytics(programStacks: string[]): Promise<Analytics
     // Load the curriculum data
     for await (const programStack of programStacks) {
         const fileContents = await readFile(`../../json/${programStack}.json`, 'utf-8').catch(err => { if (err) throw err })
-        curricula.push(JSON.parse(fileContents as string).data)
+        curricula.push(JSON.parse(fileContents as string))
         console.log(`Found ${programStack}`)
     }
     // Return early if needed

@@ -77,7 +77,7 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
             const potentialSemesterIndices = new Array(courseToMove.semester - (minSemesterIndex + 1)).fill(0).map((_, i) => minSemesterIndex + i)
             // console.log(`Potenial semester indicies: ${potentialSemesters.join(', ')}`)
             for (let s = 0; s < potentialSemesterIndices.length; s++) {
-                const firstLayerPreReqs = courses.filter(v => v.edges.includes(courseToMove.courseCode))
+                const firstLayerPreReqs = courses.filter(v => courseToMove.preReqs.includes(v.courseCode))
                 courseToMove.semester = potentialSemesterIndices[s] + 1
                 for (const prereq of firstLayerPreReqs) {
                     ShiftBranch(prereq, courseToMove, tempCurriculum.semesters, false)

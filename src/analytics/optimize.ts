@@ -1,5 +1,5 @@
 import { Curriculum, Vertex } from '../types/analytics'
-import { calculateCoursePath, ShiftBranch, DeepCopy, UpdateRelativeSemesterLocks, CalculateCreditHours, UpdateMovedCourses } from './utils'
+import { calculateCoursePath, ShiftBranch, DeepCopy, UpdateRelativeSemesterLocks, CalculateCreditHours, UpdateMovedCourses, ComputeVerticesFromCourseCodes } from './utils'
 
 const { max:MAX, min:MIN } = Math
 
@@ -20,11 +20,12 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
         for (const course of currentSemester.flat()) { // For each course in the curriculum, calculate and store its simple path
             if (foundPaths.includes(course.courseCode)) continue
             // Prevent coreqs from being included multiple times
-            const coreqs = optimizedSemesters.flat().filter(v => v.edges.includes(course.courseCode) && course.edges.includes(v.courseCode))
+            // TODO: This needs cleaned up a lot, perhaps the whole algo needs cleaned?
+            const coreqs = ComputeVerticesFromCourseCodes(optimizedSemesters.flat(), course.coReqs)
             if (coreqs.length > 0) {
                 let coreqAlreadyPresent = false
                 for (const coreq of coreqs) {
-                    if (simplePaths.flat().flatMap(v => v.edges).includes(coreq.courseCode)) {
+                    if (simplePaths.flat().flatMap(v => v.postReqs.concat(v.coReqs)).includes(coreq.courseCode)) { // TODO: Improve this
                         coreqAlreadyPresent = true
                         break
                     }
@@ -95,7 +96,9 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 // Since this a copy of whats in the path (which in turn in a copy of the actual curriculum) we need to then map this to the objects in the temp curriculum to establish references again
                 const branches: Vertex[] = DeepCopy<Vertex[]>(forwardShift ? path.slice(path.findIndex(v => v.semester === course.semester)) : path.slice(0, path.findLastIndex(v => v.semester === course.semester))).map(courseCopy => tempCurriculum.flat().find(temp => temp.courseCode === courseCopy.courseCode))
                 const initialStateOfCreditHours: number[] = CalculateCreditHours(tempCurriculum)
-                const firstLayerNodes = branches.filter(v => forwardShift ? tempCourse.edges.includes(v.courseCode) : v.edges.includes(courseCode))
+                const firstLayerNodes = forwardShift 
+                    ? tempCourse.postReqs.map(edge => tempCurriculum.flat().find(v => v.courseCode === edge))
+                    : tempCourse.preReqs.map(edge => tempCurriculum.flat().find(v => v.courseCode === edge))
                 // Make the first move manually, then starting shifting each branch
                 tempCourse.semester = candidateSemesterIndex + 1
                 // Try to make a shift, then later we can check to see if its result is valid

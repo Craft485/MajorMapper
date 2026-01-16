@@ -72,7 +72,7 @@ export async function calculateCoursePath(course: Vertex, curriculum: Curriculum
                                   AreCoReqs(course, node) 
                                   ? isLookingForward
                                   : (isLookingForward === undefined 
-                                    ? node.postReqs.includes(course.courseCode) === undefined 
+                                    ? node.preReqs.includes(course.courseCode)
                                     : isLookingForward)
         )
     }
@@ -198,19 +198,14 @@ function GroupStrings(list: string[], predicate: (str: string) => number): strin
 export function SortStrings(list: string[]): string[] {
     // Phase 1, sort then group by number
     list.sort((a, b) => +/(\d+)/.exec(a)[0] - +/(\d+)/.exec(b)[0])
-    console.log('Phase 1.1: ', list)
     const numberGrouping = GroupStrings(list, s => +/(\d+)/.exec(s)[0])
-    console.log('Phase 1.2: ', numberGrouping)
     
     // Phase 2, sort then group by length
     numberGrouping.map(group => group.sort((a, b) => a.length - b.length))
-    console.log('Phase 2.1: ', numberGrouping)
     const charSumGrouping = numberGrouping.map(group => GroupStrings(group, s => s.length))
-    console.log('Phase 2.2: ', charSumGrouping)
     
     // Phase 3, sort by charsum
     charSumGrouping.map(group => group.map(subgroup => subgroup.sort((a, b) => CharSum(a) - CharSum(b))))
-    console.log('Phase 3.1: ', charSumGrouping)
     
     return charSumGrouping.flat(2)
 }

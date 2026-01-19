@@ -96,9 +96,7 @@ export async function OptimizeCurriculum(curriculum: Curriculum): Promise<Curric
                 // Since this a copy of whats in the path (which in turn in a copy of the actual curriculum) we need to then map this to the objects in the temp curriculum to establish references again
                 const branches: Vertex[] = DeepCopy<Vertex[]>(forwardShift ? path.slice(path.findIndex(v => v.semester === course.semester)) : path.slice(0, path.findLastIndex(v => v.semester === course.semester))).map(courseCopy => tempCurriculum.flat().find(temp => temp.courseCode === courseCopy.courseCode))
                 const initialStateOfCreditHours: number[] = CalculateCreditHours(tempCurriculum)
-                const firstLayerNodes = forwardShift 
-                    ? tempCourse.postReqs.map(edge => tempCurriculum.flat().find(v => v.courseCode === edge))
-                    : tempCourse.preReqs.map(edge => tempCurriculum.flat().find(v => v.courseCode === edge))
+                const firstLayerNodes = ComputeVerticesFromCourseCodes(tempCurriculum.flat(), forwardShift ? tempCourse.postReqs : tempCourse.preReqs)
                 // Make the first move manually, then starting shifting each branch
                 tempCourse.semester = candidateSemesterIndex + 1
                 // Try to make a shift, then later we can check to see if its result is valid

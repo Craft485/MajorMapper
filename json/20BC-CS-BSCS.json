@@ -46,8 +46,7 @@
                 ],
                 "coReqs": [],
                 "postReqs": [
-                    "MATH1062",
-                    "PHYS2001"
+                    "MATH1062"
                 ],
                 "preReqs": []
             }

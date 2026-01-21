@@ -10,3 +10,4 @@ testing
 out
 *.old.*
 .vscode
+json/new

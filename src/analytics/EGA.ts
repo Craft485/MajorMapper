@@ -77,7 +77,7 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
             const potentialSemesterIndices = new Array(courseToMove.semester - (minSemesterIndex + 1)).fill(0).map((_, i) => minSemesterIndex + i)
             // console.log(`Potenial semester indicies: ${potentialSemesters.join(', ')}`)
             for (let s = 0; s < potentialSemesterIndices.length; s++) {
-                const firstLayerPreReqs = courses.filter(v => v.edges.includes(courseToMove.courseCode))
+                const firstLayerPreReqs = courses.filter(v => courseToMove.preReqs.includes(v.courseCode))
                 courseToMove.semester = potentialSemesterIndices[s] + 1
                 for (const prereq of firstLayerPreReqs) {
                     ShiftBranch(prereq, courseToMove, tempCurriculum.semesters, false)
@@ -106,7 +106,12 @@ async function Mutate(curriculum: Curriculum, alreadyAttemptedMoves: string[]): 
  * @param curriculum Full curriculum object
  * @returns Returns a number that represents both of the parameters of the CBCB model as a squared distance to the origin
  */
-const Score = (curriculum: Curriculum): number => curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) ** 2 + Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2
+const Score = (curriculum: Curriculum): number => {
+    const sumOfWeightedComplexitySquared = curriculum.semesters.flat().reduce((total, currCourse) => total + (currCourse.semester * currCourse.metrics.structuralComplexity), 0) ** 2
+    const maxCreditsSquared = Math.max(...new Array(curriculum.semesters.length).fill(0).map((_, i) => curriculum.semesters[i].reduce((total, curr) => total + curr.credits, 0))) ** 2
+    console.log(`sum of weighted complexity squared: ${sumOfWeightedComplexitySquared}, max number of credits in a specific semester squared: ${maxCreditsSquared}, score: ${sumOfWeightedComplexitySquared + maxCreditsSquared}`)
+    return sumOfWeightedComplexitySquared + maxCreditsSquared
+}
 
 function SelectBestCurriculumFromList(curriculums: Curriculum[]): Curriculum {
     let bestScore = Score(curriculums[0]), bestScoreIndex = 0

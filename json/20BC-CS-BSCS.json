@@ -1,249 +1,416 @@
 {
-    "data": {
-        "semesters": [
-            [
-                {
-                    "edges": [],
-                    "courseCode": "CS1100",
-                    "courseName": "Introduction to Computer Science",
-                    "credits": 1,
-                    "semester": 1
-                  },
-                  {
-                    "edges": ["ENED1120", "CS1021C"],
-                    "courseCode": "ENED1100",
-                    "courseName": "Foundations of Engineering Design Thinking I (C- min)",
-                    "credits": 3,
-                    "semester": 1,
-                    "semesterLock": [0]
-                  },
-                  {
-                    "edges": ["ENGL2089"],
-                    "courseCode": "ENGL1001",
-                    "courseName": "English Composition (C- min)",
-                    "credits": 3,
-                    "semester": 1
-                  },
-                  {
-                    "edges": ["MATH1062", "PHYS2001"],
-                    "courseCode": "MATH1061",
-                    "courseName": "Calculus I (C- min)",
-                    "credits": 4,
-                    "semester": 1,
-                    "semesterLock": [0]
-                }
-            ],
-            [
-                  {
-                    "edges": ["CHEM1040L"],
-                    "courseCode": "CHEM1040",
-                    "courseName": "General Chemistry I",
-                    "credits": 4,
-                    "semester": 2
-                },
-                {
-                    "edges": ["CHEM1040"],
-                    "courseCode": "CHEM1040L",
-                    "courseName": "General Chemistry Laboratory I",
-                    "credits": 1,
-                    "semester": 2
-                },
-                {
-                    "edges": ["CS2071", "CS2011", "CS2023", "CS2028C"],
-                    "courseCode": "CS1021C",
-                    "courseName": "Computer Science 1 (C- min)",
-                    "credits": 4,
-                    "semester": 2
-                },
-                {
-                    "edges": [],
-                    "courseCode": "ENED1120",
-                    "courseName": "Foundations of Engineering Design Thinking II",
-                    "credits": 3,
-                    "semester": 2,
-                    "semesterLock": [1]
-                },
-                {
-                    "edges": ["MATH2076"],
-                    "courseCode": "MATH1062",
-                    "courseName": "Calculus II (C- min)",
-                    "credits": 4,
-                    "semester": 2,
-                    "semesterLock": [1]
-                },
-                {
-                    "edges": ["PD2050"],
-                    "courseCode": "PD1011",
-                    "courseName": "Introduction to COOP for CEAS (C- min)",
-                    "credits": 1,
-                    "semester": 2,
-                    "semesterLock": [1]
-                }
-            ],
-            [
-                {
-                    "edges": ["EECE4029"],
-                    "courseCode": "CS2011",
-                    "courseName": "Introduction to Computer Systems (C- min)",
-                    "credits": 3,
-                    "semester": 3
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS2023",
-                    "courseName": "Python Programming (C- min)",
-                    "credits": 3,
-                    "semester": 3
-                },
-                {
-                    "edges": ["EECE4029", "CS3003", "CS4092", "CS4033", "EECE3093C", "CS5170", "CS4071", "CS4065"],
-                    "courseCode": "CS2028C",
-                    "courseName": "Data Structures (C- min)",
-                    "credits": 4,
-                    "semester": 3
-                },
-                {
-                    "edges": [],
-                    "courseCode": "IT2030C",
-                    "courseName": "Information Security and Assurance",
-                    "credits": 3,
-                    "semester": 3
-                },
-                {
-                    "edges": [],
-                    "courseCode": "MATH2076",
-                    "courseName": "Linear Algebra (C- min)",
-                    "credits": 3,
-                    "semester": 3
-                }
-            ],
-            [
-                {
-                    "edges": ["CS4092", "EECE3093C", "CS4071", "CS5170"],
-                    "courseCode": "CS2071",
-                    "courseName": "Discrete Computational Structures (C- min)",
-                    "credits": 3,
-                    "semester": 4
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS3003",
-                    "courseName": "Programming Languages",
-                    "credits": 3,
-                    "semester": 4
-                },
-                {
-                    "edges": ["ENGL4092"],
-                    "courseCode": "ENGL2089",
-                    "courseName": "Intermediate Composition",
-                    "credits": 3,
-                    "semester": 4
-                },
-                {
-                    "edges": [],
-                    "courseCode": "PD2050",
-                    "courseName": "Mid-Curricular Co-op Community for Engineering",
-                    "credits": 1,
-                    "semester": 4,
-                    "semesterLock": [3, 4]
-                },
-                {
-                    "edges": ["CS4071"],
-                    "courseCode": "STAT2037",
-                    "courseName": "Probability and Statistics I (C- min)",
-                    "credits": 3,
-                    "semester": 4
-                }
-            ],
-            [
-                {
-                    "edges": [],
-                    "courseCode": "COMM1071",
-                    "courseName": "Introduction to Effective Speaking",
-                    "credits": 3,
-                    "semester": 5
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS4071",
-                    "courseName": "Design and Analysis of Algorithms (C- min)",
-                    "credits": 3,
-                    "semester": 5
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS4092",
-                    "courseName": "Database Design and Development (C- min)",
-                    "credits": 3,
-                    "semester": 5
-                },
-                {
-                    "edges": [],
-                    "courseCode": "EECE3093C",
-                    "courseName": "Software Engineering (C- min)",
-                    "credits": 4,
-                    "semester": 5
-                }
-            ],
-            [
-                {
-                    "edges": [],
-                    "courseCode": "CS4033",
-                    "courseName": "Artificial Intelligence: Principles and Applications",
-                    "credits": 3,
-                    "semester": 6
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS4065",
-                    "courseName": "Computer Networks and Networked Computing",
-                    "credits": 3,
-                    "semester": 6
-                },
-                {
-                    "edges": [],
-                    "courseCode": "EECE4029",
-                    "courseName": "Operating Systems & Systems Programming (C- min)",
-                    "credits": 3,
-                    "semester": 6
-                },
-                {
-                    "edges": [],
-                    "courseCode": "ENGL4092",
-                    "courseName": "Technical and Scientific Writing",
-                    "credits": 3,
-                    "semester": 6
-                }
-            ],
-            [
-                {
-                    "edges": ["CS5002"],
-                    "courseCode": "CS5001",
-                    "courseName": "Computer Science Senior Design I (C- min)",
-                    "credits": 3,
-                    "semester": 7,
-                    "semesterLock": [-2]
-                },
-                {
-                    "edges": [],
-                    "courseCode": "CS5170",
-                    "courseName": "The Theory of Formal Languages and Automata",
-                    "credits": 3,
-                    "semester": 7,
-                    "semesterLock": [-2]
-                }
-            ],
-            [
-                {
-                    "edges": [],
-                    "courseCode": "CS5002",
-                    "courseName": "Computer Science Senior Design II (C- min)",
-                    "credits": 3,
-                    "semester": 8,
-                    "semesterLock": [-1]
-                }
-            ]
+    "semesters": [
+        [
+            {
+                "courseCode": "CS1100",
+                "courseName": "Introduction to Computer Science",
+                "credits": 1,
+                "semester": 1,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": []
+            },
+            {
+                "courseCode": "ENED1100",
+                "courseName": "Foundations of Engineering Design Thinking I (C- min)",
+                "credits": 3,
+                "semester": 1,
+                "semesterLock": [
+                    0
+                ],
+                "coReqs": [],
+                "postReqs": [
+                    "ENED1120",
+                    "CS1021C"
+                ],
+                "preReqs": []
+            },
+            {
+                "courseCode": "ENGL1001",
+                "courseName": "English Composition (C- min)",
+                "credits": 3,
+                "semester": 1,
+                "coReqs": [],
+                "postReqs": [
+                    "ENGL2089"
+                ],
+                "preReqs": []
+            },
+            {
+                "courseCode": "MATH1061",
+                "courseName": "Calculus I (C- min)",
+                "credits": 4,
+                "semester": 1,
+                "semesterLock": [
+                    0
+                ],
+                "coReqs": [],
+                "postReqs": [
+                    "MATH1062"
+                ],
+                "preReqs": []
+            }
         ],
-        "totalCredits": 91
-    }
+        [
+            {
+                "courseCode": "CHEM1040",
+                "courseName": "General Chemistry I",
+                "credits": 4,
+                "semester": 2,
+                "coReqs": [
+                    "CHEM1040L"
+                ],
+                "postReqs": [],
+                "preReqs": []
+            },
+            {
+                "courseCode": "CHEM1040L",
+                "courseName": "General Chemistry Laboratory I",
+                "credits": 1,
+                "semester": 2,
+                "coReqs": [
+                    "CHEM1040"
+                ],
+                "postReqs": [],
+                "preReqs": []
+            },
+            {
+                "courseCode": "CS1021C",
+                "courseName": "Computer Science 1 (C- min)",
+                "credits": 4,
+                "semester": 2,
+                "coReqs": [],
+                "postReqs": [
+                    "CS2071",
+                    "CS2011",
+                    "CS2023",
+                    "CS2028C"
+                ],
+                "preReqs": [
+                    "ENED1100"
+                ]
+            },
+            {
+                "courseCode": "ENED1120",
+                "courseName": "Foundations of Engineering Design Thinking II",
+                "credits": 3,
+                "semester": 2,
+                "semesterLock": [
+                    1
+                ],
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "ENED1100"
+                ]
+            },
+            {
+                "courseCode": "MATH1062",
+                "courseName": "Calculus II (C- min)",
+                "credits": 4,
+                "semester": 2,
+                "semesterLock": [
+                    1
+                ],
+                "coReqs": [],
+                "postReqs": [
+                    "MATH2076"
+                ],
+                "preReqs": [
+                    "MATH1061"
+                ]
+            },
+            {
+                "courseCode": "PD1011",
+                "courseName": "Introduction to COOP for CEAS (C- min)",
+                "credits": 1,
+                "semester": 2,
+                "semesterLock": [
+                    1
+                ],
+                "coReqs": [],
+                "postReqs": [
+                    "PD2050"
+                ],
+                "preReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "CS2011",
+                "courseName": "Introduction to Computer Systems (C- min)",
+                "credits": 3,
+                "semester": 3,
+                "coReqs": [],
+                "postReqs": [
+                    "EECE4029"
+                ],
+                "preReqs": [
+                    "CS1021C"
+                ]
+            },
+            {
+                "courseCode": "CS2023",
+                "courseName": "Python Programming (C- min)",
+                "credits": 3,
+                "semester": 3,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS1021C"
+                ]
+            },
+            {
+                "courseCode": "CS2028C",
+                "courseName": "Data Structures (C- min)",
+                "credits": 4,
+                "semester": 3,
+                "coReqs": [],
+                "postReqs": [
+                    "EECE4029",
+                    "CS3003",
+                    "CS4092",
+                    "CS4033",
+                    "EECE3093C",
+                    "CS5170",
+                    "CS4071",
+                    "CS4065"
+                ],
+                "preReqs": [
+                    "CS1021C"
+                ]
+            },
+            {
+                "courseCode": "IT2030C",
+                "courseName": "Information Security and Assurance",
+                "credits": 3,
+                "semester": 3,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": []
+            },
+            {
+                "courseCode": "MATH2076",
+                "courseName": "Linear Algebra (C- min)",
+                "credits": 3,
+                "semester": 3,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "MATH1062"
+                ]
+            }
+        ],
+        [
+            {
+                "courseCode": "CS2071",
+                "courseName": "Discrete Computational Structures (C- min)",
+                "credits": 3,
+                "semester": 4,
+                "coReqs": [],
+                "postReqs": [
+                    "CS4092",
+                    "EECE3093C",
+                    "CS4071",
+                    "CS5170"
+                ],
+                "preReqs": [
+                    "CS1021C"
+                ]
+            },
+            {
+                "courseCode": "CS3003",
+                "courseName": "Programming Languages",
+                "credits": 3,
+                "semester": 4,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C"
+                ]
+            },
+            {
+                "courseCode": "ENGL2089",
+                "courseName": "Intermediate Composition",
+                "credits": 3,
+                "semester": 4,
+                "coReqs": [],
+                "postReqs": [
+                    "ENGL4092"
+                ],
+                "preReqs": [
+                    "ENGL1001"
+                ]
+            },
+            {
+                "courseCode": "PD2050",
+                "courseName": "Mid-Curricular Co-op Community for Engineering",
+                "credits": 1,
+                "semester": 4,
+                "semesterLock": [
+                    3,
+                    4
+                ],
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "PD1011"
+                ]
+            },
+            {
+                "courseCode": "STAT2037",
+                "courseName": "Probability and Statistics I (C- min)",
+                "credits": 3,
+                "semester": 4,
+                "coReqs": [],
+                "postReqs": [
+                    "CS4071"
+                ],
+                "preReqs": []
+            }
+        ],
+        [
+            {
+                "courseCode": "COMM1071",
+                "courseName": "Introduction to Effective Speaking",
+                "credits": 3,
+                "semester": 5,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": []
+            },
+            {
+                "courseCode": "CS4071",
+                "courseName": "Design and Analysis of Algorithms (C- min)",
+                "credits": 3,
+                "semester": 5,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C",
+                    "CS2071",
+                    "STAT2037"
+                ]
+            },
+            {
+                "courseCode": "CS4092",
+                "courseName": "Database Design and Development (C- min)",
+                "credits": 3,
+                "semester": 5,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C",
+                    "CS2071"
+                ]
+            },
+            {
+                "courseCode": "EECE3093C",
+                "courseName": "Software Engineering (C- min)",
+                "credits": 4,
+                "semester": 5,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C",
+                    "CS2071"
+                ]
+            }
+        ],
+        [
+            {
+                "courseCode": "CS4033",
+                "courseName": "Artificial Intelligence: Principles and Applications",
+                "credits": 3,
+                "semester": 6,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C"
+                ]
+            },
+            {
+                "courseCode": "CS4065",
+                "courseName": "Computer Networks and Networked Computing",
+                "credits": 3,
+                "semester": 6,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C"
+                ]
+            },
+            {
+                "courseCode": "EECE4029",
+                "courseName": "Operating Systems & Systems Programming (C- min)",
+                "credits": 3,
+                "semester": 6,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2011",
+                    "CS2028C"
+                ]
+            },
+            {
+                "courseCode": "ENGL4092",
+                "courseName": "Technical and Scientific Writing",
+                "credits": 3,
+                "semester": 6,
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "ENGL2089"
+                ]
+            }
+        ],
+        [
+            {
+                "courseCode": "CS5001",
+                "courseName": "Computer Science Senior Design I (C- min)",
+                "credits": 3,
+                "semester": 7,
+                "semesterLock": [
+                    -2
+                ],
+                "coReqs": [],
+                "postReqs": [
+                    "CS5002"
+                ],
+                "preReqs": []
+            },
+            {
+                "courseCode": "CS5170",
+                "courseName": "The Theory of Formal Languages and Automata",
+                "credits": 3,
+                "semester": 7,
+                "semesterLock": [
+                    -2
+                ],
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS2028C",
+                    "CS2071"
+                ]
+            }
+        ],
+        [
+            {
+                "courseCode": "CS5002",
+                "courseName": "Computer Science Senior Design II (C- min)",
+                "credits": 3,
+                "semester": 8,
+                "semesterLock": [
+                    -1
+                ],
+                "coReqs": [],
+                "postReqs": [],
+                "preReqs": [
+                    "CS5001"
+                ]
+            }
+        ]
+    ],
+    "totalCredits": 91
 }

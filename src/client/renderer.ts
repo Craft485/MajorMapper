@@ -150,13 +150,13 @@ function showPreReqs(course: HTMLSpanElement, foundEdges: string[] = [], isLooki
 }
 
 function render(renderData: { data: Curriculum }): void {
+    paths.clear()
     document.getElementById('show-all-lines-toggle').classList.remove('toggled-on')
     document.getElementById('show-all-lines-toggle').classList.add('toggled-off')
     const curricula = renderData.data, semesters = curricula.semesters
     contentContainer.innerHTML = ''
     contentContainer.style.cssText = `height: ${window.innerHeight - contentHeader.offsetHeight - 42}px`
     renderer.classList.add('active')
-    paths.clear()
     SVGPaths.length = 0
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
     let semesterCount = 1
@@ -198,7 +198,7 @@ function render(renderData: { data: Curriculum }): void {
                     </div>
                 </div>`
             courseBlock.addEventListener('click', _ => showPreReqs(courseBlock))
-            courseBlock.addEventListener('mouseover', _ => UpdateContextMenuPos(courseBlock))
+            courseBlock.addEventListener('mouseover', ev => UpdateContextMenuPos(ev, courseBlock))
             column.appendChild(courseBlock)
         }
         semesterCount++
@@ -227,18 +227,16 @@ function render(renderData: { data: Curriculum }): void {
 }
 
 // Function to check for context menus creating overflow, and fixing them if so
-function UpdateContextMenuPos(parent: HTMLSpanElement) {
+function UpdateContextMenuPos(ev: MouseEvent, parent: HTMLSpanElement) {
+    // @ts-expect-error TS doesn't think toElement exists on MouseEvent. It does.
+    if(!ev.toElement.classList.contains("course")) return
     const menu = parent.querySelector<HTMLDivElement>('.context-menu')
-    menu.style.top = '' // Reset the fix in case we've scrolled elsewhere and its no longer needed
-    const { y, height, width } = menu.getBoundingClientRect()
-    const parentRect = parent.getBoundingClientRect()
-    if (y + height > contentContainer.clientHeight) {
-        // Using scrollY here to account for scrolling which was breaking the y position originally
-        menu.style.top = `${parentRect.y - height + window.scrollY}px`
-    }
-    let newX = parentRect.x
-    if (newX + width > contentContainer.clientWidth) newX -= (newX + width) - contentContainer.clientWidth
-    menu.style.left = `${newX}px`
+    const { x:parentX, y:parentY, height:parentHeight, width:parentWidth } = parent.getBoundingClientRect()
+    const { height, width } = menu.getBoundingClientRect()
+    menu.style.top = parentY + parentHeight + height >= window.innerHeight ? "unset" : "105%"
+    menu.style.bottom = parentY + parentHeight + height >= window.innerHeight ? "105%" : "unset"
+    menu.style.right = parentX + parentWidth + width >= window.innerWidth ? "0" : "unset"
+    menu.style.left = parentX + parentWidth + width >= window.innerWidth ? "unset" : "0"
 }
 
 const submenus = Array.from(document.querySelectorAll<HTMLElement>('#sub-menus > article'))
@@ -281,8 +279,6 @@ function ShowAllLines() {
 }
 
 function DegreePlanOnScroll() {
-    // Quick and ugly fix for updating the x position of any context menus (just in case they're being displayed while the user is scrolling)
-    Array.from(document.querySelectorAll<HTMLDivElement>('.context-menu')).forEach(e => { e.style.left = `${e.parentElement.getBoundingClientRect().x}px` })
     paths.clear()
     const updatedSVGPaths: typeof SVGPaths = []
     for (const [label, path] of SVGPaths) {

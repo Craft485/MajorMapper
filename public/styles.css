@@ -206,6 +206,7 @@ button#show-all-lines-toggle.toggled-on::before {
 }
 
 .course {
+    position: relative;
     display: block;
     box-sizing: border-box;
     border: var(--calhoun-red) solid 2px;

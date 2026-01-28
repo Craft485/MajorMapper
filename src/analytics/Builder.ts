@@ -1,20 +1,20 @@
-import { Curriculum, Vertex } from '../types/analytics'
+import { Vertex } from '../types/analytics'
 import { CalculateCreditHours, DeepCopy, FindCoreqs, GetPreReqs, UpdateRelativeSemesterLocks, SortVertices } from './utils'
 
 export async function Builder(curriculum: { [code: string]: Vertex }): Promise<Vertex[][]> {
-    const allCourses = Object.values(curriculum)
+    const allCourses = SortVertices(Object.values(curriculum))
     const semesters: Vertex[][] = new Array(Math.max(...allCourses.map(c => c.semester))).fill(0).map(_ => new Array)
     const coursesWithLocks: Vertex[] = []
     // Copy the courses from the passed in curriculum, splitting them into different arrays depending if they have semester locks or not
     // then sort the non-semester locked courses based on their course number
-    const courseList = DeepCopy<Vertex[]>(Object.values(curriculum)).filter(course => {
+    const courses = DeepCopy<Vertex[]>(allCourses).filter(course => {
         if (course.semesterLock?.length > 0) {
             coursesWithLocks.push(DeepCopy<Vertex>(course))
             return false
         }
         return true
     })
-    const courses = SortVertices(courseList)
+
     console.log(courses.map(x => x.courseCode).join(', '))
     // Add locked courses first, including any coreqs attached to them
     for (const lockedCourse of coursesWithLocks) {

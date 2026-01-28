@@ -6,6 +6,9 @@
                 "courseName": "Introduction to EECS for EE, CompE, and EET Majors",
                 "credits": 1,
                 "semester": 1,
+                "semesterLock": [
+                    0
+                ],
                 "coReqs": [],
                 "postReqs": [],
                 "preReqs": []
@@ -15,6 +18,9 @@
                 "courseName": "Foundations of Engineering Design Thinking I (C- min)",
                 "credits": 3,
                 "semester": 1,
+                "semesterLock": [
+                    0
+                ],
                 "coReqs": [],
                 "postReqs": [
                     "EECE2051C",
@@ -39,6 +45,9 @@
                 "courseName": "Calculus I (C- min)",
                 "credits": 4,
                 "semester": 1,
+                "semesterLock": [
+                    0
+                ],
                 "coReqs": [
                     "PHYS2001"
                 ],
@@ -119,6 +128,9 @@
                 "courseName": "Foundations of Engineering Design Thinking II (C- min)",
                 "credits": 3,
                 "semester": 2,
+                "semesterLock": [
+                    1
+                ],
                 "coReqs": [],
                 "postReqs": [],
                 "preReqs": [

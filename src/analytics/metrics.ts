@@ -9,10 +9,10 @@ export async function CalculateMetrics(curriculum: Curriculum | {[code: string]:
         // Get all courses that relate to the current course of interest, excluding any that have a mutual co-req relationship with the current vertex
         const subset = (await calculateCoursePath(vertex, curriculum)).filter(course => !course.coReqs.includes(vertex.courseCode))
         // DEBUG: To be removed later
-        if (vertex.courseCode === 'CS1021C') {
+        if (vertex.courseCode === 'CS2071') {
             console.log('ELEEMOSYNARY')
             console.log(subset)
-            // process.exit()
+            console.log(`BLOCKING FACTOR SUBSET FILTER FOR ${vertex.courseCode}: ` + subset.filter(course => course.semester > vertex.semester).map(c=>c.courseCode).join(', '))
         }
         // Build an array of all path permutations through the current vertex of interest
         const paths = (await BuildPathPermutations(subset, [])).filter(path => path.find(course => course.courseCode === vertex.courseCode) !== undefined)
@@ -24,7 +24,6 @@ export async function CalculateMetrics(curriculum: Curriculum | {[code: string]:
         // Old version: paths.map(path => path.slice(path.findIndex(course => course.courseCode === vertex.courseCode) + 1)).flat().filter((v, i, a) => a.findIndex(c => c.courseCode === v.courseCode) === i).length
         const BlockingFactor = subset.filter(course => course.semester > vertex.semester).length
         const Centrality = pathLengths.reduce((acc, curr) => acc + curr, 0)
-        // console.log(`BLOCKING FACTOR SUBSET FILTER FOR ${vertex.courseCode}: ` + subset.filter(course => course.semester > vertex.semester).map(c=>c.courseCode).join(', '))
         vertex.metrics = {
             delayFactor: DelayFactor,
             blockingFactor: BlockingFactor,
@@ -40,7 +39,7 @@ export async function CalculateMetrics(curriculum: Curriculum | {[code: string]:
 
 export async function BuildPathPermutations(courses: Vertex[], permutations: Vertex[][] = []): Promise<Vertex[][]> {
     if (permutations.length === 0) { // This call is the top of the recurse chain
-        const sourceNodes = courses.filter(course => courses.find(vertex => vertex.postReqs.includes(course.courseCode)) === undefined) // FIXME: I don't think we are finding source nodes correctly
+        const sourceNodes = courses.filter(course => courses.find(vertex => vertex.postReqs.includes(course.courseCode)) === undefined)
         for (const node of sourceNodes) { // Recursively build paths stemming from each source node
             permutations.push(...await BuildPathPermutations(courses, [[node]]))
         }
@@ -52,10 +51,7 @@ export async function BuildPathPermutations(courses: Vertex[], permutations: Ver
         for (const permutation of permutations) {
             const lastNode = permutation.at(-1)
             const nextNodes = ComputeVerticesFromCourseCodes(courses, lastNode.postReqs)
-            console.log(`${lastNode.courseCode}: ${nextNodes.map(c => c.courseCode).join(', ')}\n`)
-            // if (lastNode.courseCode === 'CS1021C') {
-            //     console.log(courses)
-            // }
+            // console.log(`${lastNode.courseCode}: ${nextNodes.map(c => c.courseCode).join(', ')}\n`)
             if (nextNodes.length === 0) { // If we have already finished building this path, just save it and move on
                 newPermutations.push(permutation)
                 sinkNodeCount++

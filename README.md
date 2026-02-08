@@ -1,9 +1,8 @@
 # University of Cincinnati Major Mapper / Degree Planner (aka "Can I Double Major?")
 
-The end goal of this project is to have a (static) single page web application that will:
+College planning can be a lot. Especially for incoming High School students with little to no reference for the world of higher education. This difficulty compounds if a student wishes to purse multiple fields of study.
 
-- Take in one or more majors/minors/certifications or other curriculums
-- Display a "graph" of the curriculum(s) along with some statistics to aid in decision making for whether or not a student wishes to pursue a certain academic venture
+This degree planner hopes to provide a web tool usable by current/incoming college students and college advisors to plan for 1 or more potential academic avenues. Using concepts from current discussions in academia surrounding the idea of "curricular analytics" to made informed decisions about course placement.
 
 ## Setup
 
@@ -25,15 +24,15 @@ The following is a rough outline for how this app works conceptuality
 1. The user answers a short questionnaire supplying various bits of information such as what field(s) of study they wish to pursue.
     - *Note: I hope to expand this questionnaire further, but those ideas are very theoretical at the moment*
 2. The user will submit their answers to the web server, if the user has selected a single degree plan then steps 3 and 4 are skipped.
-3. Otherwise, if the user selected more than one field of study, the program will merge the curricula into a single curriculum (ensuring that course dependencies are respected).
-    - *Note: This merge step is not concerned with semester credit hours, only that class requisite chains are respected*
-4. Once the curricula are merged, the program will then attempt to optimize the degree plan. This mainly consists of making sure that every semester is at or below 18 credit hours.
-    - *Note: The optimize step may find it necessary to add additional semesters if there are simply too many credit hours floating around, however, this is a last resort*
-5. After a final degree plan has been reached, the program will calculate metrics for each course. This metrics include Delay Factor (DF), Blocking Factor (BF), Centrality Factor (CF), and Structural Complexity (SC). While there are many papers out there discussing these metrics, my primary source for learning their algorithmic/mathematic definitions can be found [as part of the documentation for a related R package](https://cran.r-project.org/web/packages/CurricularAnalytics/vignettes/CurricularAnalytics.html). See the [metrics](#metrics) section for more details.
+3. If the user has selected more than one curriculum, the two are merged into a single list and sorted. This merge ensures that any requisite edges are conservered  while also removing courses that are duplicate across multiple curricula
+4. The sorted list of courses is passed to the builder. This step starts with a blank curriculum and slots in courses 1 by 1 (starting with locked classes, then following the sort order). This makes sure (for the most part) that no single semester goes over 18 credits and any additional semesters are added if requried.
+5.  Once a base degree is built, an optimizer takes the degree plan and makes sure that no single semester if over 18 credit hours
+6. Then, a second optimizer tries to move courses in hopes of minimizing a certain scoring function (TODO: Add a section about the deterministic "EGA")
+7. After a final degree plan has been reached, the program will calculate metrics for each course. This metrics include Delay Factor (DF), Blocking Factor (BF), Centrality Factor (CF), and Structural Complexity (SC). While there are many papers out there discussing these metrics, my primary source for learning their algorithmic/mathematic definitions can be found [as part of the documentation for a related R package](https://cran.r-project.org/web/packages/CurricularAnalytics/vignettes/CurricularAnalytics.html). See the [metrics](#metrics) section for more details.
 
 ## Metrics
 
-==Note: Much of this is either taken or adapted from the R package mentioned previously and is therefore only covering the basics==
+Note: Much of this is either taken or adapted from the R package mentioned previously and is therefore only covering the basics
 
 All equations shown here assume that:
 
@@ -53,10 +52,7 @@ What follows is the definitions and short explanations for each metric that is b
 
 For a single node
 
-<!-- Need to use a proper math code block here because GitHub can't render # otherwise for some reason -->
-```math
-DF(v_k) = \max_{i,j,l,m}\{\#(\ce{v_i->[P_l]v_k->[P_m]v_j})\}
-```
+$$ DF(v_k) = \max_{i,j,l,m}\{(\\#(\ce{v_i->[P_l]v_k->[P_m]v_j}))\} $$
 
 For an entire curriculum graph
 
@@ -111,16 +107,12 @@ In order to create more reasonable outputs, its important to restrict the moveme
 
 A course can have multiple semester locks depending on circumstances
 
-There are two types of locks: absolute and relative
+There are two types of locks: *absolute* and *relative*
 
-Absolute: a positive integer between 0 and (number of semester - 1) that represents a hard, constant, lock to a semester
+Absolute: a positive integer between 0 and (number of semesters - 1) that represents a hard, constant, lock to a semester
 
 Relative: a negative integer where abs(lock) is between 1 and the number of semesters, representing a count backwards in the curriculum starting from the last semester (which is index -1)
 
 This enables us to ensure that a student will meet certain timely course requirements such as senior design, professional development, or calculus.
 
 **NOTE: not all courses need a semester lock, in fact very few will probably have them**
-
-### Regards to old versions of this project
-
-The original version of this project sought to scrape publicly available information from UC. This proved difficult to do with the inconsistencies between curriculums. Additionally, there was no feasible way to obtain information regarding prerequisite information (ie. there was no way for the program to tell that Calculus 1 is required to take Calculus 2) which is the ultimate reason I moved away from the approach altogether.
